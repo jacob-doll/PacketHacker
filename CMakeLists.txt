@@ -12,5 +12,25 @@ include(${wxWidgets_USE_FILE})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-# add_subdirectory(pcap-tests)
-add_subdirectory(src)
+set(PACKET_SRCS
+    src/packet/packet_arp.cpp
+    src/packet/packet_data.cpp
+    src/packet/packet_eth.cpp
+    src/packet/packet_ip.cpp
+    src/packet/packet.cpp
+    src/packet/utils/utils.cpp
+    src/packet/utils/buffer_utils.cpp
+)
+
+set(SRCS 
+    src/app/main.cpp
+    src/app/main_window.cpp
+    src/app/context.cpp
+    src/app/ui/byte_viewer.cpp
+)
+
+add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${PACKET_SRCS})
+target_link_libraries(${PROJECT_NAME} ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES})
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} IPHLPAPI)
+endif()

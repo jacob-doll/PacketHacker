@@ -1,41 +1,38 @@
 #include "buffer_utils.h"
+#include <cstring>
 
 namespace PacketHacker
 {
 namespace Utils
 {
 
-void WriteToBuffer(uint8_t *buffer, uint32_t &offset, uint8_t value)
+void WriteToBuffer(uint8_t *buffer, uint32_t &offset, const uint8_t value)
 {
     buffer[offset] = value;
     offset = offset + 1;
 }
 
-void WriteToBuffer(uint8_t *buffer, uint32_t &offset, uint16_t value)
+void WriteToBuffer(uint8_t *buffer, uint32_t &offset, const uint16_t value)
 {
-    for (int i = 0; i < 2; i++)
-    {
-        buffer[offset] = (value >> (i * 8));
-        offset = offset + 1;
-    }
+    buffer += offset;
+    uint16_t swap = BYTE_SWAP_16(value);
+    std::memcpy(buffer, &swap, sizeof(value));
+    offset += sizeof(value);
 }
 
-void WriteToBuffer(uint8_t *buffer, uint32_t &offset, uint32_t value)
+void WriteToBuffer(uint8_t *buffer, uint32_t &offset, const uint32_t value)
 {
-    for (int i = 0; i < 4; i++)
-    {
-        buffer[offset] = (value >> (i * 8));
-        offset = offset + 1;
-    }
+    buffer += offset;
+    uint16_t swap = BYTE_SWAP_32(value);
+    std::memcpy(buffer, &swap, sizeof(value));
+    offset += sizeof(value);
 }
 
 void CopyToBuffer(uint8_t *dst, uint8_t *src, uint32_t &offset, uint32_t size)
 {
-    for (int i = 0; i < size; i++)
-    {
-        dst[offset] = src[i];
-        offset = offset + 1;
-    }
+    dst += offset;
+    std::memcpy(dst, src, size);
+    offset += size;
 }
 
 } // namespace Utils
