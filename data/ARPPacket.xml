@@ -1,0 +1,27 @@
+<packet>
+    <name>ARP</name>
+    <header size="28">
+        <element name="Hardware type" size="2">
+            <type name="Ethernet" val="0x0001"/>
+        </element>
+        <element name="Protocol type" size="2">
+            <type name="IPv4" val="0x0800"/>
+            <type name="IPv6" val="0x86DD"/>
+        </element>
+        <element name="Hardware address length" size="1">
+            <type name="Ethernet" val="0x06"/>
+        </element>
+        <element name="Protocol address length" size="1">
+            <type name="IPv4" val="0x04"/>
+            <type name="IPv6" val="0x06"/>
+        </element>
+        <element name="Operation" size="2">
+            <type name="Request" val="0x0001"/>
+            <type name="Reply" val="0x0002"/>
+        </element>
+        <element name="Sender hardware address" size="6"/>
+        <element name="Sender protocol address" size="4"/>
+        <element name="Target hardware address" size="6"/>
+        <element name="Target protocol address" size="4"/>        
+    </header>
+</packet>

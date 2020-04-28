@@ -7,6 +7,7 @@
 
 #include "context.h"
 #include "ui/byte_viewer.h"
+#include "ui/packet_tree.h"
 
 namespace PacketHacker
 {
@@ -25,6 +26,8 @@ private:
     wxButton *m_pSendButton = nullptr;
     wxMenuBar *m_pMenuBar = nullptr;
     wxMenu *m_pAdapterMenu = nullptr;
+
+    UI::PacketTree *m_pPacketTree = nullptr;
     UI::ByteViewer *m_pByteViewer = nullptr;
 };
 

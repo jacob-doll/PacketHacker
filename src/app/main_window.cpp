@@ -7,7 +7,7 @@
 namespace PacketHacker
 {
 MainWindow::MainWindow()
-    : wxFrame(nullptr, wxID_ANY, "Packet Hacker")
+    : wxFrame(nullptr, wxID_ANY, "Packet Hacker", wxDefaultPosition, wxSize(1280, 720))
 {
     m_pContext = new Context();
     m_pMenuBar = new wxMenuBar();
@@ -20,8 +20,12 @@ MainWindow::MainWindow()
 
     m_pSizer = new wxBoxSizer(wxVERTICAL);
 
+    m_pPacketTree = new UI::PacketTree(this);
+    m_pSizer->Add(m_pPacketTree, 2, wxEXPAND);
+
     m_pByteViewer = new UI::ByteViewer(this);
 
+    //TeST
     EthernetPacket *base = new EthernetPacket();
     uint8_t dstMac[] = {0xff, 0xff, 0xff, 0xff, 0xff, 0xff};
     uint8_t srcMac[] = {0xe0, 0xd5, 0x5e, 0x61, 0xb5, 0x7d};
@@ -49,6 +53,8 @@ MainWindow::MainWindow()
     {
         m_pByteViewer->SetByte(i, data[i]);
     }
+
+    m_pPacketTree->SetPacket(base);
 
     delete data;
     delete base;

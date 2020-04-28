@@ -1,0 +1,12 @@
+<packet>
+    <name>Ethernet</name>
+    <header size="14">
+        <element name="MAC destination" size="6"/>
+        <element name="MAC source" size="6"/>
+        <element name="MAC type" size="2">
+            <type name="IPv4" val="0x0800">
+            <type name="ARP" val="0x0806">
+            <type name="IPv6" val="0x86DD">
+        </element>
+    </header>
+</packet>

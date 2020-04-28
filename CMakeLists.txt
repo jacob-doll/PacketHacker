@@ -7,7 +7,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mod
 find_package(PCAP REQUIRED)
 include_directories(${PROJECT_NAME} ${PCAP_INCLUDE_DIR})
 
-find_package(wxWidgets COMPONENTS core base REQUIRED)
+find_package(wxWidgets COMPONENTS core base propgrid REQUIRED)
 include(${wxWidgets_USE_FILE})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
@@ -27,6 +27,7 @@ set(SRCS
     src/app/main_window.cpp
     src/app/context.cpp
     src/app/ui/byte_viewer.cpp
+    src/app/ui/packet_tree.cpp
 )
 
 add_executable(${PROJECT_NAME} WIN32 ${SRCS} ${PACKET_SRCS})

@@ -26,7 +26,11 @@ public:
 
     void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;
 
+    std::string GetName() const override { return "Ethernet"; }
+    std::vector<std::string> GetFields() const override { return m_fields; }
+
 private:
+    const std::vector<std::string> m_fields = {"Destination MAC", "Source MAC", "Type"};
     EthernetHeader m_header;
 };
 

@@ -38,7 +38,19 @@ public:
 
     void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;
 
+    std::string GetName() const override { return "Arp"; }
+    std::vector<std::string> GetFields() const override { return m_fields; }
+
 private:
+    const std::vector<std::string> m_fields = {"Hardware Type",
+                                               "Protocol Type",
+                                               "Hardware Address Length",
+                                               "Protocol Address Size",
+                                               "Operation Code",
+                                               "Sender MAC",
+                                               "Sender IP",
+                                               "Target MAC",
+                                               "Target IP"};
     ArpHeader m_header;
 };
 
