@@ -1,5 +1,7 @@
 #include "main.h"
-#include "main_window.h"
+#include "app/main_window.h"
+#include "packet/packet.h"
+#include <cstdio>
 
 IMPLEMENT_APP(PacketHackerApp)
 
@@ -12,3 +14,4 @@ bool PacketHackerApp::OnInit()
     window->Show();
     return true;
 }
+

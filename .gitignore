@@ -35,3 +35,4 @@
 .vscode/
 CMakeFiles/
 build/
+packet_hacker-cppcheck-build-dir/

@@ -1,5 +1,5 @@
-#include <pcap.h>
 #include "context.h"
+#include <pcap.h>
 
 #include <wx/wxprec.h>
 
@@ -7,20 +7,75 @@
 #include <wx/wx.h>
 #endif
 
+
 namespace PacketHacker
 {
 
 Context::Context()
+    : m_CurrentAdapter{}, m_AdapterSet(false), m_pBasePacket()
 {
+    m_packetTypes = Utils::GetAvailablePackets();
+    m_adapters = Utils::GetAdapters();
 }
 
-void Context::SetAdapter(AdapterInfo &info)
+Context::~Context() {
+    delete m_pBasePacket;
+}
+
+void Context::SetAdapter(int index)
 {
     m_AdapterSet = true;
-    m_CurrentAdapter = info;
+    m_CurrentAdapter = m_adapters[index];
+}
+    
+void Context::SetBasePacket(int index)
+{
+    delete m_pBasePacket;
+    PacketInfo info = m_packetTypes[index];
+    m_pBasePacket = new Packet();
+    m_pBasePacket->LoadPacket(info.path.c_str());
 }
 
-bool Context::SendPacket(u_char *data, int size)
+void Context::AddPacket(int index)
+{
+    if (!m_pBasePacket)
+    {
+        SetBasePacket(index);
+    }
+    else
+    {
+        Packet *currentPacket = m_pBasePacket;
+        while (currentPacket->GetInnerPacket())
+        {
+            currentPacket = currentPacket->GetInnerPacket();
+        }
+        PacketInfo info = m_packetTypes[index];
+        Packet *packet = new Packet();
+        currentPacket->SetInnerPacket(packet);
+        packet->LoadPacket(info.path.c_str());
+    }
+}
+
+void Context::RemovePacket(std::string name)
+{
+    if (!m_pBasePacket) return;
+    if (m_pBasePacket->GetName() == name)
+    {
+        delete m_pBasePacket;
+        m_pBasePacket = nullptr;
+    }
+
+    Packet *currentPacket = m_pBasePacket;
+    while (currentPacket)
+    {
+        if (currentPacket->GetInnerPacket()->GetName() == name) {
+            currentPacket->RemoveInnerPacket();
+        }
+        currentPacket = currentPacket->GetInnerPacket();
+    }
+}
+
+bool Context::SendPacket(uint8_t *data, int size)
 {
     if (!IsAdapterSet())
     {
