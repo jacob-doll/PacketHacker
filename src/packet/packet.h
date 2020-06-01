@@ -1,71 +1,93 @@
 #pragma once
 #include <stdint.h>
-#include <memory>
 #include <vector>
-#include <map>
 #include <string>
+#include <functional>
 
-namespace PacketHacker
+namespace PacketHacker {
+
+enum PacketTypes {
+  ARP = 1000,
+  ETHERNET = 1001
+};
+
+class HeaderField;
+
+class Packet
 {
-    enum ElementType
-    {
-        NONE = 0,
-        MAC = 1,
-        IPv4 = 2,
-        IPv6 = 3,
-        INT = 4
-    };
+public:
+  Packet();
+  ~Packet();
 
-    struct ElementValue
-    {
-        std::string name;
-        uint32_t val;
-    };
+  Packet *GetOuterPacket() const { return m_outerPacket; }
+  Packet *GetInnerPacket() const { return m_innerPacket; }
+  Packet *GetPacket(std::string name);
+  void SetInnerPacket(Packet *inner);
+  void RemoveInnerPacket();
+  uint32_t Size() const;
+  void Init();
 
-    struct HeaderElement
-    {
-        std::string name;
-        std::string defaultVal;
-        std::vector<ElementValue> values;
-        uint32_t elementType;
-        uint32_t size;
-        uint32_t offset;
-    };
+  void WriteToBuf(uint8_t *buffer, uint32_t size, uint32_t offset = 0);
 
-    class Packet
-    {
-    public:
-        Packet();
-        ~Packet();
+  virtual uint32_t HeaderSize() const = 0;
+  virtual std::string GetName() const = 0;
+  HeaderField *GetField(std::string name) const;
+  std::vector<HeaderField *> GetFields() const { return m_fields; }
 
-        uint32_t HeaderSize() const { return m_headerSize; }
-        uint32_t PayloadSize() const;
-        uint32_t Size() const;
+  virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) = 0;
 
-        Packet* GetOuterPacket() const { return m_outerPacket; }
-        Packet* GetInnerPacket() const { return m_innerPacket; }
-        Packet* GetPacket(std::string name);
-        void SetInnerPacket(Packet* inner);
-        void RemoveInnerPacket();
+private:
+  void SetOuterPacket(Packet *outer);
 
-        void WriteToBuf(uint8_t *buffer, uint32_t size, uint32_t offset = 0);
-        void DoWriteToBuf(uint8_t *buffer, uint32_t &offset);
+protected:
+  std::vector<HeaderField *> m_fields;
 
-        std::string GetName() const { return m_name; }
-        HeaderElement GetField(std::string name) const;
-        std::vector<HeaderElement> GetFields() const { return m_headerElements; }
+private:
+  Packet *m_outerPacket;
+  Packet *m_innerPacket;
+};
 
-        bool LoadPacket(const char *filename);
+class HeaderField
+{
+public:
+  HeaderField(Packet *packet, std::string name, std::string defaultVal)
+    : m_packet(packet), m_name(name), m_defaultVal(defaultVal)
+  {
+  }
 
-    private:
-        void SetOuterPacket(Packet* outer);
+  virtual ~HeaderField() {}
 
-    private:
-        Packet* m_outerPacket;
-        Packet* m_innerPacket;
-        uint32_t m_headerSize;
-        std::string m_name;
-        std::vector<HeaderElement> m_headerElements;
-    };
+  virtual void HandleData(const char *data) = 0;
 
-} // namespace PacketHacker
+  Packet *GetPacket() const { return m_packet; }
+  std::string GetName() const { return m_name; }
+  std::string GetDefaultVal() const { return m_defaultVal; }
+
+protected:
+  Packet *m_packet;
+  std::string m_name;
+  std::string m_defaultVal;
+};
+
+template<class T>
+class HeaderFieldImpl : public HeaderField
+{
+public:
+  typedef void (T::*HandlerFunctionPtr)(const char *);
+
+  HeaderFieldImpl(T *packet, std::string name, std::string defaultVal, HandlerFunctionPtr function)
+    : HeaderField(packet, name, defaultVal), m_function(function)
+  {
+  }
+
+  virtual void HandleData(const char *data)
+  {
+    T *packet = static_cast<T *>(m_packet);
+    (packet->*m_function)(data);
+  }
+
+private:
+  HandlerFunctionPtr m_function;
+};
+
+}// namespace PacketHacker

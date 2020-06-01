@@ -9,35 +9,35 @@
 #include "context.h"
 #include "ui/byte_viewer.h"
 #include "ui/packet_tree.h"
+#include "ui/details_pane.h"
 
-namespace PacketHacker
-{
+namespace PacketHacker {
 class MainWindow : public wxFrame
 {
 public:
-    MainWindow();
-    ~MainWindow();
+  MainWindow();
+  ~MainWindow();
 
-    void OnButtonPressed(wxCommandEvent &event);
-    void OnAdapterSelected(wxCommandEvent &event);
-    void OnPacketSelected(wxCommandEvent &event);
+  void OnButtonPressed(wxCommandEvent &event);
+  void OnAdapterSelected(wxCommandEvent &event);
+  void OnPacketSelected(wxCommandEvent &event);
 
-    UI::ByteViewer *GetByteViewer() const { return m_pByteViewer; }
-    Context *GetContext() const { return m_pContext; }
+  UI::ByteViewer *GetByteViewer() const { return m_pByteViewer; }
+  Context *GetContext() const { return m_pContext; }
 
 private:
-    Context *m_pContext = nullptr;
+  Context *m_pContext;
 
-    wxBoxSizer *m_pSizer = nullptr;
-    wxButton *m_pSendButton = nullptr;
-    wxMenuBar *m_pMenuBar = nullptr;
-    wxMenu *m_pAdapterMenu = nullptr;
-    wxMenu *m_pPacketMenu = nullptr;
+  wxButton *m_pSendButton;
+  wxMenuBar *m_pMenuBar;
+  wxMenu *m_pAdapterMenu;
+  wxMenu *m_pPacketMenu;
 
-    UI::PacketTree *m_pPacketTree = nullptr;
-    UI::ByteViewer *m_pByteViewer = nullptr;
+  UI::PacketTree *m_pPacketTree;
+  UI::ByteViewer *m_pByteViewer;
+  UI::DetailsPane *m_pDetailsPane;
 };
 
 const int ID_SENDBUTTON = 101;
 
-} // namespace PacketHacker
+}// namespace PacketHacker

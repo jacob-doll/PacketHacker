@@ -4,38 +4,42 @@
 #include <vector>
 
 #include "packet/packet.h"
+#include "packet/packets.h"
 #include "packet/utils/utils.h"
 
-namespace PacketHacker
-{
+namespace PacketHacker {
 
 class Context
 {
+  friend class MainWindow;
+
 public:
-    Context();
-    ~Context();
+  Context(MainWindow *window);
+  ~Context();
 
-    void SetAdapter(int index);
-    AdapterInfo GetAdapter() { return m_CurrentAdapter; }
-    bool IsAdapterSet() const { return m_AdapterSet; }
+  void SetAdapter(int index);
+  AdapterInfo GetAdapter() { return m_CurrentAdapter; }
+  bool IsAdapterSet() const { return m_AdapterSet; }
 
-    void SetBasePacket(int index);
-    void AddPacket(int index);
-    void RemovePacket(std::string name);
-    Packet* GetBasePacket() const { return m_pBasePacket; }
+  void SetBasePacket(int packetId);
+  void AddPacket(int packetId);
+  void RemovePacket(std::string name);
+  Packet *GetBasePacket() const { return m_pBasePacket; }
 
-    bool SendPacket(uint8_t *data, int size);
+  bool SendPacket();
 
-    std::vector<PacketInfo>& GetPacketTypes() { return m_packetTypes; }
-    std::vector<AdapterInfo>& GetAdapters() { return m_adapters; }
+  std::vector<AdapterInfo> &GetAdapters() { return m_adapters; }
+
+  MainWindow *GetMainWindow() const { return m_MainWindow; }
 
 private:
-    AdapterInfo m_CurrentAdapter;
-    bool m_AdapterSet;
+  MainWindow *m_MainWindow;
 
-    std::vector<PacketInfo> m_packetTypes;
-    std::vector<AdapterInfo> m_adapters;
-    Packet *m_pBasePacket;
+  AdapterInfo m_CurrentAdapter;
+  bool m_AdapterSet;
+
+  std::vector<AdapterInfo> m_adapters;
+  Packet *m_pBasePacket;
 };
 
-} // namespace PacketHacker
+}// namespace PacketHacker

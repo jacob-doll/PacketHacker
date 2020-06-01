@@ -1,7 +1,8 @@
 {
     "cmake.configureSettings": {
-        "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG}/scripts/buildsystems/vcpkg.cmake",
+        "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG}/scripts/buildsystems/vcpkg.cmake"
     },
+    "editor.tabSize": 2,
     "files.associations": {
         "SConstruct": "python",
         "SConscript": "python",

@@ -7,11 +7,12 @@ IMPLEMENT_APP(PacketHackerApp)
 
 bool PacketHackerApp::OnInit()
 {
-    using namespace PacketHacker;
+  using namespace PacketHacker;
 
-    MainWindow *window = new MainWindow();
-    window->Center();
-    window->Show();
-    return true;
+  MainWindow *window = new MainWindow();
+  window->Center();
+  window->Show();
+
+
+  return true;
 }
-
