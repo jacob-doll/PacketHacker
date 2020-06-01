@@ -29,6 +29,7 @@ namespace UI {
 
   void PacketTree::SetPacket(Packet *packet)
   {
+    // TODO: Check to make sure that packet does not have duplicate children
     MainWindow *window = m_pContext->GetMainWindow();
     if (packet) {
       window->GetByteViewer()->SetSize(packet->Size());

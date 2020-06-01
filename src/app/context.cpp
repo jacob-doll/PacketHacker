@@ -1,5 +1,4 @@
 #include "context.h"
-#include <pcap.h>
 
 #include <wx/wxprec.h>
 
