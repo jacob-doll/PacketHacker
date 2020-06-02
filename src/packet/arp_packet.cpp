@@ -89,6 +89,11 @@ void ArpPacket::SetTargetIp(const char *val)
   }
 }
 
+void ArpPacket::DoParse(uint8_t *buffer)
+{
+  Utils::ReadValue(buffer, m_header);
+}
+
 void ArpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
 {
   buffer += offset;

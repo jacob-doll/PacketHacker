@@ -48,6 +48,12 @@ namespace Utils {
   }
 
   template<typename T>
+  void ReadValue(const uint8_t *buffer, T &value)
+  {
+    std::memcpy(&value, buffer, sizeof(value));
+  }
+
+  template<typename T>
   void WriteValue(uint8_t *buffer, const T &value)
   {
     std::memcpy(buffer, &value, sizeof(value));
