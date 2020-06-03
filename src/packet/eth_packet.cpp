@@ -1,6 +1,8 @@
 #include "eth_packet.h"
 #include "utils/utils.h"
 
+#include <sstream>
+
 namespace PacketHacker {
 
 EthernetPacket::EthernetPacket()
@@ -51,6 +53,17 @@ void EthernetPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
   buffer += 6;
   Utils::WriteValue(buffer, BYTE_SWAP_16(m_header.type));
   offset += HeaderSize();
+}
+
+std::string EthernetPacket::ToString() 
+{
+  std::stringstream ss;
+  ss << GetName() << " (size: " << HeaderSize() << "): {\n";
+  ss << "\tdst: " << Utils::HardwareAddressToString(m_header.dstMac) << "\n";
+  ss << "\tsrc: " << Utils::HardwareAddressToString(m_header.srcMac) << "\n";
+  ss << "\ttype: " << std::hex << m_header.type << "\n";
+  ss << "}";
+  return ss.str();
 }
 
 }// namespace PacketHacker

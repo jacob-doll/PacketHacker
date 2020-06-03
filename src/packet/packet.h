@@ -32,6 +32,7 @@ public:
 
   virtual uint32_t HeaderSize() const = 0;
   virtual std::string GetName() const = 0;
+  virtual std::string ToString() = 0;
 
   HeaderField *GetField(std::string name) const;
   std::vector<HeaderField *> GetFields() const { return m_fields; }

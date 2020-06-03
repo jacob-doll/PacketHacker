@@ -1,7 +1,4 @@
 {
-    "cmake.configureSettings": {
-        "CMAKE_TOOLCHAIN_FILE": "${env:VCPKG}/scripts/buildsystems/vcpkg.cmake"
-    },
     "editor.tabSize": 2,
     "files.associations": {
         "SConstruct": "python",
@@ -101,6 +98,7 @@
         "xlocmes": "cpp",
         "xlocmon": "cpp",
         "xloctime": "cpp",
-        "xtree": "cpp"
+        "xtree": "cpp",
+        "concepts": "cpp"
     }
 }

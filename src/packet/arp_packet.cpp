@@ -1,6 +1,8 @@
 #include "arp_packet.h"
 #include "utils/utils.h"
 
+#include <sstream>
+
 namespace PacketHacker {
 
 ArpPacket::ArpPacket()
@@ -116,6 +118,15 @@ void ArpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
   Utils::Write(buffer, m_header.targetIp, 4);
   buffer += 4;
   offset += HeaderSize();
+}
+
+std::string ArpPacket::ToString() 
+{
+  std::stringstream ss;
+  ss << GetName() << " (size: " << HeaderSize() << "): {\n";
+  
+  ss << "}/n";
+  return ss.str();
 }
 
 }// namespace PacketHacker

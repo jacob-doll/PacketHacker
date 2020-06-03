@@ -15,6 +15,7 @@ public:
 
   virtual uint32_t HeaderSize() const override { return sizeof(EthernetHeader); }
   virtual std::string GetName() const override { return "Ethernet"; }
+  virtual std::string ToString() override;
 
 protected:
   virtual void DoParse(uint8_t *buffer) override;

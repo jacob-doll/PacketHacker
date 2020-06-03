@@ -3,6 +3,8 @@
 #include "packet/arp_packet.h"
 #include "packet/utils/utils.h"
 
+#include <assert.h>
+
 int main()
 {
   using namespace PacketHacker;
@@ -35,9 +37,10 @@ int main()
   eth->Parse(data, 14);
   uint8_t out_data[14]{};
   eth->WriteToBuf(out_data, 14);
-  for (int i = 0; i < 14; i++) {
-    printf("%.2x ", data[i]);
-  }
+  // for (int i = 0; i < 14; i++) {
+  //   // assert(data[i] == out_data[i]);
+  // }
+  printf("%s", eth->ToString().c_str());
 
   delete eth;
   return 0;

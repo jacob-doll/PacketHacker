@@ -21,6 +21,7 @@ public:
 
   virtual uint32_t HeaderSize() const override { return sizeof(ArpHeader); }
   virtual std::string GetName() const override { return "ARP"; }
+  virtual std::string ToString() override;
 
 protected:
   virtual void DoParse(uint8_t *buffer) override;
