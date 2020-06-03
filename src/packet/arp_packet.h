@@ -8,6 +8,7 @@ class ArpPacket : public Packet
 {
 public:
   ArpPacket();
+  ArpPacket(const uint8_t *data, uint32_t size);
 
   void SetHardwareType(const char *val);
   void SetProtocolType(const char *val);
@@ -19,12 +20,12 @@ public:
   void SetTargetMac(const char *val);
   void SetTargetIp(const char *val);
 
+  virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override { return sizeof(ArpHeader); }
   virtual std::string GetName() const override { return "ARP"; }
   virtual std::string ToString() override;
 
 protected:
-  virtual void DoParse(uint8_t *buffer) override;
   virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;
 
 private:

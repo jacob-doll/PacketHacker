@@ -27,9 +27,9 @@ public:
   uint32_t Size() const;
   void Init();
 
-  void Parse(uint8_t *buffer, uint32_t size);
   void WriteToBuf(uint8_t *buffer, uint32_t size, uint32_t offset = 0);
 
+  virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) = 0;
   virtual uint32_t HeaderSize() const = 0;
   virtual std::string GetName() const = 0;
   virtual std::string ToString() = 0;
@@ -38,7 +38,6 @@ public:
   std::vector<HeaderField *> GetFields() const { return m_fields; }
 
 protected:
-  virtual void DoParse(uint8_t *buffer) = 0;
   virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) = 0;
 
 private:

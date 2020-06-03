@@ -8,17 +8,18 @@ class EthernetPacket : public Packet
 {
 public:
   EthernetPacket();
+  EthernetPacket(const uint8_t *data, uint32_t size);
 
   void SetDst(const char *val);
   void SetSrc(const char *val);
   void SetType(const char *val);
 
+  virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override { return sizeof(EthernetHeader); }
   virtual std::string GetName() const override { return "Ethernet"; }
   virtual std::string ToString() override;
 
 protected:
-  virtual void DoParse(uint8_t *buffer) override;
   virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;
 
 private:

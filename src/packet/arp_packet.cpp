@@ -29,6 +29,18 @@ ArpPacket::ArpPacket()
   Init();
 }
 
+ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
+{
+  if (size < HeaderSize()) {
+    return;
+  }
+  Utils::ReadValue(data, m_header);
+  m_header.hardwareType = BYTE_SWAP_16(m_header.hardwareType);
+  m_header.protocolType = BYTE_SWAP_16(m_header.protocolType);
+  m_header.opcode = BYTE_SWAP_16(m_header.opcode);
+}
+
+
 void ArpPacket::SetHardwareType(const char *val)
 {
   uint16_t data = std::stoi(val, 0, 16);
@@ -91,9 +103,14 @@ void ArpPacket::SetTargetIp(const char *val)
   }
 }
 
-void ArpPacket::DoParse(uint8_t *buffer)
+bool ArpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
 {
-  Utils::ReadValue(buffer, m_header);
+  uint32_t headerSize = HeaderSize();
+  if (size < headerSize) {
+    return false;
+  }
+  const ArpHeader *header = (const ArpHeader *)buffer;
+  return Utils::BufferEquals<4>(m_header.targetIp, header->senderIp) && Utils::BufferEquals<4>(m_header.senderIp, header->targetIp);
 }
 
 void ArpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
@@ -120,12 +137,20 @@ void ArpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
   offset += HeaderSize();
 }
 
-std::string ArpPacket::ToString() 
+std::string ArpPacket::ToString()
 {
   std::stringstream ss;
   ss << GetName() << " (size: " << HeaderSize() << "): {\n";
-  
-  ss << "}/n";
+  ss << "\thardwareType: " << std::hex << m_header.hardwareType << "\n";
+  ss << "\tprotocolType: " << std::hex << m_header.protocolType << "\n";
+  ss << "\thardwareLength: " << std::hex << m_header.hardwareLength << "\n";
+  ss << "\tprotocolLength: " << std::hex << m_header.protocolLength << "\n";
+  ss << "\topcode: " << std::hex << m_header.opcode << "\n";
+  ss << "\tsenderMac: " << Utils::HardwareAddressToString(m_header.senderMac) << "\n";
+  ss << "\tsenderIp: " << Utils::IPv4ToString(m_header.senderIp) << "\n";
+  ss << "\ttargetMac: " << Utils::HardwareAddressToString(m_header.targetMac) << "\n";
+  ss << "\ttargetIp: " << Utils::IPv4ToString(m_header.targetIp) << "\n";
+  ss << "}";
   return ss.str();
 }
 

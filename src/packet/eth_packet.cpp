@@ -1,5 +1,6 @@
 #include "eth_packet.h"
 #include "utils/utils.h"
+#include "utils/packet_utils.h"
 
 #include <sstream>
 
@@ -15,6 +16,20 @@ EthernetPacket::EthernetPacket()
   HeaderField *type = new HeaderFieldImpl<EthernetPacket>(this, "Type", "0x0800", &EthernetPacket::SetType);
   m_fields.emplace_back(type);
   Init();
+}
+
+EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
+{
+  uint32_t headerSize = HeaderSize();
+  if (size < headerSize) {
+    return;
+  }
+  Utils::ReadValue(data, m_header);
+  m_header.type = BYTE_SWAP_16(m_header.type);
+  size = size - headerSize;
+  if (size > 0) {
+    SetInnerPacket(Utils::PacketFromType(m_header.type, (uint8_t *)(data + headerSize), size));
+  }
 }
 
 void EthernetPacket::SetDst(const char *val)
@@ -39,9 +54,20 @@ void EthernetPacket::SetType(const char *val)
   m_header.type = data;
 }
 
-void EthernetPacket::DoParse(uint8_t *buffer)
+bool EthernetPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
 {
-  Utils::ReadValue(buffer, m_header);
+  uint32_t headerSize = HeaderSize();
+  if (size < headerSize) {
+    return false;
+  }
+
+  const EthernetHeader *header = (const EthernetHeader *)buffer;
+  size = size - headerSize;
+  if (Utils::BufferEquals<6>(m_header.srcMac, header->dstMac)) {
+    return GetInnerPacket() ? GetInnerPacket()->DoesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
+  }
+
+  return false;
 }
 
 void EthernetPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
@@ -55,13 +81,16 @@ void EthernetPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
   offset += HeaderSize();
 }
 
-std::string EthernetPacket::ToString() 
+std::string EthernetPacket::ToString()
 {
   std::stringstream ss;
   ss << GetName() << " (size: " << HeaderSize() << "): {\n";
   ss << "\tdst: " << Utils::HardwareAddressToString(m_header.dstMac) << "\n";
   ss << "\tsrc: " << Utils::HardwareAddressToString(m_header.srcMac) << "\n";
   ss << "\ttype: " << std::hex << m_header.type << "\n";
+  if (GetInnerPacket()) {
+    ss << GetInnerPacket()->ToString() << "\n";
+  }
   ss << "}";
   return ss.str();
 }

@@ -75,15 +75,6 @@ HeaderField *Packet::GetField(std::string name) const
   return nullptr;
 }
 
-void Packet::Parse(uint8_t *buffer, uint32_t size)
-{
-  uint32_t headerSize = HeaderSize();
-  if (size < headerSize) {
-    return;
-  }
-  DoParse(buffer);
-}
-
 void Packet::WriteToBuf(uint8_t *buffer, uint32_t size, uint32_t offset)
 {
   uint32_t packetSize = this->Size();

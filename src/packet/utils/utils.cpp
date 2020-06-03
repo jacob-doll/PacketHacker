@@ -64,7 +64,7 @@ namespace Utils {
   }
 #endif
 
-  bool SendPacket(AdapterInfo info, uint8_t *data, int size, char *errbuf)
+  bool SendPacket(AdapterInfo info, const uint8_t *data, int size, char *errbuf)
   {
     pcap_t *fp;
     char pcapErrbuf[PCAP_ERRBUF_SIZE];
@@ -102,7 +102,7 @@ namespace Utils {
     return IPv4Identifier;
   }
 
-  std::string IPv4ToString(uint8_t *ipv4Address)
+  std::string IPv4ToString(const uint8_t *ipv4Address)
   {
     char str[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, ipv4Address, str, INET_ADDRSTRLEN);
@@ -120,7 +120,7 @@ namespace Utils {
     return uint64_t(a[0]) << 40 | uint64_t(a[1]) << 32 | (uint32_t(a[2]) << 24 | uint32_t(a[3]) << 16 | uint32_t(a[4]) << 8 | uint32_t(a[5]));
   }
 
-  std::string HardwareAddressToString(uint8_t *hwAddress)
+  std::string HardwareAddressToString(const uint8_t *hwAddress)
   {
     // 6 bytes * 2 chars per byte + 5 colons
     constexpr uint32_t bufferSize = 6 * 3;

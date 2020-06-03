@@ -17,6 +17,7 @@ set(PACKET_SRCS
     src/packet/eth_packet.cpp
     src/packet/arp_packet.cpp
     src/packet/utils/utils.cpp
+    src/packet/utils/packet_utils.cpp
 )
 
 set(TEST_SRCS

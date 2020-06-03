@@ -35,12 +35,23 @@ struct AdapterInfo
 namespace Utils {
 
   std::vector<AdapterInfo> GetAdapters();
-  bool SendPacket(AdapterInfo info, uint8_t *data, int size, char *errbuf);
+  bool SendPacket(AdapterInfo info, const uint8_t *data, int size, char *errbuf);
 
   uint64_t HardwareToLong(const char *hwAddress);
-  std::string HardwareAddressToString(uint8_t *hwAddress);
+  std::string HardwareAddressToString(const uint8_t *hwAddress);
   uint32_t IPv4ToLong(const char *ipAddress);
-  std::string IPv4ToString(uint8_t *ipv4Address);
+  std::string IPv4ToString(const uint8_t *ipv4Address);
+
+  template<size_t N>
+  bool BufferEquals(const uint8_t *buffer1, const uint8_t *buffer2)
+  {
+    for (size_t i = 0; i < N; i++) {
+      if (buffer1[i] != buffer2[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
 
   inline void Write(uint8_t *buffer, const uint8_t *ptr, size_t size)
   {
