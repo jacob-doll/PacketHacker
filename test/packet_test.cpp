@@ -2,8 +2,7 @@
 #include "packet/eth_packet.h"
 #include "packet/arp_packet.h"
 #include "packet/utils/utils.h"
-
-#include <assert.h>
+#include "packet/adapter.h"
 
 void ParseTest()
 {
@@ -31,31 +30,46 @@ void MatchReplyTest()
   delete eth2;
 }
 
+void AdapterTest()
+{
+  using namespace PacketHacker;
+  EthernetPacket *eth = new EthernetPacket();
+  ArpPacket *arp = new ArpPacket();
+  eth->SetInnerPacket(arp);
+  eth->SetDst("ff:ff:ff:ff:ff:ff");
+  eth->SetSrc("00:11:22:33:44:55");
+  eth->SetType("0x0806");
+  arp->SetHardwareType("0x0001");
+  arp->SetProtocolType("0x0800");
+  arp->SetHardwareLength("0x06");
+  arp->SetProtocolLength("0x04");
+  arp->SetOpcode("0x0001");
+  arp->SetSenderMac("00:11:22:33:44:55");
+  arp->SetSenderIp("192.168.1.12");
+  arp->SetTargetMac("00:00:00:00:00:00");
+  arp->SetTargetIp("192.168.1.1");
+  AdapterInfo info = Utils::GetAdapters()[5];
+
+  // for (AdapterInfo info : Utils::GetAdapters()) {
+  //   printf("%ws\n", info.friendlyName.c_str());
+  // }
+
+  printf("%ws\n", info.friendlyName.c_str());
+  char errbuf[256];
+  Adapter adapter(info.name);
+  if (!adapter.OpenPacketStream(errbuf)) {
+    printf("%s\n", errbuf);
+  }
+  // adapter.SendPacket(eth, errbuf);
+  adapter.GetNextPacket();
+
+  adapter.ClosePacketStream();
+  delete eth;
+}
+
 int main()
 {
-  // eth->SetInnerPacket(arp);
-  // eth->SetDst("ff:ff:ff:ff:ff:ff");
-  // eth->SetSrc("00:11:22:33:44:55");
-  // eth->SetType("0x0806");
-  // arp->SetHardwareType("0x0001");
-  // arp->SetProtocolType("0x0800");
-  // arp->SetHardwareLength("0x06");
-  // arp->SetProtocolLength("0x04");
-  // arp->SetOpcode("0x0001");
-  // arp->SetSenderMac("00:11:22:33:44:55");
-  // arp->SetSenderIp("192.168.1.12");
-  // arp->SetTargetMac("00:00:00:00:00:00");
-  // arp->SetTargetIp("192.168.1.1");
-  // uint8_t data[42]{};
-  // eth->WriteToBuf(data, 42);
-  // for (int i = 0; i < 42; i++) {
-  //   printf("%.2x ", data[i]);
-  // }
-  // printf("\n");
-  // AdapterInfo info = Utils::GetAdapters()[4];
-  // printf("%ws\n", info.friendlyName.c_str());
-  // Utils::SendPacket(info, data, 42);
-  MatchReplyTest();
+  AdapterTest();
 
   return 0;
 }

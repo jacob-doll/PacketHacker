@@ -77,6 +77,7 @@ namespace Utils {
 
     if (pcap_activate(fp) != 0) {
       sprintf(errbuf, "Error activating handle: %s", pcap_geterr(fp));
+      pcap_close(fp);
       return false;
     }
 

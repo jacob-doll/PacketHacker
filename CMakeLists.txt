@@ -13,6 +13,7 @@ include(${wxWidgets_USE_FILE})
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 set(PACKET_SRCS
+    src/packet/adapter.cpp
     src/packet/packet.cpp
     src/packet/eth_packet.cpp
     src/packet/arp_packet.cpp
