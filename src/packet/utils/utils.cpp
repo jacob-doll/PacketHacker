@@ -1,14 +1,13 @@
-#ifndef _WIN32
-#else
+#include "utils.h"
+
+#include <cstdio>
+
+#ifdef _WIN32
 #include <winsock2.h>
 #include <iphlpapi.h>
 #include <WS2tcpip.h>
 #endif
 
-#include "utils.h"
-
-#include <pcap.h>
-#include <cstdio>
 
 namespace PacketHacker {
 namespace Utils {
@@ -63,33 +62,6 @@ namespace Utils {
     return output;
   }
 #endif
-
-  bool SendPacket(AdapterInfo info, const uint8_t *data, int size, char *errbuf)
-  {
-    pcap_t *fp;
-    char pcapErrbuf[PCAP_ERRBUF_SIZE];
-
-    if ((fp = pcap_create(info.name.c_str(), pcapErrbuf)) == NULL) {
-      sprintf(errbuf, "Unable to open the adapter. %s is not supported by Npcap", info.name.c_str());
-      return false;
-    }
-    pcap_set_promisc(fp, 1);
-
-    if (pcap_activate(fp) != 0) {
-      sprintf(errbuf, "Error activating handle: %s", pcap_geterr(fp));
-      pcap_close(fp);
-      return false;
-    }
-
-    if (pcap_sendpacket(fp, data, size) != 0) {
-      sprintf(errbuf, "Error sending the packet: %s", pcap_geterr(fp));
-      return false;
-    }
-
-    pcap_close(fp);
-
-    return true;
-  }
 
   uint32_t IPv4ToLong(const char *ipAddress)
   {

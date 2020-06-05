@@ -32,12 +32,13 @@ set(APP_SRCS
     src/app/ui/byte_viewer.cpp
     src/app/ui/packet_tree.cpp
     src/app/ui/details_pane.cpp
+    src/app/ui/stream_pane.cpp
 )
 
-# if (WIN32)
-#     add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS} ${PACKET_SRCS})
-#     target_link_libraries(${PROJECT_NAME} ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
-# endif()
+if (WIN32)
+    add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS} ${PACKET_SRCS})
+    target_link_libraries(${PROJECT_NAME} ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
+endif()
 
-add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
-target_link_libraries(TEST ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
+# add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
+# target_link_libraries(TEST ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)

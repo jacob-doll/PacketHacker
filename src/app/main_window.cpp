@@ -1,8 +1,7 @@
+#include "main_window.h"
+
 #include <stdint.h>
 #include <wx/splitter.h>
-
-#include "main_window.h"
-#include "packet/packet.h"
 
 namespace PacketHacker {
 MainWindow::MainWindow()
@@ -25,24 +24,26 @@ MainWindow::MainWindow()
   // End menu
 
   // Main panel
-  wxBoxSizer *hBox = new wxBoxSizer(wxHORIZONTAL);
-  wxSplitterWindow *splitter = new wxSplitterWindow(this);
+  wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
+  wxSplitterWindow *hSplitter = new wxSplitterWindow(this);
 
-  wxWindow *creationPane = new wxWindow(splitter, wxID_ANY);
+  wxWindow *creationPane = new wxWindow(hSplitter, wxID_ANY);
   wxBoxSizer *vBox = new wxBoxSizer(wxVERTICAL);
   m_pPacketTree = new UI::PacketTree(m_pContext, creationPane);
   vBox->Add(m_pPacketTree, 2, wxEXPAND);
-  m_pByteViewer = new UI::ByteViewer(creationPane);
-  vBox->Add(m_pByteViewer, 2, wxEXPAND);
   m_pSendButton = new wxButton(creationPane, ID_SENDBUTTON, "Send");
   vBox->Add(m_pSendButton, 0, wxEXPAND);
   creationPane->SetSizer(vBox);
 
-  m_pDetailsPane = new UI::DetailsPane(splitter);
+  m_pDetailsPane = new UI::DetailsPane(hSplitter);
 
-  splitter->SplitVertically(m_pDetailsPane, creationPane);
-  splitter->SetMinimumPaneSize(400);
-  hBox->Add(splitter, 1, wxEXPAND);
+  hSplitter->SplitVertically(m_pDetailsPane, creationPane);
+  hSplitter->SetMinimumPaneSize(400);
+  mainSizer->Add(hSplitter, 1, wxEXPAND);
+  m_pStreamPane = new UI::StreamPane(m_pContext, this);
+  mainSizer->Add(m_pStreamPane, 1, wxEXPAND);
+  m_pByteViewer = new UI::ByteViewer(this);
+  mainSizer->Add(m_pByteViewer, 1, wxEXPAND);
 
   this->Connect(ID_SENDBUTTON, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnButtonPressed));
   for (int j = 0; j < adapterId; j++)
@@ -55,7 +56,7 @@ MainWindow::MainWindow()
   this->SetStatusText("Adapter not selected!", 0);
 
   this->SetMenuBar(m_pMenuBar);
-  this->SetSizer(hBox);
+  this->SetSizer(mainSizer);
 }
 
 MainWindow::~MainWindow()
@@ -67,15 +68,18 @@ void MainWindow::OnButtonPressed(wxCommandEvent &event)
 {
   if (!m_pContext->SendPacket()) {
     wxLogMessage("Could not send data.");
+    return;
   }
+  m_pStreamPane->OnPacketSent();
 }
 
 void MainWindow::OnAdapterSelected(wxCommandEvent &event)
 {
   if (event.GetId() >= m_pContext->GetAdapters().size()) return;
-  m_pContext->SetAdapter(event.GetId());
-  m_pDetailsPane->SetAdapterInfo(m_pContext->GetAdapter());
-  this->SetStatusText(wxString::Format("Selected: %s", m_pContext->GetAdapter().friendlyName));
+  AdapterInfo info = m_pContext->GetAdapters()[event.GetId()];
+  m_pContext->SetAdapter(info.name);
+  m_pDetailsPane->SetAdapterInfo(info);
+  this->SetStatusText(wxString::Format("Selected: %s", info.friendlyName));
 }
 
 void MainWindow::OnPacketSelected(wxCommandEvent &event)

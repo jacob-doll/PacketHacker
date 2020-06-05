@@ -1,4 +1,5 @@
 #include "context.h"
+#include "packet/adapter.h"
 
 #include <wx/wxprec.h>
 
@@ -25,7 +26,7 @@ Packet *GetPacketFromId(int packetId)
 }
 
 Context::Context(MainWindow *window)
-  : m_CurrentAdapter{},
+  : m_CurrentAdapter(),
     m_AdapterSet(false),
     m_pBasePacket(),
     m_MainWindow(window)
@@ -38,10 +39,13 @@ Context::~Context()
   delete m_pBasePacket;
 }
 
-void Context::SetAdapter(int index)
+void Context::SetAdapter(std::string name)
 {
   m_AdapterSet = true;
-  m_CurrentAdapter = m_adapters[index];
+  if (m_CurrentAdapter) {
+    delete m_CurrentAdapter;
+  }
+  m_CurrentAdapter = new Adapter(name);
 }
 
 void Context::SetBasePacket(int packetId)
@@ -92,19 +96,52 @@ bool Context::SendPacket()
   }
 
   char errbuf[256];
-  const uint32_t packetSize = m_pBasePacket->Size();
-  uint8_t *packetBuffer = new uint8_t[packetSize];
-  m_pBasePacket->WriteToBuf(packetBuffer, packetSize);
-
-  if (!Utils::SendPacket(m_CurrentAdapter, packetBuffer, packetSize, errbuf)) {
+  if (!m_CurrentAdapter->OpenPacketStream(errbuf)) {
     wxLogMessage("%s", errbuf);
-    delete[] packetBuffer;
     return false;
   }
 
-  delete[] packetBuffer;
+  if (!m_CurrentAdapter->SendPacket(m_pBasePacket, errbuf)) {
+    wxLogMessage("%s", errbuf);
+    return false;
+  }
+
+  m_CurrentAdapter->ClosePacketStream();
 
   return true;
 }
+
+bool Context::BeginStream()
+{
+  if (!IsAdapterSet()) {
+    wxLogMessage("Adapter not set!");
+    return false;
+  }
+
+  char errbuf[256];
+  if (!m_CurrentAdapter->OpenPacketStream(errbuf)) {
+    wxLogMessage("%s", errbuf);
+    return false;
+  }
+
+  return true;
+}
+
+void Context::EndStream()
+{
+  m_CurrentAdapter->ClosePacketStream();
+}
+
+const uint8_t *Context::ReadNextPacket(uint32_t *size)
+{
+  char errbuf[256];
+  const uint8_t *data;
+  if ((data = m_CurrentAdapter->GetNextPacket(size, errbuf)) == nullptr) {
+    wxLogMessage("%s", errbuf);
+    return nullptr;
+  }
+  return data;
+}
+
 
 }// namespace PacketHacker

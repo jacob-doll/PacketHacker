@@ -1,5 +1,6 @@
 #include "packet_tree.h"
-#include "../main_window.h"
+
+#include "app/main_window.h"
 
 namespace PacketHacker {
 namespace UI {

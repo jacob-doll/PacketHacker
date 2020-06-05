@@ -1,4 +1,5 @@
 #include "adapter.h"
+#include "packets.h"
 
 namespace PacketHacker {
 
@@ -11,13 +12,14 @@ bool Adapter::OpenPacketStream(char *errbuf)
 {
   char pcapErrbuf[PCAP_ERRBUF_SIZE];
 
-  if ((m_handle = pcap_create(m_name.c_str(), pcapErrbuf)) == NULL) {
+  if ((m_handle = pcap_create(m_name.c_str(), pcapErrbuf)) == nullptr) {
     sprintf(errbuf, "Unable to open the adapter. %s is not supported by Npcap", m_name.c_str());
     return false;
   }
-  pcap_set_snaplen(m_handle, 65536);
-  pcap_set_promisc(m_handle, 1);
-  pcap_set_timeout(m_handle, 1000);
+
+  pcap_set_snaplen(m_handle, 100);
+  pcap_set_promisc(m_handle, PCAP_OPENFLAG_PROMISCUOUS);
+  pcap_set_timeout(m_handle, 20);
 
   if (pcap_activate(m_handle) != 0) {
     sprintf(errbuf, "Error activating handle: %s", pcap_geterr(m_handle));
@@ -47,37 +49,24 @@ bool Adapter::SendPacket(Packet *packet, char *errbuf)
   return true;
 }
 
-Packet *Adapter::GetNextPacket()
+const uint8_t *Adapter::GetNextPacket(uint32_t *size, char *errbuf)
 {
-  printf("Getting Data\n");
   int res;
   struct pcap_pkthdr *header;
   const uint8_t *pkt_data;
 
   while ((res = pcap_next_ex(m_handle, &header, &pkt_data)) >= 0) {
-
     if (res == 0) {
-      /* Timeout elapsDed */
       continue;
     }
-
-    /* print pkt timestamp and pkt len */
-    printf("%ld:%ld (%ld)\n", header->ts.tv_sec, header->ts.tv_usec, header->len);
-
-    /* Print the packet */
-    for (int i = 1; (i < header->caplen + 1); i++) {
-      printf("%.2x ", pkt_data[i - 1]);
-      if ((i % 16) == 0) printf("\n");
-    }
-
-    printf("\n\n");
+    *size = header->caplen;
+    return pkt_data;
   }
 
   if (res == -1) {
-    printf("Error reading the packets: %s\n", pcap_geterr(m_handle));
+    sprintf(errbuf, "Error reading the packets: %s\n", pcap_geterr(m_handle));
   }
 
-  printf("\n");
   return nullptr;
 }
 

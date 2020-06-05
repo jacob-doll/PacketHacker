@@ -5,23 +5,20 @@
 #ifndef WX_PRECOMP
 #include <wx/wx.h>
 #endif
-#include <wx/propgrid/propgrid.h>
 
-#include <map>
-#include <string>
-#include <memory>
+#include <wx/timer.h>
 
 #include "app/context.h"
-#include "packet/packet.h"
 
-#define ID_REMOVE 2001
 
 namespace PacketHacker {
 namespace UI {
-  class PacketTree : public wxPanel
+
+
+  class StreamPane : public wxPanel
   {
   public:
-    PacketTree(Context *context,
+    StreamPane(Context *context,
       wxWindow *parent,
       wxWindowID winid = wxID_ANY,
       const wxPoint &pos = wxDefaultPosition,
@@ -29,17 +26,12 @@ namespace UI {
       long style = wxTAB_TRAVERSAL | wxNO_BORDER,
       const wxString &name = wxPanelNameStr);
 
-    void SetPacket(Packet *packet);
-
-    void OnPropertyGridChanged(wxPropertyGridEvent &event);
-    void OnPropertyGridRightClicked(wxPropertyGridEvent &event);
-    void OnPopupClick(wxCommandEvent &event);
+    void OnPacketSent();
 
   private:
-    wxPropertyGrid *m_pPropGrid;
     Context *m_pContext;
+    wxListBox *m_pList;
   };
 
 }// namespace UI
-
 }// namespace PacketHacker

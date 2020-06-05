@@ -35,7 +35,6 @@ struct AdapterInfo
 namespace Utils {
 
   std::vector<AdapterInfo> GetAdapters();
-  bool SendPacket(AdapterInfo info, const uint8_t *data, int size, char *errbuf);
 
   uint64_t HardwareToLong(const char *hwAddress);
   std::string HardwareAddressToString(const uint8_t *hwAddress);

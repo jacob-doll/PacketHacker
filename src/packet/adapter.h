@@ -16,7 +16,7 @@ public:
   bool OpenPacketStream(char *errbuf);
   void ClosePacketStream();
   bool SendPacket(Packet *packet, char *errbuf);
-  Packet *GetNextPacket();
+  const uint8_t *GetNextPacket(uint32_t *size, char *errbuf);
 
 private:
   std::string m_name;

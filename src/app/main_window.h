@@ -5,11 +5,12 @@
 #include <wx/wx.h>
 #endif
 
-#include "packet/packet.h"
 #include "context.h"
+#include "packet/packet.h"
 #include "ui/byte_viewer.h"
 #include "ui/packet_tree.h"
 #include "ui/details_pane.h"
+#include "ui/stream_pane.h"
 
 namespace PacketHacker {
 class MainWindow : public wxFrame
@@ -36,6 +37,7 @@ private:
   UI::PacketTree *m_pPacketTree;
   UI::ByteViewer *m_pByteViewer;
   UI::DetailsPane *m_pDetailsPane;
+  UI::StreamPane *m_pStreamPane;
 };
 
 const int ID_SENDBUTTON = 101;
