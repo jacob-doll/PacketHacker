@@ -19,6 +19,7 @@ EthernetPacket::EthernetPacket()
 }
 
 EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
+  : EthernetPacket()
 {
   uint32_t headerSize = HeaderSize();
   if (size < headerSize) {
@@ -26,6 +27,13 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
   }
   Utils::ReadValue(data, m_header);
   m_header.type = BYTE_SWAP_16(m_header.type);
+
+  GetField("Dst")->SetValue(Utils::HardwareAddressToString(m_header.dstMac).c_str());
+  GetField("Src")->SetValue(Utils::HardwareAddressToString(m_header.srcMac).c_str());
+  char buf[8];
+  sprintf(buf, "%04x", m_header.type);
+  GetField("Type")->SetValue(buf);
+
   size = size - headerSize;
   if (size > 0) {
     SetInnerPacket(Utils::PacketFromType(m_header.type, (uint8_t *)(data + headerSize), size));

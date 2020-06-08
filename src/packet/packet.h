@@ -55,7 +55,7 @@ class HeaderField
 {
 public:
   HeaderField(Packet *packet, std::string name, std::string defaultVal)
-    : m_packet(packet), m_name(name), m_defaultVal(defaultVal)
+    : m_packet(packet), m_name(name), m_defaultVal(defaultVal), m_currentVal(defaultVal)
   {
   }
 
@@ -66,10 +66,17 @@ public:
   Packet *GetPacket() const { return m_packet; }
   std::string GetName() const { return m_name; }
   std::string GetDefaultVal() const { return m_defaultVal; }
+  std::string GetCurrentVal() const { return m_currentVal; }
+
+  void SetValue(const char *value)
+  {
+    m_currentVal = value;
+  }
 
 protected:
   Packet *m_packet;
   std::string m_name;
+  std::string m_currentVal;
   std::string m_defaultVal;
 };
 

@@ -40,7 +40,13 @@ namespace UI {
       Packet *sent = m_pContext->GetBasePacket();
       if (sent->DoesReplyMatch(data, size)) {
         Packet *recieved = new EthernetPacket(data, size);
-        wxLogMessage("Reply found:\n%s", recieved->ToString());
+
+        while (recieved) {
+          for (HeaderField *field : recieved->GetFields()) {
+            m_pList->Append(field->GetCurrentVal());
+          }
+          recieved = recieved->GetInnerPacket();
+        }
         delete recieved;
         break;
       }

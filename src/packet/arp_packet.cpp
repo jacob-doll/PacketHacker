@@ -30,6 +30,7 @@ ArpPacket::ArpPacket()
 }
 
 ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
+  : ArpPacket()
 {
   if (size < HeaderSize()) {
     return;
@@ -38,8 +39,23 @@ ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
   m_header.hardwareType = BYTE_SWAP_16(m_header.hardwareType);
   m_header.protocolType = BYTE_SWAP_16(m_header.protocolType);
   m_header.opcode = BYTE_SWAP_16(m_header.opcode);
-}
 
+  char buf[8];
+  sprintf(buf, "%04x", m_header.hardwareType);
+  GetField("Hardware Type")->SetValue(buf);
+  sprintf(buf, "%04x", m_header.protocolType);
+  GetField("Protocol Type")->SetValue(buf);
+  sprintf(buf, "%02x", m_header.hardwareLength);
+  GetField("Hardware Length")->SetValue(buf);
+  sprintf(buf, "%02x", m_header.protocolLength);
+  GetField("Protocol Length")->SetValue(buf);
+  sprintf(buf, "%04x", m_header.opcode);
+  GetField("Opcode")->SetValue(buf);
+  GetField("Sender Hardware Address")->SetValue(Utils::HardwareAddressToString(m_header.senderMac).c_str());
+  GetField("Sender Protocol Address")->SetValue(Utils::IPv4ToString(m_header.senderIp).c_str());
+  GetField("Target Hardware Address")->SetValue(Utils::HardwareAddressToString(m_header.targetMac).c_str());
+  GetField("Target Protocol Address")->SetValue(Utils::IPv4ToString(m_header.targetIp).c_str());
+}
 
 void ArpPacket::SetHardwareType(const char *val)
 {
