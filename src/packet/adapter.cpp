@@ -46,9 +46,12 @@ bool Adapter::SendPacket(Packet *packet, char *errbuf)
     return false;
   }
 
+  delete[] data;
+
   return true;
 }
 
+// TODO: save pointer to last data and delete
 const uint8_t *Adapter::GetNextPacket(uint32_t *size, char *errbuf)
 {
   int res;

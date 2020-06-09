@@ -41,15 +41,15 @@ ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
   m_header.opcode = BYTE_SWAP_16(m_header.opcode);
 
   char buf[8];
-  sprintf(buf, "%04x", m_header.hardwareType);
+  sprintf(buf, "0x%04x", m_header.hardwareType);
   GetField("Hardware Type")->SetValue(buf);
-  sprintf(buf, "%04x", m_header.protocolType);
+  sprintf(buf, "0x%04x", m_header.protocolType);
   GetField("Protocol Type")->SetValue(buf);
-  sprintf(buf, "%02x", m_header.hardwareLength);
+  sprintf(buf, "0x%02x", m_header.hardwareLength);
   GetField("Hardware Length")->SetValue(buf);
-  sprintf(buf, "%02x", m_header.protocolLength);
+  sprintf(buf, "0x%02x", m_header.protocolLength);
   GetField("Protocol Length")->SetValue(buf);
-  sprintf(buf, "%04x", m_header.opcode);
+  sprintf(buf, "0x%04x", m_header.opcode);
   GetField("Opcode")->SetValue(buf);
   GetField("Sender Hardware Address")->SetValue(Utils::HardwareAddressToString(m_header.senderMac).c_str());
   GetField("Sender Protocol Address")->SetValue(Utils::IPv4ToString(m_header.senderIp).c_str());

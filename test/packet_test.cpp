@@ -36,7 +36,7 @@ void AdapterTest()
   // for (AdapterInfo info : Utils::GetAdapters()) {
   //   printf("%ws\n", info.friendlyName.c_str());
   // }
-  AdapterInfo info = Utils::GetAdapters()[4];
+  AdapterInfo info = Utils::GetAdapters()[5];
   printf("%ws\n", info.friendlyName.c_str());
 
   std::string senderMac = Utils::HardwareAddressToString(info.address);
@@ -77,6 +77,7 @@ void AdapterTest()
       printf("Receive Reply!\n");
       printf("%s\n", packet->ToString().c_str());
       delete packet;
+      break;
     }
   }
 
@@ -92,62 +93,3 @@ int main()
 
   return 0;
 }
-
-// #include <pcap.h>
-
-// #define LINE_LEN 16
-
-// int main(int argc, char **argv)
-// {
-//   using namespace PacketHacker;
-//   AdapterInfo info = Utils::GetAdapters()[4];
-//   printf("Current Adapter: %ws\n", info.friendlyName.c_str());
-
-//   pcap_t *handle;
-//   char errbuf[PCAP_ERRBUF_SIZE];
-//   int res;
-//   struct pcap_pkthdr *header;
-//   const u_char *pkt_data;
-
-//   if ((handle = pcap_create(info.name.c_str(), errbuf)) == nullptr) {
-//     fprintf(stderr, "\nError opening source: %s\n", errbuf);
-//     return -1;
-//   }
-
-//   pcap_set_snaplen(handle, 100);
-//   pcap_set_promisc(handle, PCAP_OPENFLAG_PROMISCUOUS);
-//   pcap_set_timeout(handle, 20);
-
-//   if (pcap_activate(handle) != 0) {
-//     fprintf(stderr, "Error activating handle: %s", pcap_geterr(handle));
-//     pcap_close(handle);
-//     return -1;
-//   }
-
-
-//   /* Read the packets */
-//   while ((res = pcap_next_ex(handle, &header, &pkt_data)) >= 0) {
-
-//     if (res == 0)
-//       /* Timeout elapsed */
-//       continue;
-
-//     /* print pkt timestamp and pkt len */
-//     printf("%ld:%ld (%ld)\n", header->ts.tv_sec, header->ts.tv_usec, header->len);
-
-//     /* Print the packet */
-//     for (int i = 1; (i < header->caplen + 1); i++) {
-//       printf("%.2x ", pkt_data[i - 1]);
-//       if ((i % LINE_LEN) == 0) printf("\n");
-//     }
-
-//     printf("\n\n");
-//   }
-
-//   if (res == -1) {
-//     fprintf(stderr, "Error reading the packets: %s\n", pcap_geterr(handle));
-//     return -1;
-//   }
-
-//   return 0;
-// }

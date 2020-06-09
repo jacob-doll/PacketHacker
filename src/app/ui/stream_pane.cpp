@@ -18,12 +18,28 @@ namespace UI {
 
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
 
-    m_pList = new wxListBox(this, wxID_ANY);
+    m_pPropGrid = new wxPropertyGrid(this, wxID_ANY);
 
-    sizer->Add(m_pList, 1, wxEXPAND);
+    sizer->Add(m_pPropGrid, 1, wxEXPAND);
 
     this->SetSizerAndFit(sizer);
   }
+
+  void StreamPane::SetPacket(Packet *packet)
+  {
+    m_pPropGrid->Clear();
+    Packet *currentPacket = packet;
+    while (currentPacket) {
+      wxPGProperty *currProp = m_pPropGrid->Append(new wxPropertyCategory(currentPacket->GetName()));
+      for (HeaderField *field : currentPacket->GetFields()) {
+        m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal()))->ChangeFlag(wxPG_PROP_READONLY, true);
+        ;
+      }
+
+      currentPacket = currentPacket->GetInnerPacket();
+    }
+  }
+
 
   void StreamPane::OnPacketSent()
   {
@@ -36,18 +52,15 @@ namespace UI {
     int timeout = 5;
 
     while ((data = m_pContext->ReadNextPacket(&size))) {
-      if (counter >= timeout) break;
+      if (counter >= timeout) {
+        wxLogMessage("Reply timed out!");
+        break;
+      }
       Packet *sent = m_pContext->GetBasePacket();
       if (sent->DoesReplyMatch(data, size)) {
-        Packet *recieved = new EthernetPacket(data, size);
-
-        while (recieved) {
-          for (HeaderField *field : recieved->GetFields()) {
-            m_pList->Append(field->GetCurrentVal());
-          }
-          recieved = recieved->GetInnerPacket();
-        }
-        delete recieved;
+        Packet *received = new EthernetPacket(data, size);
+        SetPacket(received);
+        delete received;
         break;
       }
       counter++;

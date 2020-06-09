@@ -6,7 +6,7 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/timer.h>
+#include <wx/propgrid/propgrid.h>
 
 #include "app/context.h"
 
@@ -26,11 +26,12 @@ namespace UI {
       long style = wxTAB_TRAVERSAL | wxNO_BORDER,
       const wxString &name = wxPanelNameStr);
 
+    void SetPacket(Packet *packet);
     void OnPacketSent();
 
   private:
     Context *m_pContext;
-    wxListBox *m_pList;
+    wxPropertyGrid *m_pPropGrid;
   };
 
 }// namespace UI

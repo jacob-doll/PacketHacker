@@ -36,6 +36,7 @@ Context::Context(MainWindow *window)
 
 Context::~Context()
 {
+  delete m_CurrentAdapter;
   delete m_pBasePacket;
 }
 

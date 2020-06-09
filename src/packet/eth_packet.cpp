@@ -31,7 +31,7 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
   GetField("Dst")->SetValue(Utils::HardwareAddressToString(m_header.dstMac).c_str());
   GetField("Src")->SetValue(Utils::HardwareAddressToString(m_header.srcMac).c_str());
   char buf[8];
-  sprintf(buf, "%04x", m_header.type);
+  sprintf(buf, "0x%04x", m_header.type);
   GetField("Type")->SetValue(buf);
 
   size = size - headerSize;

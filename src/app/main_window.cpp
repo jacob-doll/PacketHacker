@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <wx/splitter.h>
 
+#define ADAPTER_OFFSET 3000
+
 namespace PacketHacker {
 MainWindow::MainWindow()
   : wxFrame(nullptr, wxID_ANY, "Packet Hacker", wxDefaultPosition, wxSize(1280, 720))
@@ -12,7 +14,7 @@ MainWindow::MainWindow()
   // Menu Bar
   m_pMenuBar = new wxMenuBar();
   m_pAdapterMenu = new wxMenu();
-  int adapterId = 0;
+  int adapterId = ADAPTER_OFFSET;
   for (AdapterInfo info : m_pContext->GetAdapters())
     m_pAdapterMenu->Append(adapterId++, info.friendlyName);
   m_pMenuBar->Append(m_pAdapterMenu, "Adapters");
@@ -46,7 +48,7 @@ MainWindow::MainWindow()
   mainSizer->Add(m_pByteViewer, 1, wxEXPAND);
 
   this->Connect(ID_SENDBUTTON, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnButtonPressed));
-  for (int j = 0; j < adapterId; j++)
+  for (int j = ADAPTER_OFFSET; j < adapterId; j++)
     this->Connect(j, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnAdapterSelected));
 
   this->Connect(PacketTypes::ARP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
@@ -75,8 +77,8 @@ void MainWindow::OnButtonPressed(wxCommandEvent &event)
 
 void MainWindow::OnAdapterSelected(wxCommandEvent &event)
 {
-  if (event.GetId() >= m_pContext->GetAdapters().size()) return;
-  AdapterInfo info = m_pContext->GetAdapters()[event.GetId()];
+  if (event.GetId() >= m_pContext->GetAdapters().size() - ADAPTER_OFFSET) return;
+  AdapterInfo info = m_pContext->GetAdapters()[event.GetId() - ADAPTER_OFFSET];
   m_pContext->SetAdapter(info.name);
   m_pDetailsPane->SetAdapterInfo(info);
   this->SetStatusText(wxString::Format("Selected: %s", info.friendlyName));

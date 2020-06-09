@@ -17,17 +17,17 @@ namespace UI {
     sizer->Add(m_pPropGrid, 1, wxEXPAND);
 
     wxPGProperty *adapterProp = m_pPropGrid->Append(new wxPropertyCategory("Current Adapter"));
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Index", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Name", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Unicast address", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Anycast address", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Multicast address", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("DnsServer address", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Gateway address", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("DnsSuffix", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Description", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("FriendlyName", wxPG_LABEL, "null"))->Enable(false);
-    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Physical Address", wxPG_LABEL, "null"))->Enable(false);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Index", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Name", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Unicast address", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Anycast address", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Multicast address", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("DnsServer address", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Gateway address", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("DnsSuffix", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Description", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("FriendlyName", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
+    m_pPropGrid->AppendIn(adapterProp, new wxStringProperty("Physical Address", wxPG_LABEL, "null"))->ChangeFlag(wxPG_PROP_READONLY, true);
 
     this->SetSizerAndFit(sizer);
   }
