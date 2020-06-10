@@ -1,6 +1,5 @@
 #include "packet/packet.h"
-#include "packet/eth_packet.h"
-#include "packet/arp_packet.h"
+#include "packet/packets.h"
 #include "packet/utils/utils.h"
 #include "packet/adapter.h"
 
@@ -33,15 +32,17 @@ void MatchReplyTest()
 void AdapterTest()
 {
   using namespace PacketHacker;
-  // for (AdapterInfo info : Utils::GetAdapters()) {
-  //   printf("%ws\n", info.friendlyName.c_str());
-  // }
-  AdapterInfo info = Utils::GetAdapters()[5];
+  for (AdapterInfo info : Utils::GetAdapters()) {
+    printf("%ws\n", info.friendlyName.c_str());
+  }
+  AdapterInfo info = Utils::GetAdapters()[3];
   printf("%ws\n", info.friendlyName.c_str());
 
   std::string senderMac = Utils::HardwareAddressToString(info.address);
   std::string senderIp = info.unicastAddress;
   std::string targetIp = info.dnsServerAddress;
+
+  // const uint8_t data[42] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xe0, 0xd5, 0x5e, 0x61, 0xb5, 0x7d, 0x08, 0x06, 0x00, 0x01, 0x08, 0x00, 0x06, 0x04, 0x00, 0x01, 0xe0, 0xd5, 0x5e, 0x61, 0xb5, 0x7d, 0xc0, 0xa8, 0x01, 0x0a, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xc0, 0xa8, 0x01, 0x01 };
 
   EthernetPacket *eth = new EthernetPacket();
   ArpPacket *arp = new ArpPacket();
@@ -61,6 +62,15 @@ void AdapterTest()
 
   printf("Sending packet:\n%s\n", eth->ToString().c_str());
 
+  uint8_t *out = new uint8_t[eth->Size()];
+  eth->WriteToBuf(out, eth->Size());
+
+  for (int i = 0; i < eth->Size(); i++) {
+    printf("%02x ", out[i]);
+  }
+
+  delete out;
+
   const uint8_t *data;
   uint32_t size;
   char errbuf[256];
@@ -72,24 +82,62 @@ void AdapterTest()
   adapter.SendPacket(eth, errbuf);
 
   while ((data = adapter.GetNextPacket(&size, errbuf)) != nullptr) {
+    Packet *packet = new EthernetPacket(data, size);
+    printf("%s\n", packet->ToString().c_str());
+    delete packet;
     if (eth->DoesReplyMatch(data, size)) {
-      Packet *packet = new EthernetPacket(data, size);
       printf("Receive Reply!\n");
-      printf("%s\n", packet->ToString().c_str());
-      delete packet;
       break;
     }
   }
 
   adapter.ClosePacketStream();
 
-  delete data;
   delete eth;
+}
+
+void IpTest()
+{
+  using namespace PacketHacker;
+  AdapterInfo info = Utils::GetAdapters()[3];
+  printf("%ws\n", info.friendlyName.c_str());
+
+  std::string senderMac = Utils::HardwareAddressToString(info.address);
+  std::string senderIp = info.unicastAddress;
+  std::string targetIp = info.dnsServerAddress;
+
+  const uint8_t data[20] = { 0x45, 0x00, 0x00, 0x4b, 0xe4, 0x69, 0x40, 0x00, 0x80, 0x06, 0x00, 0x00, 0xc0, 0xa8, 0x01, 0x0a, 0x23, 0xba, 0xe0, 0x2f };
+
+  IpPacket *ip = new IpPacket();
+  ip->SetVersion("4");
+  ip->SetHeaderLength("5");
+  ip->SetDiffServices("0x00");
+  ip->SetTotalLength("75");
+  ip->SetId("0xe469");
+  ip->SetFlags("0x02");
+  ip->SetFragOffset("0x0000");
+  ip->SetTtl("0x80");
+  ip->SetProtocol("0x06");
+  ip->SetChecksum("0x0000");
+  ip->SetSourceIp("192.168.1.10");
+  ip->SetDestIp("35.186.224.47");
+  printf("%s\n", ip->ToString().c_str());
+
+  uint8_t out[20];
+
+  ip->WriteToBuf(out, 20);
+
+  for (int i = 0; i < 20; i++) {
+    if (data[i] != out[i]) {
+      printf("%02x ", out[i]);
+    }
+  }
+  delete ip;
 }
 
 int main()
 {
-  AdapterTest();
+  IpTest();
 
   return 0;
 }

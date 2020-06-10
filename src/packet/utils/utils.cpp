@@ -82,6 +82,13 @@ namespace Utils {
     return str;
   }
 
+  std::string IPv4ToString(uint32_t ipv4Address)
+  {
+    char str[INET_ADDRSTRLEN];
+    inet_ntop(AF_INET, &ipv4Address, str, INET_ADDRSTRLEN);
+    return str;
+  }
+
   uint64_t HardwareToLong(const char *hwAddress)
   {
     unsigned char a[6];

@@ -22,6 +22,7 @@ MainWindow::MainWindow()
   m_pPacketMenu = new wxMenu();
   m_pPacketMenu->Append(PacketTypes::ARP, "ARP");
   m_pPacketMenu->Append(PacketTypes::ETHERNET, "ETHERNET");
+  m_pPacketMenu->Append(PacketTypes::IP, "IP");
   m_pMenuBar->Append(m_pPacketMenu, "Add");
   // End menu
 
@@ -53,6 +54,7 @@ MainWindow::MainWindow()
 
   this->Connect(PacketTypes::ARP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
   this->Connect(PacketTypes::ETHERNET, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
+  this->Connect(PacketTypes::IP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
 
   this->CreateStatusBar(1);
   this->SetStatusText("Adapter not selected!", 0);

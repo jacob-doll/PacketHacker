@@ -1,6 +1,6 @@
 #include "packet.h"
 
-#include <wx/wx.h>
+#include <sstream>
 
 namespace PacketHacker {
 
@@ -85,5 +85,20 @@ void Packet::WriteToBuf(uint8_t *buffer, uint32_t size, uint32_t offset)
   if (m_innerPacket)
     m_innerPacket->WriteToBuf(buffer, packetSize, currentOffset);
 }
+
+std::string Packet::ToString() const
+{
+  std::stringstream ss;
+  ss << GetName() << ": " << HeaderSize() << " {\n";
+  for (HeaderField *field : GetFields()) {
+    ss << "\t" << field->GetName() << ": " << field->GetCurrentVal() << "\n";
+  }
+  if (m_innerPacket) {
+    ss << m_innerPacket->ToString();
+  }
+  ss << "}";
+  return ss.str();
+}
+
 
 }// namespace PacketHacker

@@ -8,7 +8,8 @@ namespace PacketHacker {
 
 enum PacketTypes {
   ARP = 1000,
-  ETHERNET = 1001
+  ETHERNET = 1001,
+  IP = 1002
 };
 
 class HeaderField;
@@ -32,10 +33,11 @@ public:
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) = 0;
   virtual uint32_t HeaderSize() const = 0;
   virtual std::string GetName() const = 0;
-  virtual std::string ToString() = 0;
 
   HeaderField *GetField(std::string name) const;
   std::vector<HeaderField *> GetFields() const { return m_fields; }
+
+  std::string ToString() const;
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) = 0;
@@ -54,8 +56,8 @@ private:
 class HeaderField
 {
 public:
-  HeaderField(Packet *packet, std::string name, std::string defaultVal)
-    : m_packet(packet), m_name(name), m_defaultVal(defaultVal), m_currentVal(defaultVal)
+  HeaderField(Packet *packet, std::string name, std::string defaultVal, bool editable)
+    : m_packet(packet), m_name(name), m_defaultVal(defaultVal), m_currentVal(defaultVal), m_editable(editable)
   {
   }
 
@@ -67,6 +69,7 @@ public:
   std::string GetName() const { return m_name; }
   std::string GetDefaultVal() const { return m_defaultVal; }
   std::string GetCurrentVal() const { return m_currentVal; }
+  bool IsEditable() { return m_editable; }
 
   void SetValue(const char *value)
   {
@@ -78,6 +81,7 @@ protected:
   std::string m_name;
   std::string m_currentVal;
   std::string m_defaultVal;
+  bool m_editable;
 };
 
 template<class T>
@@ -86,8 +90,8 @@ class HeaderFieldImpl : public HeaderField
 public:
   typedef void (T::*HandlerFunctionPtr)(const char *);
 
-  HeaderFieldImpl(T *packet, std::string name, std::string defaultVal, HandlerFunctionPtr function)
-    : HeaderField(packet, name, defaultVal), m_function(function)
+  HeaderFieldImpl(T *packet, std::string name, std::string defaultVal, HandlerFunctionPtr function, bool editable = true)
+    : HeaderField(packet, name, defaultVal, editable), m_function(function)
   {
   }
 

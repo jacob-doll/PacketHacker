@@ -21,14 +21,14 @@ public:
   void SetTargetIp(const char *val);
 
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
-  virtual uint32_t HeaderSize() const override { return sizeof(ArpHeader); }
+  virtual uint32_t HeaderSize() const override;
   virtual std::string GetName() const override { return "ARP"; }
-  virtual std::string ToString() override;
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;
 
 private:
+#pragma pack(push, 1)
   struct ArpHeader
   {
     uint16_t hardwareType;
@@ -37,10 +37,11 @@ private:
     uint8_t protocolLength;
     uint16_t opcode;
     uint8_t senderMac[6];
-    uint8_t senderIp[4];
+    uint32_t senderIp;
     uint8_t targetMac[6];
-    uint8_t targetIp[4];
+    uint32_t targetIp;
   };
+#pragma pack(pop)
 
   ArpHeader m_header;
 };

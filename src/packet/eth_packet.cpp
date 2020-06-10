@@ -2,8 +2,6 @@
 #include "utils/utils.h"
 #include "utils/packet_utils.h"
 
-#include <sstream>
-
 namespace PacketHacker {
 
 EthernetPacket::EthernetPacket()
@@ -26,17 +24,16 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
     return;
   }
   Utils::ReadValue(data, m_header);
-  m_header.type = BYTE_SWAP_16(m_header.type);
 
   GetField("Dst")->SetValue(Utils::HardwareAddressToString(m_header.dstMac).c_str());
   GetField("Src")->SetValue(Utils::HardwareAddressToString(m_header.srcMac).c_str());
   char buf[8];
-  sprintf(buf, "0x%04x", m_header.type);
+  sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.type));
   GetField("Type")->SetValue(buf);
 
   size = size - headerSize;
   if (size > 0) {
-    SetInnerPacket(Utils::PacketFromType(m_header.type, (uint8_t *)(data + headerSize), size));
+    SetInnerPacket(Utils::PacketFromType(BYTE_SWAP_16(m_header.type), (uint8_t *)(data + headerSize), size));
   }
 }
 
@@ -46,6 +43,7 @@ void EthernetPacket::SetDst(const char *val)
   for (int i = 0; i < 6; i++) {
     m_header.dstMac[6 - 1 - i] = (data >> (i * 8));
   }
+  GetField("Dst")->SetValue(val);
 }
 
 void EthernetPacket::SetSrc(const char *val)
@@ -54,12 +52,14 @@ void EthernetPacket::SetSrc(const char *val)
   for (int i = 0; i < 6; i++) {
     m_header.srcMac[6 - 1 - i] = (data >> (i * 8));
   }
+  GetField("Src")->SetValue(val);
 }
 
 void EthernetPacket::SetType(const char *val)
 {
   uint16_t data = std::stoi(val, 0, 16);
-  m_header.type = data;
+  m_header.type = BYTE_SWAP_16(data);
+  GetField("Type")->SetValue(val);
 }
 
 bool EthernetPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
@@ -81,26 +81,8 @@ bool EthernetPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
 void EthernetPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
 {
   buffer += offset;
-  Utils::Write(buffer, m_header.dstMac, 6);
-  buffer += 6;
-  Utils::Write(buffer, m_header.srcMac, 6);
-  buffer += 6;
-  Utils::WriteValue(buffer, BYTE_SWAP_16(m_header.type));
+  Utils::WriteValue(buffer, m_header);
   offset += HeaderSize();
-}
-
-std::string EthernetPacket::ToString()
-{
-  std::stringstream ss;
-  ss << GetName() << " (size: " << HeaderSize() << "): {\n";
-  ss << "\tdst: " << Utils::HardwareAddressToString(m_header.dstMac) << "\n";
-  ss << "\tsrc: " << Utils::HardwareAddressToString(m_header.srcMac) << "\n";
-  ss << "\ttype: " << std::hex << m_header.type << "\n";
-  if (GetInnerPacket()) {
-    ss << GetInnerPacket()->ToString() << "\n";
-  }
-  ss << "}";
-  return ss.str();
 }
 
 }// namespace PacketHacker

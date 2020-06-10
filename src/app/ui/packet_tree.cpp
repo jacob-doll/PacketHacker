@@ -43,7 +43,7 @@ namespace UI {
     while (currentPacket) {
       wxPGProperty *currProp = m_pPropGrid->Append(new wxPropertyCategory(currentPacket->GetName()));
       for (HeaderField *field : currentPacket->GetFields()) {
-        m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetDefaultVal()));
+        m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetDefaultVal()))->Enable(field->IsEditable());
       }
 
       currentPacket = currentPacket->GetInnerPacket();

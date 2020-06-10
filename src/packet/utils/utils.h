@@ -40,6 +40,7 @@ namespace Utils {
   std::string HardwareAddressToString(const uint8_t *hwAddress);
   uint32_t IPv4ToLong(const char *ipAddress);
   std::string IPv4ToString(const uint8_t *ipv4Address);
+  std::string IPv4ToString(uint32_t ipv4Address);
 
   template<size_t N>
   bool BufferEquals(const uint8_t *buffer1, const uint8_t *buffer2)

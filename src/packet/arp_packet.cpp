@@ -1,8 +1,6 @@
 #include "arp_packet.h"
 #include "utils/utils.h"
 
-#include <sstream>
-
 namespace PacketHacker {
 
 ArpPacket::ArpPacket()
@@ -36,20 +34,17 @@ ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
     return;
   }
   Utils::ReadValue(data, m_header);
-  m_header.hardwareType = BYTE_SWAP_16(m_header.hardwareType);
-  m_header.protocolType = BYTE_SWAP_16(m_header.protocolType);
-  m_header.opcode = BYTE_SWAP_16(m_header.opcode);
 
   char buf[8];
-  sprintf(buf, "0x%04x", m_header.hardwareType);
+  sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.hardwareType));
   GetField("Hardware Type")->SetValue(buf);
-  sprintf(buf, "0x%04x", m_header.protocolType);
+  sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.protocolType));
   GetField("Protocol Type")->SetValue(buf);
   sprintf(buf, "0x%02x", m_header.hardwareLength);
   GetField("Hardware Length")->SetValue(buf);
   sprintf(buf, "0x%02x", m_header.protocolLength);
   GetField("Protocol Length")->SetValue(buf);
-  sprintf(buf, "0x%04x", m_header.opcode);
+  sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.opcode));
   GetField("Opcode")->SetValue(buf);
   GetField("Sender Hardware Address")->SetValue(Utils::HardwareAddressToString(m_header.senderMac).c_str());
   GetField("Sender Protocol Address")->SetValue(Utils::IPv4ToString(m_header.senderIp).c_str());
@@ -60,31 +55,36 @@ ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
 void ArpPacket::SetHardwareType(const char *val)
 {
   uint16_t data = std::stoi(val, 0, 16);
-  m_header.hardwareType = data;
+  m_header.hardwareType = BYTE_SWAP_16(data);
+  GetField("Hardware Type")->SetValue(val);
 }
 
 void ArpPacket::SetProtocolType(const char *val)
 {
   uint16_t data = std::stoi(val, 0, 16);
-  m_header.protocolType = data;
+  m_header.protocolType = BYTE_SWAP_16(data);
+  GetField("Protocol Type")->SetValue(val);
 }
 
 void ArpPacket::SetHardwareLength(const char *val)
 {
   uint8_t data = std::stoi(val, 0, 16);
   m_header.hardwareLength = data;
+  GetField("Hardware Length")->SetValue(val);
 }
 
 void ArpPacket::SetProtocolLength(const char *val)
 {
   uint8_t data = std::stoi(val, 0, 16);
   m_header.protocolLength = data;
+  GetField("Protocol Length")->SetValue(val);
 }
 
 void ArpPacket::SetOpcode(const char *val)
 {
   uint16_t data = std::stoi(val, 0, 16);
-  m_header.opcode = data;
+  m_header.opcode = BYTE_SWAP_16(data);
+  GetField("Opcode")->SetValue(val);
 }
 
 void ArpPacket::SetSenderMac(const char *val)
@@ -93,14 +93,14 @@ void ArpPacket::SetSenderMac(const char *val)
   for (int i = 0; i < 6; i++) {
     m_header.senderMac[6 - 1 - i] = (data >> (i * 8));
   }
+  GetField("Sender Hardware Address")->SetValue(val);
 }
 
 void ArpPacket::SetSenderIp(const char *val)
 {
   uint32_t data = Utils::IPv4ToLong(val);
-  for (int i = 0; i < 4; i++) {
-    m_header.senderIp[4 - 1 - i] = (data >> (i * 8));
-  }
+  m_header.senderIp = BYTE_SWAP_32(data);
+  GetField("Sender Protocol Address")->SetValue(val);
 }
 
 void ArpPacket::SetTargetMac(const char *val)
@@ -109,14 +109,14 @@ void ArpPacket::SetTargetMac(const char *val)
   for (int i = 0; i < 6; i++) {
     m_header.targetMac[6 - 1 - i] = (data >> (i * 8));
   }
+  GetField("Target Hardware Address")->SetValue(val);
 }
 
 void ArpPacket::SetTargetIp(const char *val)
 {
   uint32_t data = Utils::IPv4ToLong(val);
-  for (int i = 0; i < 4; i++) {
-    m_header.targetIp[4 - 1 - i] = (data >> (i * 8));
-  }
+  m_header.targetIp = BYTE_SWAP_32(data);
+  GetField("Target Protocol Address")->SetValue(val);
 }
 
 bool ArpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
@@ -126,48 +126,19 @@ bool ArpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
     return false;
   }
   const ArpHeader *header = (const ArpHeader *)buffer;
-  return Utils::BufferEquals<4>(m_header.targetIp, header->senderIp) && Utils::BufferEquals<4>(m_header.senderIp, header->targetIp);
+  return (m_header.targetIp == header->senderIp) && (m_header.senderIp == header->targetIp);
+}
+
+uint32_t ArpPacket::HeaderSize() const
+{
+  return sizeof(ArpHeader);
 }
 
 void ArpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
 {
   buffer += offset;
-  Utils::WriteValue(buffer, BYTE_SWAP_16(m_header.hardwareType));
-  buffer += sizeof(m_header.hardwareType);
-  Utils::WriteValue(buffer, BYTE_SWAP_16(m_header.protocolType));
-  buffer += sizeof(m_header.protocolType);
-  Utils::WriteValue(buffer, m_header.hardwareLength);
-  buffer += sizeof(m_header.hardwareLength);
-  Utils::WriteValue(buffer, m_header.protocolLength);
-  buffer += sizeof(m_header.protocolLength);
-  Utils::WriteValue(buffer, BYTE_SWAP_16(m_header.opcode));
-  buffer += sizeof(m_header.opcode);
-  Utils::Write(buffer, m_header.senderMac, 6);
-  buffer += 6;
-  Utils::Write(buffer, m_header.senderIp, 4);
-  buffer += 4;
-  Utils::Write(buffer, m_header.targetMac, 6);
-  buffer += 6;
-  Utils::Write(buffer, m_header.targetIp, 4);
-  buffer += 4;
+  Utils::WriteValue(buffer, m_header);
   offset += HeaderSize();
-}
-
-std::string ArpPacket::ToString()
-{
-  std::stringstream ss;
-  ss << GetName() << " (size: " << HeaderSize() << "): {\n";
-  ss << "\thardwareType: " << std::hex << m_header.hardwareType << "\n";
-  ss << "\tprotocolType: " << std::hex << m_header.protocolType << "\n";
-  ss << "\thardwareLength: " << std::hex << m_header.hardwareLength << "\n";
-  ss << "\tprotocolLength: " << std::hex << m_header.protocolLength << "\n";
-  ss << "\topcode: " << std::hex << m_header.opcode << "\n";
-  ss << "\tsenderMac: " << Utils::HardwareAddressToString(m_header.senderMac) << "\n";
-  ss << "\tsenderIp: " << Utils::IPv4ToString(m_header.senderIp) << "\n";
-  ss << "\ttargetMac: " << Utils::HardwareAddressToString(m_header.targetMac) << "\n";
-  ss << "\ttargetIp: " << Utils::IPv4ToString(m_header.targetIp) << "\n";
-  ss << "}";
-  return ss.str();
 }
 
 }// namespace PacketHacker

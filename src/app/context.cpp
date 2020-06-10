@@ -15,13 +15,12 @@ Packet *GetPacketFromId(int packetId)
   switch (packetId) {
   case PacketTypes::ARP:
     return new ArpPacket();
-    break;
   case PacketTypes::ETHERNET:
     return new EthernetPacket();
-    break;
+  case PacketTypes::IP:
+    return new IpPacket();
   default:
     return nullptr;
-    break;
   }
 }
 

@@ -8,7 +8,8 @@ namespace Utils {
     switch (type) {
     case TYPE_ARP:
       return new ArpPacket(buffer, size);
-
+    case TYPE_IPv4:
+      return new IpPacket(buffer, size);
     default:
       break;
     }
