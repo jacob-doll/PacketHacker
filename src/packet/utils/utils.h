@@ -70,5 +70,7 @@ namespace Utils {
     std::memcpy(buffer, &value, sizeof(value));
   }
 
+  uint16_t CalcChecksum(void *vdata, uint32_t size);
+
 }// namespace Utils
 }// namespace PacketHacker

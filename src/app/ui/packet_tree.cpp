@@ -43,11 +43,15 @@ namespace UI {
     while (currentPacket) {
       wxPGProperty *currProp = m_pPropGrid->Append(new wxPropertyCategory(currentPacket->GetName()));
       for (HeaderField *field : currentPacket->GetFields()) {
-        m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetDefaultVal()))->Enable(field->IsEditable());
+        m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal()))->Enable(field->IsEditable());
       }
 
       currentPacket = currentPacket->GetInnerPacket();
     }
+  }
+
+  void Reload()
+  {
   }
 
   void PacketTree::OnPropertyGridChanged(wxPropertyGridEvent &event)
@@ -59,6 +63,7 @@ namespace UI {
     HeaderField *field = packet->GetField(name);
     field->HandleData(event.GetValue().GetString().c_str());
     window->GetByteViewer()->Update(m_pContext->GetBasePacket());
+    SetPacket(m_pContext->GetBasePacket());
   }
 
   void PacketTree::OnPopupClick(wxCommandEvent &event)

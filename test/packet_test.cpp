@@ -135,9 +135,29 @@ void IpTest()
   delete ip;
 }
 
+void ChecksumTest()
+{
+  using namespace PacketHacker;
+  const uint8_t data[20] = { 0x45, 0x00, 0x00, 0x73, 0x00, 0x00, 0x40, 0x00, 0x40, 0x11, 0x00, 0x00, 0xc0, 0xa8, 0x00, 0x01, 0xc0, 0xa8, 0x00, 0xc7 };
+  IpPacket ip(data, 20);
+  printf("%s\n", ip.ToString().c_str());
+
+  uint8_t out[20];
+  ip.WriteToBuf(out, 20);
+
+  for (int i = 0; i < 20; i++) {
+    printf("%02x ", out[i]);
+  }
+
+  printf("\n");
+  printf("%s\n", ip.ToString().c_str());
+  // uint16_t check = Utils::CalcChecksum((void *)data, 20);
+  // printf("%04x", check);
+}
+
 int main()
 {
-  IpTest();
+  ChecksumTest();
 
   return 0;
 }

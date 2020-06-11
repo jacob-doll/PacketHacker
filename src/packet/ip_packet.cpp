@@ -1,5 +1,6 @@
 #include "ip_packet.h"
 #include "utils/utils.h"
+#include "utils/packet_utils.h"
 
 namespace PacketHacker {
 
@@ -139,13 +140,36 @@ void IpPacket::SetDestIp(const char *val)
   GetField("Destination")->SetValue(val);
 }
 
-bool IpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size) { return false; }
+bool IpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
+{
+  uint16_t headerSize = HeaderSize();
+  if (size < headerSize) {
+    return false;
+  }
+
+  const IpHeader *header = (const IpHeader *)buffer;
+  size = size - headerSize;
+
+  if (m_header.destIp == header->sourceIp && m_header.sourceIp == header->destIp && m_header.protocol == header->protocol) {
+    return GetInnerPacket() ? GetInnerPacket()->DoesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
+  }
+
+  return false;
+}
 
 uint32_t IpPacket::HeaderSize() const { return sizeof(IpHeader); }
 
 void IpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
 {
   m_header.totalLength = BYTE_SWAP_16((uint16_t)this->Size());
+  GetField("Total Length")->SetValue(std::to_string(this->Size()).c_str());
+
+  m_header.checksum = 0x0000;
+  uint16_t checksum = Utils::CalcChecksum((void *)&m_header, sizeof(m_header));
+  m_header.checksum = BYTE_SWAP_16(checksum);
+  char buf[6];
+  sprintf(buf, "0x%04x", checksum);
+  GetField("Checksum")->SetValue(buf);
 
   buffer += offset;
   Utils::WriteValue(buffer, m_header);
