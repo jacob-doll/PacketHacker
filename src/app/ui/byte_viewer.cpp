@@ -245,6 +245,7 @@ namespace UI {
 
   void ByteViewer::Update(Packet *packet)
   {
+    m_pGrid->ClearGrid();
     uint32_t size = packet->Size();
     uint8_t *data = new uint8_t[size];
     packet->WriteToBuf(data, size);

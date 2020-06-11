@@ -9,7 +9,7 @@ IpPacket::IpPacket()
   HeaderField *version = new HeaderFieldImpl<IpPacket>(this, "Version", "4", &IpPacket::SetVersion, false);
   HeaderField *headerLength = new HeaderFieldImpl<IpPacket>(this, "Header Length", "5", &IpPacket::SetHeaderLength);
   HeaderField *diffServices = new HeaderFieldImpl<IpPacket>(this, "Differentiated Services", "0x00", &IpPacket::SetDiffServices);
-  HeaderField *totalLength = new HeaderFieldImpl<IpPacket>(this, "Total Length", "0", &IpPacket::SetTotalLength, false);
+  HeaderField *totalLength = new HeaderFieldImpl<IpPacket>(this, "Total Length", "20", &IpPacket::SetTotalLength, false);
   HeaderField *id = new HeaderFieldImpl<IpPacket>(this, "Identification", "0x0000", &IpPacket::SetId);
   HeaderField *flags = new HeaderFieldImpl<IpPacket>(this, "Flags", "0x00", &IpPacket::SetFlags);
   HeaderField *fragOffset = new HeaderFieldImpl<IpPacket>(this, "Fragment offset", "0x0000", &IpPacket::SetFragOffset);
@@ -145,6 +145,8 @@ uint32_t IpPacket::HeaderSize() const { return sizeof(IpHeader); }
 
 void IpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
 {
+  m_header.totalLength = BYTE_SWAP_16((uint16_t)this->Size());
+
   buffer += offset;
   Utils::WriteValue(buffer, m_header);
   buffer += 6;
