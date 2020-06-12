@@ -25,7 +25,7 @@ public:
 
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override;
-  virtual std::string GetName() const override { return "Ipv4"; }
+  virtual std::string GetName() const override { return "IPv4"; }
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;
