@@ -138,6 +138,7 @@ void IpTest()
 void ChecksumTest()
 {
   using namespace PacketHacker;
+
   const uint8_t data[20] = { 0x45, 0x00, 0x00, 0x73, 0x00, 0x00, 0x40, 0x00, 0x40, 0x11, 0x00, 0x00, 0xc0, 0xa8, 0x00, 0x01, 0xc0, 0xa8, 0x00, 0xc7 };
   IpPacket ip(data, 20);
   printf("%s\n", ip.ToString().c_str());
@@ -155,9 +156,71 @@ void ChecksumTest()
   // printf("%04x", check);
 }
 
+void Icmp()
+{
+  using namespace PacketHacker;
+  AdapterInfo info = Utils::GetAdapters()[4];
+  printf("%ws\n", info.friendlyName.c_str());
+
+  std::string senderMac = Utils::HardwareAddressToString(info.address);
+  std::string senderIp = info.unicastAddress;
+  std::string targetIp = info.dnsServerAddress;
+
+  // const uint8_t in[42] = { 0x10, 0xda, 0x43, 0x96, 0x84, 0xcf, 0xe0, 0xd5, 0x5e, 0x61, 0xb5, 0x7d, 0x08, 0x00, 0x45, 0x00, 0x00, 0x3c, 0xfe, 0xe0, 0x00, 0x00, 0x80, 0x01, 0x00, 0x00, 0xc0, 0xa8, 0x01, 0x0a, 0xc0, 0xa8, 0x01, 0x01, 0x08, 0x00, 0x4d, 0x5a, 0x00, 0x01, 0x00, 0x01 };
+  EthernetPacket *eth = new EthernetPacket();
+  IpPacket *ip = new IpPacket();
+  IcmpPacket *icmp = new IcmpPacket();
+  eth->SetDst("10:da:43:96:84:cf");
+  eth->SetSrc(senderMac.c_str());
+  eth->SetType("0x0800");
+  ip->SetProtocol("1");
+  ip->SetSourceIp(senderIp.c_str());
+  ip->SetDestIp(targetIp.c_str());
+  icmp->SetType("8");
+  icmp->SetCode("0");
+  icmp->SetData("0x00010001");
+  eth->SetInnerPacket(ip);
+  ip->SetInnerPacket(icmp);
+
+
+  printf("%s\n", eth->ToString().c_str());
+
+  uint8_t out[42];
+  eth->WriteToBuf(out, 42);
+
+  for (int i = 0; i < 42; i++) {
+    printf("%02x ", out[i]);
+  }
+  printf("\n");
+  printf("%s\n", eth->ToString().c_str());
+
+  const uint8_t *data;
+  uint32_t size;
+  char errbuf[256];
+  Adapter adapter(info.name);
+  if (!adapter.OpenPacketStream(errbuf)) {
+    printf("%s\n", errbuf);
+  }
+
+  adapter.SendPacket(eth, errbuf);
+
+  while ((data = adapter.GetNextPacket(&size, errbuf)) != nullptr) {
+    if (eth->DoesReplyMatch(data, size)) {
+      printf("Receive Reply!\n");
+      Packet *recieved = new EthernetPacket(data, size);
+      printf("%s\n", recieved->ToString().c_str());
+      delete recieved;
+      break;
+    }
+  }
+
+  adapter.ClosePacketStream();
+  delete eth;
+}
+
 int main()
 {
-  ChecksumTest();
+  Icmp();
 
   return 0;
 }

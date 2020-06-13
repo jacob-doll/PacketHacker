@@ -1,5 +1,6 @@
 #include "context.h"
 #include "packet/adapter.h"
+#include "packet/utils/packet_utils.h"
 
 #include <wx/wxprec.h>
 
@@ -9,20 +10,6 @@
 
 
 namespace PacketHacker {
-
-Packet *GetPacketFromId(int packetId)
-{
-  switch (packetId) {
-  case PacketTypes::ARP:
-    return new ArpPacket();
-  case PacketTypes::ETHERNET:
-    return new EthernetPacket();
-  case PacketTypes::IP:
-    return new IpPacket();
-  default:
-    return nullptr;
-  }
-}
 
 Context::Context(MainWindow *window)
   : m_CurrentAdapter(),
@@ -51,7 +38,7 @@ void Context::SetAdapter(std::string name)
 void Context::SetBasePacket(int packetId)
 {
   delete m_pBasePacket;
-  m_pBasePacket = GetPacketFromId(packetId);
+  m_pBasePacket = Utils::PacketFromId(packetId);
   if (!m_pBasePacket) wxLogMessage("Illegal packetId: %d", packetId);
 }
 
@@ -60,12 +47,18 @@ void Context::AddPacket(int packetId)
   if (!m_pBasePacket) {
     SetBasePacket(packetId);
   } else {
+    Packet *packet = Utils::PacketFromId(packetId);
+    if (!packet) wxLogMessage("Illegal packetId: %d", packetId);
+
     Packet *currentPacket = m_pBasePacket;
-    while (currentPacket->GetInnerPacket()) {
+    while (currentPacket) {
+      if (packet->GetName() == currentPacket->GetName()) {
+        wxLogMessage("Cannot have multiple packets of same type: %s", packet->GetName());
+        return;
+      }
+      if (!currentPacket->GetInnerPacket()) break;
       currentPacket = currentPacket->GetInnerPacket();
     }
-    Packet *packet = GetPacketFromId(packetId);
-    if (!packet) wxLogMessage("Illegal packetId: %d", packetId);
 
     currentPacket->SetInnerPacket(packet);
   }

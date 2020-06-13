@@ -3,6 +3,22 @@
 namespace PacketHacker {
 namespace Utils {
 
+  Packet *PacketFromId(int packetId)
+  {
+    switch (packetId) {
+    case PacketType::ARP:
+      return new ArpPacket();
+    case PacketType::ETHERNET:
+      return new EthernetPacket();
+    case PacketType::IP:
+      return new IpPacket();
+    case PacketType::ICMP:
+      return new IcmpPacket();
+    default:
+      return nullptr;
+    }
+  }
+
   Packet *PacketFromType(uint32_t type, const uint8_t *buffer, uint32_t size)
   {
     switch (type) {
@@ -10,6 +26,8 @@ namespace Utils {
       return new ArpPacket(buffer, size);
     case TYPE_IPv4:
       return new IpPacket(buffer, size);
+    case TYPE_ICMP:
+      return new IcmpPacket(buffer, size);
     default:
       break;
     }

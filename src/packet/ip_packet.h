@@ -26,6 +26,7 @@ public:
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override;
   virtual std::string GetName() const override { return "IPv4"; }
+  virtual PacketType GetPacketType() const override { return PacketType::IP; }
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;

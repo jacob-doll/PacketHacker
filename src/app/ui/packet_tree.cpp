@@ -41,6 +41,7 @@ namespace UI {
     m_pPropGrid->Clear();
     Packet *currentPacket = packet;
     while (currentPacket) {
+      std::string name = currentPacket->GetName();
       wxPGProperty *currProp = m_pPropGrid->Append(new wxPropertyCategory(currentPacket->GetName()));
       for (HeaderField *field : currentPacket->GetFields()) {
         m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal()))->Enable(field->IsEditable());
@@ -50,8 +51,15 @@ namespace UI {
     }
   }
 
-  void Reload()
+  void PacketTree::Reload()
   {
+    Packet *currentPacket = m_pContext->GetBasePacket();
+    while (currentPacket) {
+      for (HeaderField *field : currentPacket->GetFields()) {
+        m_pPropGrid->GetProperty(field->GetName())->SetValue(field->GetCurrentVal());
+      }
+      currentPacket = currentPacket->GetInnerPacket();
+    }
   }
 
   void PacketTree::OnPropertyGridChanged(wxPropertyGridEvent &event)
@@ -63,7 +71,7 @@ namespace UI {
     HeaderField *field = packet->GetField(name);
     field->HandleData(event.GetValue().GetString().c_str());
     window->GetByteViewer()->Update(m_pContext->GetBasePacket());
-    SetPacket(m_pContext->GetBasePacket());
+    Reload();
   }
 
   void PacketTree::OnPopupClick(wxCommandEvent &event)

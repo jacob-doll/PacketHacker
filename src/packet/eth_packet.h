@@ -17,6 +17,7 @@ public:
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override { return sizeof(EthernetHeader); }
   virtual std::string GetName() const override { return "Ethernet"; }
+  virtual PacketType GetPacketType() const override { return PacketType::ETHERNET; }
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;

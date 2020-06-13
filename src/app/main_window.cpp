@@ -20,9 +20,10 @@ MainWindow::MainWindow()
   m_pMenuBar->Append(m_pAdapterMenu, "Adapters");
 
   m_pPacketMenu = new wxMenu();
-  m_pPacketMenu->Append(PacketTypes::ARP, "ARP");
-  m_pPacketMenu->Append(PacketTypes::ETHERNET, "ETHERNET");
-  m_pPacketMenu->Append(PacketTypes::IP, "IP");
+  m_pPacketMenu->Append(PacketType::ARP, "ARP");
+  m_pPacketMenu->Append(PacketType::ETHERNET, "ETHERNET");
+  m_pPacketMenu->Append(PacketType::IP, "IP");
+  m_pPacketMenu->Append(PacketType::ICMP, "ICMP");
   m_pMenuBar->Append(m_pPacketMenu, "Add");
   // End menu
 
@@ -52,9 +53,10 @@ MainWindow::MainWindow()
   for (int j = ADAPTER_OFFSET; j < adapterId; j++)
     this->Connect(j, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnAdapterSelected));
 
-  this->Connect(PacketTypes::ARP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
-  this->Connect(PacketTypes::ETHERNET, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
-  this->Connect(PacketTypes::IP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
+  this->Connect(PacketType::ARP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
+  this->Connect(PacketType::ETHERNET, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
+  this->Connect(PacketType::IP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
+  this->Connect(PacketType::ICMP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
 
   this->CreateStatusBar(1);
   this->SetStatusText("Adapter not selected!", 0);

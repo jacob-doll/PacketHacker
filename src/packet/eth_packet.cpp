@@ -11,7 +11,7 @@ EthernetPacket::EthernetPacket()
   m_fields.emplace_back(dst);
   HeaderField *src = new HeaderFieldImpl<EthernetPacket>(this, "Src", "00:00:00:00:00:00", &EthernetPacket::SetSrc);
   m_fields.emplace_back(src);
-  HeaderField *type = new HeaderFieldImpl<EthernetPacket>(this, "Type", "0x0800", &EthernetPacket::SetType);
+  HeaderField *type = new HeaderFieldImpl<EthernetPacket>(this, "EtherType", "0x0800", &EthernetPacket::SetType);
   m_fields.emplace_back(type);
   Init();
 }
@@ -29,7 +29,7 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
   GetField("Src")->SetValue(Utils::HardwareAddressToString(m_header.srcMac).c_str());
   char buf[8];
   sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.type));
-  GetField("Type")->SetValue(buf);
+  GetField("EtherType")->SetValue(buf);
 
   size = size - headerSize;
   if (size > 0) {
@@ -59,7 +59,7 @@ void EthernetPacket::SetType(const char *val)
 {
   uint16_t data = std::stoi(val, 0, 16);
   m_header.type = BYTE_SWAP_16(data);
-  GetField("Type")->SetValue(val);
+  GetField("EtherType")->SetValue(val);
 }
 
 bool EthernetPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)

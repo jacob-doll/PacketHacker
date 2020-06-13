@@ -14,9 +14,9 @@ IpPacket::IpPacket()
   HeaderField *id = new HeaderFieldImpl<IpPacket>(this, "Identification", "0x0000", &IpPacket::SetId);
   HeaderField *flags = new HeaderFieldImpl<IpPacket>(this, "Flags", "0x00", &IpPacket::SetFlags);
   HeaderField *fragOffset = new HeaderFieldImpl<IpPacket>(this, "Fragment offset", "0x0000", &IpPacket::SetFragOffset);
-  HeaderField *ttl = new HeaderFieldImpl<IpPacket>(this, "Time to live", "20", &IpPacket::SetTtl);
+  HeaderField *ttl = new HeaderFieldImpl<IpPacket>(this, "Time to live", "128", &IpPacket::SetTtl);
   HeaderField *protocol = new HeaderFieldImpl<IpPacket>(this, "Protocol", "0x00", &IpPacket::SetProtocol);
-  HeaderField *checksum = new HeaderFieldImpl<IpPacket>(this, "Checksum", "0x0000", &IpPacket::SetChecksum, false);
+  HeaderField *checksum = new HeaderFieldImpl<IpPacket>(this, "Header Checksum", "0x0000", &IpPacket::SetChecksum, false);
   HeaderField *sourceIp = new HeaderFieldImpl<IpPacket>(this, "Source", "0.0.0.0", &IpPacket::SetSourceIp);
   HeaderField *destIp = new HeaderFieldImpl<IpPacket>(this, "Destination", "0.0.0.0", &IpPacket::SetDestIp);
   m_fields = { version, headerLength, diffServices, totalLength, id, flags, fragOffset, ttl, protocol, checksum, sourceIp, destIp };
@@ -26,7 +26,8 @@ IpPacket::IpPacket()
 IpPacket::IpPacket(const uint8_t *data, uint32_t size)
   : IpPacket()
 {
-  if (size < HeaderSize()) {
+  uint32_t headerSize = HeaderSize();
+  if (size < headerSize) {
     return;
   }
   Utils::ReadValue(data, m_header);
@@ -51,9 +52,14 @@ IpPacket::IpPacket(const uint8_t *data, uint32_t size)
   sprintf(buf, "0x%02x", m_header.protocol);
   GetField("Protocol")->SetValue(buf);
   sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.checksum));
-  GetField("Checksum")->SetValue(buf);
+  GetField("Header Checksum")->SetValue(buf);
   GetField("Source")->SetValue(Utils::IPv4ToString(m_header.sourceIp).c_str());
   GetField("Destination")->SetValue(Utils::IPv4ToString(m_header.destIp).c_str());
+
+  size = size - headerSize;
+  if (size > 0) {
+    SetInnerPacket(Utils::PacketFromType(m_header.protocol, (uint8_t *)(data + headerSize), size));
+  }
 }
 
 void IpPacket::SetVersion(const char *val)
@@ -123,7 +129,7 @@ void IpPacket::SetChecksum(const char *val)
 {
   uint16_t data = std::stoi(val, 0, 0);
   m_header.checksum = BYTE_SWAP_16(data);
-  GetField("Checksum")->SetValue(val);
+  GetField("Header Checksum")->SetValue(val);
 }
 
 void IpPacket::SetSourceIp(const char *val)
@@ -169,7 +175,7 @@ void IpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
   m_header.checksum = BYTE_SWAP_16(checksum);
   char buf[6];
   sprintf(buf, "0x%04x", checksum);
-  GetField("Checksum")->SetValue(buf);
+  GetField("Header Checksum")->SetValue(buf);
 
   buffer += offset;
   Utils::WriteValue(buffer, m_header);

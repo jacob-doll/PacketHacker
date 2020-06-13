@@ -30,6 +30,7 @@ namespace UI {
       const wxString &name = wxPanelNameStr);
 
     void SetPacket(Packet *packet);
+    void Reload();
 
     void OnPropertyGridChanged(wxPropertyGridEvent &event);
     void OnPropertyGridRightClicked(wxPropertyGridEvent &event);

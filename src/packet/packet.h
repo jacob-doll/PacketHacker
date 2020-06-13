@@ -6,10 +6,11 @@
 
 namespace PacketHacker {
 
-enum PacketTypes {
+enum PacketType {
   ARP = 1000,
   ETHERNET = 1001,
-  IP = 1002
+  IP = 1002,
+  ICMP = 1003
 };
 
 class HeaderField;
@@ -30,6 +31,7 @@ public:
 
   void WriteToBuf(uint8_t *buffer, uint32_t size, uint32_t offset = 0);
 
+  virtual PacketType GetPacketType() const = 0;
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) = 0;
   virtual uint32_t HeaderSize() const = 0;
   virtual std::string GetName() const = 0;
