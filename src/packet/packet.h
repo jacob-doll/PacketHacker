@@ -13,6 +13,12 @@ enum PacketType {
   ICMP = 1003
 };
 
+enum FieldType {
+  FIELD_HARDWARE,
+  FIELD_IP,
+  FIELD_INT
+};
+
 class HeaderField;
 
 class Packet
@@ -58,8 +64,8 @@ private:
 class HeaderField
 {
 public:
-  HeaderField(Packet *packet, std::string name, std::string defaultVal, bool editable)
-    : m_packet(packet), m_name(name), m_defaultVal(defaultVal), m_currentVal(defaultVal), m_editable(editable)
+  HeaderField(Packet *packet, std::string name, std::string defaultVal, bool editable, FieldType type)
+    : m_packet(packet), m_name(name), m_defaultVal(defaultVal), m_currentVal(defaultVal), m_editable(editable), m_type(type)
   {
   }
 
@@ -72,6 +78,7 @@ public:
   std::string GetDefaultVal() const { return m_defaultVal; }
   std::string GetCurrentVal() const { return m_currentVal; }
   bool IsEditable() { return m_editable; }
+  FieldType GetType() { return m_type; }
 
   void SetValue(const char *value)
   {
@@ -84,6 +91,7 @@ protected:
   std::string m_currentVal;
   std::string m_defaultVal;
   bool m_editable;
+  FieldType m_type;
 };
 
 template<class T>
@@ -92,8 +100,8 @@ class HeaderFieldImpl : public HeaderField
 public:
   typedef void (T::*HandlerFunctionPtr)(const char *);
 
-  HeaderFieldImpl(T *packet, std::string name, std::string defaultVal, HandlerFunctionPtr function, bool editable = true)
-    : HeaderField(packet, name, defaultVal, editable), m_function(function)
+  HeaderFieldImpl(T *packet, std::string name, std::string defaultVal, HandlerFunctionPtr function, bool editable = true, FieldType type = FieldType::FIELD_INT)
+    : HeaderField(packet, name, defaultVal, editable, type), m_function(function)
   {
   }
 

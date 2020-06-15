@@ -17,8 +17,8 @@ IpPacket::IpPacket()
   HeaderField *ttl = new HeaderFieldImpl<IpPacket>(this, "Time to live", "128", &IpPacket::SetTtl);
   HeaderField *protocol = new HeaderFieldImpl<IpPacket>(this, "Protocol", "0x00", &IpPacket::SetProtocol);
   HeaderField *checksum = new HeaderFieldImpl<IpPacket>(this, "Header Checksum", "0x0000", &IpPacket::SetChecksum, false);
-  HeaderField *sourceIp = new HeaderFieldImpl<IpPacket>(this, "Source", "0.0.0.0", &IpPacket::SetSourceIp);
-  HeaderField *destIp = new HeaderFieldImpl<IpPacket>(this, "Destination", "0.0.0.0", &IpPacket::SetDestIp);
+  HeaderField *sourceIp = new HeaderFieldImpl<IpPacket>(this, "Source", "0.0.0.0", &IpPacket::SetSourceIp, true, FieldType::FIELD_IP);
+  HeaderField *destIp = new HeaderFieldImpl<IpPacket>(this, "Destination", "0.0.0.0", &IpPacket::SetDestIp, true, FieldType::FIELD_IP);
   m_fields = { version, headerLength, diffServices, totalLength, id, flags, fragOffset, ttl, protocol, checksum, sourceIp, destIp };
   Init();
 }

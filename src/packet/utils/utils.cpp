@@ -109,6 +109,26 @@ namespace Utils {
     return std::string(buffer);
   }
 
+  bool IsHardwareAddressValid(const char *address)
+  {
+    uint8_t a[6];
+    int last = -1;
+    int rc = sscanf(address, "%hhx:%hhx:%hhx:%hhx:%hhx:%hhx%n", a + 0, a + 1, a + 2, a + 3, a + 4, a + 5, &last);
+    if (rc != 6 || strlen(address) != last)
+      return false;
+    return true;
+  }
+
+  bool IsIpv4AddressValid(const char *address)
+  {
+    uint32_t b1, b2, b3, b4 = 0;
+    int rc = sscanf(address, "%u.%u.%u.%u", &b1, &b2, &b3, &b4);
+    if (rc != 4 || b1 > 255 || b2 > 255 || b3 > 255 || b4 > 255) {
+      return false;
+    }
+    return true;
+  }
+
   uint16_t CalcChecksum(void *vdata, uint32_t size)
   {
     uint8_t *data = (uint8_t *)vdata;

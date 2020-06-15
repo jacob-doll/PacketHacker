@@ -18,6 +18,29 @@
 
 namespace PacketHacker {
 namespace UI {
+
+  class HardwareAddressProperty : public wxStringProperty
+  {
+  public:
+    HardwareAddressProperty(const wxString &label = wxPG_LABEL,
+      const wxString &name = wxPG_LABEL,
+      const wxString &value = wxEmptyString);
+
+    virtual bool ValidateValue(wxVariant &value,
+      wxPGValidationInfo &validationInfo) const override;
+  };
+
+  class IpAddressProperty : public wxStringProperty
+  {
+  public:
+    IpAddressProperty(const wxString &label = wxPG_LABEL,
+      const wxString &name = wxPG_LABEL,
+      const wxString &value = wxEmptyString);
+
+    virtual bool ValidateValue(wxVariant &value,
+      wxPGValidationInfo &validationInfo) const override;
+  };
+
   class PacketTree : public wxPanel
   {
   public:

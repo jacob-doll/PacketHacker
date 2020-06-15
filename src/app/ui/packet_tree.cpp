@@ -1,10 +1,47 @@
 #include "packet_tree.h"
 
 #include "app/main_window.h"
+#include "packet/utils/utils.h"
 
 namespace PacketHacker {
 namespace UI {
 
+  // HardwareAddressProperty
+  // ------------------------------------------------------
+  HardwareAddressProperty::HardwareAddressProperty(const wxString &label,
+    const wxString &name,
+    const wxString &value)
+    : wxStringProperty(label, name, value)
+  {
+  }
+
+  bool HardwareAddressProperty::ValidateValue(wxVariant &value,
+    wxPGValidationInfo &validationInfo) const
+  {
+    return Utils::IsHardwareAddressValid(value.GetString().c_str().AsChar());
+  }
+
+  // ------------------------------------------------------
+
+  // HardwareAddressProperty
+  // ------------------------------------------------------
+  IpAddressProperty::IpAddressProperty(const wxString &label,
+    const wxString &name,
+    const wxString &value)
+    : wxStringProperty(label, name, value)
+  {
+  }
+
+  bool IpAddressProperty::ValidateValue(wxVariant &value,
+    wxPGValidationInfo &validationInfo) const
+  {
+    return Utils::IsIpv4AddressValid(value.GetString().c_str().AsChar());
+  }
+
+  // ------------------------------------------------------
+
+  // PacketTree
+  // ------------------------------------------------------
   PacketTree::PacketTree(Context *context,
     wxWindow *parent,
     wxWindowID winid,
@@ -30,7 +67,6 @@ namespace UI {
 
   void PacketTree::SetPacket(Packet *packet)
   {
-    // TODO: Check to make sure that packet does not have duplicate children
     MainWindow *window = m_pContext->GetMainWindow();
     if (packet) {
       window->GetByteViewer()->SetSize(packet->Size());
@@ -44,7 +80,19 @@ namespace UI {
       std::string name = currentPacket->GetName();
       wxPGProperty *currProp = m_pPropGrid->Append(new wxPropertyCategory(currentPacket->GetName()));
       for (HeaderField *field : currentPacket->GetFields()) {
-        m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal()))->Enable(field->IsEditable());
+        wxPGProperty *fieldProp;
+        switch (field->GetType()) {
+        case FieldType::FIELD_HARDWARE:
+          fieldProp = new HardwareAddressProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal());
+          break;
+        case FieldType::FIELD_IP:
+          fieldProp = new IpAddressProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal());
+          break;
+        default:
+          fieldProp = new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal());
+        }
+        fieldProp->Enable(field->IsEditable());
+        m_pPropGrid->AppendIn(currProp, fieldProp);
       }
 
       currentPacket = currentPacket->GetInnerPacket();

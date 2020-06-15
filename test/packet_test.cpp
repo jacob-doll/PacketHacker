@@ -2,6 +2,7 @@
 #include "packet/packets.h"
 #include "packet/utils/utils.h"
 #include "packet/adapter.h"
+#include "packet/hardware_address.h"
 
 void ParseTest()
 {
@@ -218,9 +219,21 @@ void Icmp()
   delete eth;
 }
 
+void HardwareTest()
+{
+  using namespace PacketHacker;
+  const uint8_t data[6] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 };
+  HardwareAddress address = "00";
+  printf(address.AsString().c_str());
+  printf("\n");
+  for (int i = 0; i < HARDWARE_LENGTH; i++) {
+    printf("%02x ", address.GetData()[i]);
+  }
+}
+
 int main()
 {
-  Icmp();
+  HardwareTest();
 
   return 0;
 }
