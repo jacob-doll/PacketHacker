@@ -29,7 +29,7 @@ public:
   virtual PacketType GetPacketType() const override { return PacketType::IP; }
 
 protected:
-  virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;
+  virtual void DoWriteToBuf(uint8_t *buffer) override;
 
 private:
 #pragma pack(push, 1)

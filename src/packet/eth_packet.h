@@ -20,7 +20,7 @@ public:
   virtual PacketType GetPacketType() const override { return PacketType::ETHERNET; }
 
 protected:
-  virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) override;
+  virtual void DoWriteToBuf(uint8_t *buffer) override;
 
 private:
   struct EthernetHeader

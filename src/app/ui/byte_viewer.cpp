@@ -247,14 +247,10 @@ namespace UI {
   {
     m_pGrid->ClearGrid();
     uint32_t size = packet->Size();
-    uint8_t *data = new uint8_t[size];
-    packet->WriteToBuf(data, size);
-    for (uint32_t i = 0; i < size; i++) {
-      SetByte(i, data[i]);
-    }
+    m_pByteTable->GetData().clear();
+    m_pByteTable->GetData().resize(size);
+    packet->WriteToBuf(m_pByteTable->GetData().data(), size);
     m_pGrid->ForceRefresh();
-
-    delete[] data;
   }
 
   void ByteViewer::SetSize(uint32_t size)

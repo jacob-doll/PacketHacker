@@ -75,15 +75,15 @@ HeaderField *Packet::GetField(std::string name) const
   return nullptr;
 }
 
-void Packet::WriteToBuf(uint8_t *buffer, uint32_t size, uint32_t offset)
+void Packet::WriteToBuf(uint8_t *buffer, uint32_t size)
 {
   uint32_t packetSize = this->Size();
   if (size < packetSize)
     return;
-  uint32_t currentOffset = offset;
-  DoWriteToBuf(buffer, currentOffset);
+  uint32_t offset = HeaderSize();
   if (m_innerPacket)
-    m_innerPacket->WriteToBuf(buffer, packetSize, currentOffset);
+    m_innerPacket->WriteToBuf((buffer + offset), packetSize);
+  DoWriteToBuf(buffer);
 }
 
 std::string Packet::ToString() const

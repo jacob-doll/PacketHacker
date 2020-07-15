@@ -7,9 +7,10 @@
 
 namespace PacketHacker {
 MainWindow::MainWindow()
-  : wxFrame(nullptr, wxID_ANY, "Packet Hacker", wxDefaultPosition, wxSize(1280, 720))
+  : wxFrame(nullptr, wxID_ANY, _("Packet Hacker"), wxDefaultPosition, wxSize(1280, 720), wxDEFAULT_FRAME_STYLE)
 {
   m_pContext = new Context(this);
+  m_mgr.SetManagedWindow(this);
 
   // Menu Bar
   m_pMenuBar = new wxMenuBar();
@@ -24,30 +25,26 @@ MainWindow::MainWindow()
   m_pPacketMenu->Append(PacketType::ETHERNET, "ETHERNET");
   m_pPacketMenu->Append(PacketType::IP, "IP");
   m_pPacketMenu->Append(PacketType::ICMP, "ICMP");
+  m_pPacketMenu->Append(PacketType::DATA, "DATA");
   m_pMenuBar->Append(m_pPacketMenu, "Add");
   // End menu
 
-  // Main panel
-  wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
-  wxSplitterWindow *hSplitter = new wxSplitterWindow(this);
+  wxAuiToolBar *toolbar = new wxAuiToolBar(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxAUI_TB_DEFAULT_STYLE | wxAUI_TB_OVERFLOW | wxAUI_TB_VERTICAL);
+  m_pSendButton = new wxButton(toolbar, ID_SENDBUTTON, "Send");
+  toolbar->AddControl(m_pSendButton);
+  m_mgr.AddPane(toolbar, wxAuiPaneInfo().Name("tb1").Caption("Big Toolbar").ToolbarPane().Top());
 
-  wxWindow *creationPane = new wxWindow(hSplitter, wxID_ANY);
-  wxBoxSizer *vBox = new wxBoxSizer(wxVERTICAL);
-  m_pPacketTree = new UI::PacketTree(m_pContext, creationPane);
-  vBox->Add(m_pPacketTree, 2, wxEXPAND);
-  m_pSendButton = new wxButton(creationPane, ID_SENDBUTTON, "Send");
-  vBox->Add(m_pSendButton, 0, wxEXPAND);
-  creationPane->SetSizer(vBox);
+  m_pPacketTree = new UI::PacketTree(m_pContext, this);
+  m_mgr.AddPane(m_pPacketTree, wxCENTER, wxT("Current Packet"));
 
-  m_pDetailsPane = new UI::DetailsPane(hSplitter);
+  m_pDetailsPane = new UI::DetailsPane(this);
+  m_mgr.AddPane(m_pDetailsPane, wxLEFT, wxT("Details Pane"));
 
-  hSplitter->SplitVertically(m_pDetailsPane, creationPane);
-  hSplitter->SetMinimumPaneSize(400);
-  mainSizer->Add(hSplitter, 1, wxEXPAND);
   m_pStreamPane = new UI::StreamPane(m_pContext, this);
-  mainSizer->Add(m_pStreamPane, 1, wxEXPAND);
+  m_mgr.AddPane(m_pStreamPane, wxRIGHT, wxT("Received Packet"));
+
   m_pByteViewer = new UI::ByteViewer(this);
-  mainSizer->Add(m_pByteViewer, 1, wxEXPAND);
+  m_mgr.AddPane(m_pByteViewer, wxBOTTOM, wxT("Byte Viewer"));
 
   this->Connect(ID_SENDBUTTON, wxEVT_COMMAND_BUTTON_CLICKED, wxCommandEventHandler(MainWindow::OnButtonPressed));
   for (int j = ADAPTER_OFFSET; j < adapterId; j++)
@@ -57,16 +54,19 @@ MainWindow::MainWindow()
   this->Connect(PacketType::ETHERNET, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
   this->Connect(PacketType::IP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
   this->Connect(PacketType::ICMP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
+  this->Connect(PacketType::DATA, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
 
   this->CreateStatusBar(1);
   this->SetStatusText("Adapter not selected!", 0);
 
   this->SetMenuBar(m_pMenuBar);
-  this->SetSizer(mainSizer);
+
+  m_mgr.Update();
 }
 
 MainWindow::~MainWindow()
 {
+  m_mgr.UnInit();
   delete m_pContext;
 }
 

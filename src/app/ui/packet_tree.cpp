@@ -104,7 +104,10 @@ namespace UI {
     Packet *currentPacket = m_pContext->GetBasePacket();
     while (currentPacket) {
       for (HeaderField *field : currentPacket->GetFields()) {
-        m_pPropGrid->GetProperty(field->GetName())->SetValue(field->GetCurrentVal());
+        wxPGProperty *property = m_pPropGrid->GetProperty(field->GetName());
+        if (property->GetValue() != field->GetCurrentVal()) {
+          property->SetValue(field->GetCurrentVal());
+        }
       }
       currentPacket = currentPacket->GetInnerPacket();
     }

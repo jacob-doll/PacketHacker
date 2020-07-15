@@ -10,7 +10,8 @@ enum PacketType {
   ARP = 1000,
   ETHERNET = 1001,
   IP = 1002,
-  ICMP = 1003
+  ICMP = 1003,
+  DATA = 1004
 };
 
 enum FieldType {
@@ -25,7 +26,7 @@ class Packet
 {
 public:
   Packet();
-  ~Packet();
+  virtual ~Packet();
 
   Packet *GetOuterPacket() const { return m_outerPacket; }
   Packet *GetInnerPacket() const { return m_innerPacket; }
@@ -35,7 +36,7 @@ public:
   uint32_t Size() const;
   void Init();
 
-  void WriteToBuf(uint8_t *buffer, uint32_t size, uint32_t offset = 0);
+  void WriteToBuf(uint8_t *buffer, uint32_t size);
 
   virtual PacketType GetPacketType() const = 0;
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) = 0;
@@ -48,7 +49,7 @@ public:
   std::string ToString() const;
 
 protected:
-  virtual void DoWriteToBuf(uint8_t *buffer, uint32_t &offset) = 0;
+  virtual void DoWriteToBuf(uint8_t *buffer) = 0;
 
 private:
   void SetOuterPacket(Packet *outer);

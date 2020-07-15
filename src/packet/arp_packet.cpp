@@ -134,11 +134,9 @@ uint32_t ArpPacket::HeaderSize() const
   return sizeof(ArpHeader);
 }
 
-void ArpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
+void ArpPacket::DoWriteToBuf(uint8_t *buffer)
 {
-  buffer += offset;
   Utils::WriteValue(buffer, m_header);
-  offset += HeaderSize();
 }
 
 }// namespace PacketHacker

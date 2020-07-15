@@ -14,6 +14,8 @@ namespace Utils {
       return new IpPacket();
     case PacketType::ICMP:
       return new IcmpPacket();
+    case PacketType::DATA:
+      return new DataPacket();
     default:
       return nullptr;
     }

@@ -38,15 +38,13 @@ void Adapter::ClosePacketStream()
 bool Adapter::SendPacket(Packet *packet, char *errbuf)
 {
   const uint32_t size = packet->Size();
-  uint8_t *data = new uint8_t[size];
-  packet->WriteToBuf(data, size);
+  std::vector<uint8_t> data(size);
+  packet->WriteToBuf(data.data(), size);
 
-  if (pcap_sendpacket(m_handle, data, size) != 0) {
+  if (pcap_sendpacket(m_handle, data.data(), size) != 0) {
     sprintf(errbuf, "Error sending the packet: %s", pcap_geterr(m_handle));
     return false;
   }
-
-  delete[] data;
 
   return true;
 }

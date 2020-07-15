@@ -7,18 +7,19 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mod
 find_package(PCAP REQUIRED)
 include_directories(${PROJECT_NAME} ${PCAP_INCLUDE_DIR})
 
-find_package(wxWidgets COMPONENTS core base propgrid REQUIRED)
+find_package(wxWidgets COMPONENTS core base propgrid aui REQUIRED)
 include(${wxWidgets_USE_FILE})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 set(PACKET_SRCS
     src/packet/adapter.cpp
-    src/packet/packet.cpp
-    src/packet/eth_packet.cpp
     src/packet/arp_packet.cpp
+    src/packet/data_packet.cpp
+    src/packet/eth_packet.cpp
     src/packet/icmp_packet.cpp
     src/packet/ip_packet.cpp
+    src/packet/packet.cpp
     src/packet/utils/utils.cpp
     src/packet/utils/packet_utils.cpp
 )
@@ -40,7 +41,8 @@ set(APP_SRCS
 if (WIN32)
     add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS} ${PACKET_SRCS})
     target_link_libraries(${PROJECT_NAME} ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
+    
+    add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
+    target_link_libraries(TEST ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
 endif()
 
-# add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
-# target_link_libraries(TEST ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)

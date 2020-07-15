@@ -165,7 +165,7 @@ bool IpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
 
 uint32_t IpPacket::HeaderSize() const { return sizeof(IpHeader); }
 
-void IpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
+void IpPacket::DoWriteToBuf(uint8_t *buffer)
 {
   m_header.totalLength = BYTE_SWAP_16((uint16_t)this->Size());
   GetField("Total Length")->SetValue(std::to_string(this->Size()).c_str());
@@ -177,11 +177,9 @@ void IpPacket::DoWriteToBuf(uint8_t *buffer, uint32_t &offset)
   sprintf(buf, "0x%04x", checksum);
   GetField("Header Checksum")->SetValue(buf);
 
-  buffer += offset;
   Utils::WriteValue(buffer, m_header);
   buffer += 6;
   Utils::WriteValue(buffer, BYTE_SWAP_16(m_header.flagsOffset));
-  offset += HeaderSize();
 }
 
 }// namespace PacketHacker

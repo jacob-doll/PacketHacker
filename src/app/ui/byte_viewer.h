@@ -66,7 +66,7 @@ namespace UI {
 
     void Resize(size_t size);
 
-    std::vector<uint8_t> GetData() { return m_Data; }
+    std::vector<uint8_t> &GetData() { return m_Data; }
 
   private:
     int m_rows = 1;

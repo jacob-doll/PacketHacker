@@ -5,6 +5,8 @@
 #include <wx/wx.h>
 #endif
 
+#include <wx/aui/aui.h>
+
 #include "context.h"
 #include "packet/packet.h"
 #include "ui/byte_viewer.h"
@@ -28,6 +30,8 @@ public:
 
 private:
   Context *m_pContext;
+
+  wxAuiManager m_mgr;
 
   wxButton *m_pSendButton;
   wxMenuBar *m_pMenuBar;

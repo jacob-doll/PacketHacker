@@ -2,7 +2,6 @@
 #include "packet/packets.h"
 #include "packet/utils/utils.h"
 #include "packet/adapter.h"
-#include "packet/hardware_address.h"
 
 void ParseTest()
 {
@@ -171,6 +170,7 @@ void Icmp()
   EthernetPacket *eth = new EthernetPacket();
   IpPacket *ip = new IpPacket();
   IcmpPacket *icmp = new IcmpPacket();
+  DataPacket *data_ = new DataPacket();
   eth->SetDst("10:da:43:96:84:cf");
   eth->SetSrc(senderMac.c_str());
   eth->SetType("0x0800");
@@ -180,8 +180,10 @@ void Icmp()
   icmp->SetType("8");
   icmp->SetCode("0");
   icmp->SetData("0x00010001");
+  data_->SetData("abcdefg");
   eth->SetInnerPacket(ip);
   ip->SetInnerPacket(icmp);
+  icmp->SetInnerPacket(data_);
 
 
   printf("%s\n", eth->ToString().c_str());
@@ -219,21 +221,8 @@ void Icmp()
   delete eth;
 }
 
-void HardwareTest()
-{
-  using namespace PacketHacker;
-  const uint8_t data[6] = { 0x00, 0x11, 0x22, 0x33, 0x44, 0x55 };
-  HardwareAddress address = "00";
-  printf(address.AsString().c_str());
-  printf("\n");
-  for (int i = 0; i < HARDWARE_LENGTH; i++) {
-    printf("%02x ", address.GetData()[i]);
-  }
-}
-
 int main()
 {
-  HardwareTest();
-
+  Icmp();
   return 0;
 }
