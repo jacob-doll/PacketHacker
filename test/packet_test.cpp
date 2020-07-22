@@ -221,8 +221,37 @@ void Icmp()
   delete eth;
 }
 
+void UdpTest()
+{
+  using namespace PacketHacker;
+  IpPacket *ip = new IpPacket();
+  UdpPacket *udp = new UdpPacket();
+  DataPacket *data = new DataPacket();
+  ip->SetSourceIp("192.168.0.31");
+  ip->SetDestIp("192.168.0.30");
+  udp->SetSrcPort("20");
+  udp->SetDstPort("10");
+  udp->SetLength("10");
+  data->SetData("Hi");
+  udp->SetInnerPacket(data);
+  ip->SetInnerPacket(udp);
+
+  printf("%s\n", ip->ToString().c_str());
+
+  uint8_t out[30];
+  ip->WriteToBuf(out, 30);
+
+  for (int i = 0; i < 30; i++) {
+    printf("%02x ", out[i]);
+  }
+  printf("\n");
+  printf("%s\n", ip->ToString().c_str());
+
+  delete ip;
+}
+
 int main()
 {
-  Icmp();
+  UdpTest();
   return 0;
 }

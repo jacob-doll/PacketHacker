@@ -8,10 +8,11 @@ namespace PacketHacker {
 
 enum PacketType {
   ARP = 1000,
-  ETHERNET = 1001,
-  IP = 1002,
-  ICMP = 1003,
-  DATA = 1004
+  ETHERNET,
+  IP,
+  ICMP,
+  DATA,
+  UDP
 };
 
 enum FieldType {

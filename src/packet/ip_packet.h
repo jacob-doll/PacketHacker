@@ -23,6 +23,9 @@ public:
   void SetSourceIp(const char *val);
   void SetDestIp(const char *val);
 
+  const uint32_t GetSourceIp() const { return m_header.sourceIp; }
+  const uint32_t GetDestIp() const { return m_header.destIp; }
+
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override;
   virtual std::string GetName() const override { return "IPv4"; }

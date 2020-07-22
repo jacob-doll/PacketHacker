@@ -16,6 +16,8 @@ namespace Utils {
       return new IcmpPacket();
     case PacketType::DATA:
       return new DataPacket();
+    case PacketType::UDP:
+      return new UdpPacket();
     default:
       return nullptr;
     }
@@ -30,6 +32,8 @@ namespace Utils {
       return new IpPacket(buffer, size);
     case TYPE_ICMP:
       return new IcmpPacket(buffer, size);
+    case TYPE_UDP:
+      return new UdpPacket(buffer, size);
     default:
       break;
     }

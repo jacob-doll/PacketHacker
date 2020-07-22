@@ -20,6 +20,7 @@ set(PACKET_SRCS
     src/packet/icmp_packet.cpp
     src/packet/ip_packet.cpp
     src/packet/packet.cpp
+    src/packet/udp_packet.cpp
     src/packet/utils/utils.cpp
     src/packet/utils/packet_utils.cpp
 )

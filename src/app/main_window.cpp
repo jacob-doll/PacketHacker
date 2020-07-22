@@ -26,6 +26,7 @@ MainWindow::MainWindow()
   m_pPacketMenu->Append(PacketType::IP, "IP");
   m_pPacketMenu->Append(PacketType::ICMP, "ICMP");
   m_pPacketMenu->Append(PacketType::DATA, "DATA");
+  m_pPacketMenu->Append(PacketType::UDP, "UDP");
   m_pMenuBar->Append(m_pPacketMenu, "Add");
   // End menu
 
@@ -55,6 +56,7 @@ MainWindow::MainWindow()
   this->Connect(PacketType::IP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
   this->Connect(PacketType::ICMP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
   this->Connect(PacketType::DATA, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
+  this->Connect(PacketType::UDP, wxEVT_COMMAND_MENU_SELECTED, wxCommandEventHandler(MainWindow::OnPacketSelected));
 
   this->CreateStatusBar(1);
   this->SetStatusText("Adapter not selected!", 0);
