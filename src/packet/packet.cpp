@@ -17,7 +17,7 @@ Packet::~Packet()
   delete m_innerPacket;
 }
 
-uint32_t Packet::Size() const
+const uint32_t Packet::Size() const
 {
   uint32_t size = HeaderSize();
   if (m_innerPacket) {
@@ -33,7 +33,7 @@ void Packet::Init()
   }
 }
 
-Packet *Packet::GetPacket(std::string name)
+Packet *Packet::GetPacket(const std::string &name)
 {
   Packet *packet = this;
   while (packet) {
@@ -65,7 +65,7 @@ void Packet::SetOuterPacket(Packet *outer)
   m_outerPacket = outer;
 }
 
-HeaderField *Packet::GetField(std::string name) const
+HeaderField *Packet::GetField(const std::string &name) const
 {
   for (HeaderField *field : m_fields) {
     if (field->GetName() == name) {
@@ -75,7 +75,7 @@ HeaderField *Packet::GetField(std::string name) const
   return nullptr;
 }
 
-void Packet::WriteToBuf(uint8_t *buffer, uint32_t size)
+void Packet::WriteToBuf(uint8_t *buffer, const uint32_t size)
 {
   uint32_t packetSize = this->Size();
   if (size < packetSize)

@@ -4,7 +4,7 @@
 namespace PacketHacker {
 
 Adapter::Adapter(std::string name)
-  : m_name(name)
+  : m_name(std::move(name))
 {
 }
 

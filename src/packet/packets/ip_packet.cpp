@@ -1,6 +1,6 @@
 #include "ip_packet.h"
-#include "utils/utils.h"
-#include "utils/packet_utils.h"
+#include "packet/utils/utils.h"
+#include "packet/utils/packet_utils.h"
 
 namespace PacketHacker {
 

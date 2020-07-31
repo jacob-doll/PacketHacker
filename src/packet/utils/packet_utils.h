@@ -7,8 +7,8 @@
 namespace PacketHacker {
 namespace Utils {
 
-  Packet *PacketFromId(int packetId);
-  Packet *PacketFromType(uint32_t type, const uint8_t *buffer, uint32_t size);
+  Packet *PacketFromId(const uint32_t packetId);
+  Packet *PacketFromType(const uint32_t type, const uint8_t *buffer, const uint32_t size);
 
 }// namespace Utils
 }// namespace PacketHacker

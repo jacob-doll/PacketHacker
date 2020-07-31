@@ -1,7 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
-project(PacketHacker)
 
-set(CMAKE_CXX_STANDARD 17)
+project(PacketHacker CXX)
+
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules)
 
 find_package(PCAP REQUIRED)
@@ -12,21 +13,23 @@ include(${wxWidgets_USE_FILE})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
+option(BUILD_SANDBOX "Build sandbox test of packet generation." OFF)
+
 set(PACKET_SRCS
     src/packet/adapter.cpp
-    src/packet/arp_packet.cpp
-    src/packet/data_packet.cpp
-    src/packet/eth_packet.cpp
-    src/packet/icmp_packet.cpp
-    src/packet/ip_packet.cpp
     src/packet/packet.cpp
-    src/packet/udp_packet.cpp
+    src/packet/packets/arp_packet.cpp
+    src/packet/packets/data_packet.cpp
+    src/packet/packets/eth_packet.cpp
+    src/packet/packets/icmp_packet.cpp
+    src/packet/packets/ip_packet.cpp
+    src/packet/packets/udp_packet.cpp
     src/packet/utils/utils.cpp
     src/packet/utils/packet_utils.cpp
 )
 
-set(TEST_SRCS
-    test/packet_test.cpp
+set(SANDBOX_SRCS
+    sandbox/sandbox.cpp
 )
 
 set(APP_SRCS 
@@ -43,7 +46,9 @@ if (WIN32)
     add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS} ${PACKET_SRCS})
     target_link_libraries(${PROJECT_NAME} ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
     
-    add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
-    target_link_libraries(TEST ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
+    if (BUILD_SANDBOX)
+        add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
+        target_link_libraries(TEST ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
+    endif()
 endif()
 

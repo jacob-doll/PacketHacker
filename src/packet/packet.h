@@ -2,7 +2,6 @@
 #include <stdint.h>
 #include <vector>
 #include <string>
-#include <functional>
 
 namespace PacketHacker {
 
@@ -31,20 +30,20 @@ public:
 
   Packet *GetOuterPacket() const { return m_outerPacket; }
   Packet *GetInnerPacket() const { return m_innerPacket; }
-  Packet *GetPacket(std::string name);
+  Packet *GetPacket(const std::string &name);
   void SetInnerPacket(Packet *inner);
   void RemoveInnerPacket();
-  uint32_t Size() const;
+  const uint32_t Size() const;
   void Init();
 
-  void WriteToBuf(uint8_t *buffer, uint32_t size);
+  void WriteToBuf(uint8_t *buffer, const uint32_t size);
 
   virtual PacketType GetPacketType() const = 0;
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) = 0;
   virtual uint32_t HeaderSize() const = 0;
   virtual std::string GetName() const = 0;
 
-  HeaderField *GetField(std::string name) const;
+  HeaderField *GetField(const std::string &name) const;
   std::vector<HeaderField *> GetFields() const { return m_fields; }
 
   std::string ToString() const;
@@ -66,8 +65,8 @@ private:
 class HeaderField
 {
 public:
-  HeaderField(Packet *packet, std::string name, std::string defaultVal, bool editable, FieldType type)
-    : m_packet(packet), m_name(name), m_defaultVal(defaultVal), m_currentVal(defaultVal), m_editable(editable), m_type(type)
+  HeaderField(Packet *packet, const std::string name, const std::string defaultVal, const bool editable, const FieldType type)
+    : m_packet(packet), m_name(std::move(name)), m_defaultVal(defaultVal), m_currentVal(defaultVal), m_editable(editable), m_type(type)
   {
   }
 
@@ -76,11 +75,11 @@ public:
   virtual void HandleData(const char *data) = 0;
 
   Packet *GetPacket() const { return m_packet; }
-  std::string GetName() const { return m_name; }
-  std::string GetDefaultVal() const { return m_defaultVal; }
-  std::string GetCurrentVal() const { return m_currentVal; }
-  bool IsEditable() { return m_editable; }
-  FieldType GetType() { return m_type; }
+  const std::string &GetName() const { return m_name; }
+  const std::string &GetDefaultVal() const { return m_defaultVal; }
+  const std::string &GetCurrentVal() const { return m_currentVal; }
+  const bool IsEditable() const { return m_editable; }
+  const FieldType GetType() const { return m_type; }
 
   void SetValue(const char *value)
   {
@@ -89,11 +88,11 @@ public:
 
 protected:
   Packet *m_packet;
-  std::string m_name;
+  const std::string m_name;
+  const std::string m_defaultVal;
   std::string m_currentVal;
-  std::string m_defaultVal;
-  bool m_editable;
-  FieldType m_type;
+  const bool m_editable;
+  const FieldType m_type;
 };
 
 template<class T>

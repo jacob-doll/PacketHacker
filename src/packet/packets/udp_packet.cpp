@@ -1,8 +1,8 @@
 #include "udp_packet.h"
-#include "utils/utils.h"
 #include "data_packet.h"
 #include "ip_packet.h"
-#include "constants.h"
+#include "packet/utils/utils.h"
+#include "packet/constants.h"
 
 namespace PacketHacker {
 
@@ -63,7 +63,23 @@ void UdpPacket::SetLength(const char *val) {}
 
 void UdpPacket::SetChecksum(const char *val) {}
 
-bool UdpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size) { return true; }
+bool UdpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
+{
+  uint16_t headerSize = HeaderSize();
+  if (size < headerSize) {
+    return false;
+  }
+
+  const UdpHeader *header = (const UdpHeader *)buffer;
+  size = size - headerSize;
+
+  if (m_header.dstPort == header->srcPort && m_header.srcPort == header->dstPort) {
+    return GetInnerPacket() ? GetInnerPacket()->DoesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
+  }
+
+  return false;
+}
+
 uint32_t UdpPacket::HeaderSize() const { return sizeof(UdpHeader); }
 
 void UdpPacket::DoWriteToBuf(uint8_t *buffer)
@@ -82,7 +98,7 @@ void UdpPacket::DoWriteToBuf(uint8_t *buffer)
     Utils::WriteValue(&psuedo_header[0], ip->GetSourceIp());
     Utils::WriteValue(&psuedo_header[4], ip->GetDestIp());
     Utils::WriteValue(&psuedo_header[8], (uint8_t)0);
-    Utils::WriteValue(&psuedo_header[9], (uint8_t)TYPE_UDP);
+    Utils::WriteValue(&psuedo_header[9], (uint8_t)Constants::IP::TYPE_UDP);
     Utils::WriteValue(&psuedo_header[10], (uint16_t)m_header.length);
   }
 

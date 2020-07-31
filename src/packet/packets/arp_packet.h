@@ -1,6 +1,6 @@
 #pragma once
 
-#include "packet.h"
+#include "packet/packet.h"
 
 namespace PacketHacker {
 

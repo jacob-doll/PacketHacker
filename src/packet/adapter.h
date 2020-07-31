@@ -19,7 +19,7 @@ public:
   const uint8_t *GetNextPacket(uint32_t *size, char *errbuf);
 
 private:
-  std::string m_name;
+  const std::string m_name;
   pcap_t *m_handle;
 };
 

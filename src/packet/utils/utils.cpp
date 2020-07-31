@@ -21,7 +21,7 @@ namespace Utils {
 
     ::GetAdaptersAddresses(AF_INET, 0, nullptr, nullptr, &size);
     pAddresses = (IP_ADAPTER_ADDRESSES *)malloc(size);
-    if (::GetAdaptersAddresses(AF_INET, 0, nullptr, pAddresses, &size) == NO_ERROR) {
+    if (::GetAdaptersAddresses(AF_INET, GAA_FLAG_INCLUDE_GATEWAYS, nullptr, pAddresses, &size) == NO_ERROR) {
       pCurrAddresses = pAddresses;
       while (pCurrAddresses) {
         AdapterInfo info{};
@@ -82,7 +82,7 @@ namespace Utils {
     return str;
   }
 
-  std::string IPv4ToString(uint32_t ipv4Address)
+  std::string IPv4ToString(const uint32_t ipv4Address)
   {
     char str[INET_ADDRSTRLEN];
     inet_ntop(AF_INET, &ipv4Address, str, INET_ADDRSTRLEN);
