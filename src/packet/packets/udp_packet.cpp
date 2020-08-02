@@ -1,7 +1,8 @@
 #include "udp_packet.h"
 #include "data_packet.h"
 #include "ip_packet.h"
-#include "packet/utils/utils.h"
+#include "packet/utils/buffer_utils.h"
+#include "packet/utils/adapter_utils.h"
 #include "packet/constants.h"
 
 namespace PacketHacker {

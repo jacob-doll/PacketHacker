@@ -2,12 +2,13 @@
 
 #include <string>
 #include <stdint.h>
-#include <pcap.h>
 
 #include "packet/packet.h"
+#include "utils/adapter_utils.h"
+
+struct pcap;
 
 namespace PacketHacker {
-
 class Adapter
 {
 public:
@@ -20,7 +21,7 @@ public:
 
 private:
   const std::string m_name;
-  pcap_t *m_handle;
+  pcap *m_handle;
 };
 
 }// namespace PacketHacker

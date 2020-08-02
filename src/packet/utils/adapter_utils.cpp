@@ -1,6 +1,4 @@
-#include "utils.h"
-
-#include <cstdio>
+#include "adapter_utils.h"
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -8,9 +6,9 @@
 #include <WS2tcpip.h>
 #endif
 
-
 namespace PacketHacker {
 namespace Utils {
+
 #ifdef _WIN32
   std::vector<AdapterInfo> GetAdapters()
   {
@@ -50,7 +48,7 @@ namespace Utils {
         info.dnsSuffix = pCurrAddresses->DnsSuffix;
         info.description = pCurrAddresses->Description;
         info.friendlyName = pCurrAddresses->FriendlyName;
-        memcpy(info.address, pCurrAddresses->PhysicalAddress, pCurrAddresses->PhysicalAddressLength);
+        info.address = HardwareAddressToString(pCurrAddresses->PhysicalAddress);
         output.emplace_back(info);
         pCurrAddresses = pCurrAddresses->Next;
       }

@@ -18,13 +18,14 @@ option(BUILD_SANDBOX "Build sandbox test of packet generation." OFF)
 set(PACKET_SRCS
     src/packet/adapter.cpp
     src/packet/packet.cpp
+    # src/packet/packet_queue.cpp
     src/packet/packets/arp_packet.cpp
     src/packet/packets/data_packet.cpp
     src/packet/packets/eth_packet.cpp
     src/packet/packets/icmp_packet.cpp
     src/packet/packets/ip_packet.cpp
     src/packet/packets/udp_packet.cpp
-    src/packet/utils/utils.cpp
+    src/packet/utils/adapter_utils.cpp
     src/packet/utils/packet_utils.cpp
 )
 
@@ -43,9 +44,12 @@ set(APP_SRCS
 )
 
 if (WIN32)
-    add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS} ${PACKET_SRCS})
-    target_link_libraries(${PROJECT_NAME} ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
-    
+    add_library(PacketHackerLib STATIC ${PACKET_SRCS})
+    target_link_libraries(PacketHackerLib ${PCAP_LIBRARY} IPHLPAPI Ws2_32)
+
+    add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS})
+    target_link_libraries(${PROJECT_NAME} PacketHackerLib ${wxWidgets_LIBRARIES})
+
     if (BUILD_SANDBOX)
         add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
         target_link_libraries(TEST ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)

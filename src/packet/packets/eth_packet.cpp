@@ -1,5 +1,6 @@
 #include "eth_packet.h"
-#include "packet/utils/utils.h"
+#include "packet/utils/buffer_utils.h"
+#include "packet/utils/adapter_utils.h"
 #include "packet/utils/packet_utils.h"
 
 namespace PacketHacker {

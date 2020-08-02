@@ -1,5 +1,4 @@
 #include "details_pane.h"
-#include "packet/utils/utils.h"
 
 namespace PacketHacker {
 namespace UI {
@@ -44,7 +43,7 @@ namespace UI {
     m_pPropGrid->GetProperty("DnsSuffix")->SetValue(info.dnsSuffix);
     m_pPropGrid->GetProperty("Description")->SetValue(info.description);
     m_pPropGrid->GetProperty("FriendlyName")->SetValue(info.friendlyName);
-    m_pPropGrid->GetProperty("Physical Address")->SetValue(Utils::HardwareAddressToString(info.address));
+    m_pPropGrid->GetProperty("Physical Address")->SetValue(info.address);
   }
 
 }// namespace UI

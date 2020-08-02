@@ -1,7 +1,7 @@
 #include "packet_tree.h"
 
 #include "app/main_window.h"
-#include "packet/utils/utils.h"
+#include "packet/utils/adapter_utils.h"
 
 namespace PacketHacker {
 namespace UI {

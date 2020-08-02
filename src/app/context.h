@@ -5,7 +5,7 @@
 
 #include "packet/packet.h"
 #include "packet/packets.h"
-#include "packet/utils/utils.h"
+#include "packet/utils/adapter_utils.h"
 
 namespace PacketHacker {
 
