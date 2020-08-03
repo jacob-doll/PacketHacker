@@ -1,7 +1,6 @@
 #include "main_window.h"
 
 #include <stdint.h>
-#include <wx/splitter.h>
 
 #define ADAPTER_OFFSET 3000
 
@@ -16,7 +15,7 @@ MainWindow::MainWindow()
   m_pMenuBar = new wxMenuBar();
   m_pAdapterMenu = new wxMenu();
   int adapterId = ADAPTER_OFFSET;
-  for (AdapterInfo info : m_pContext->GetAdapters())
+  for (AdapterInfo info : Adapter::GetAvailableAdapters())
     m_pAdapterMenu->Append(adapterId++, info.friendlyName);
   m_pMenuBar->Append(m_pAdapterMenu, "Adapters");
 
@@ -83,8 +82,8 @@ void MainWindow::OnButtonPressed(wxCommandEvent &event)
 
 void MainWindow::OnAdapterSelected(wxCommandEvent &event)
 {
-  if (event.GetId() >= m_pContext->GetAdapters().size() - ADAPTER_OFFSET) return;
-  AdapterInfo info = m_pContext->GetAdapters()[event.GetId() - ADAPTER_OFFSET];
+  if (event.GetId() >= Adapter::GetAvailableAdapters().size() - ADAPTER_OFFSET) return;
+  AdapterInfo info = Adapter::GetAvailableAdapters()[event.GetId() - ADAPTER_OFFSET];
   m_pContext->SetAdapter(info.name);
   m_pDetailsPane->SetAdapterInfo(info);
   this->SetStatusText(wxString::Format("Selected: %s", info.friendlyName));

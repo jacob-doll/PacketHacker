@@ -6,24 +6,7 @@
 #define PHYSICAL_ADDR_LEN 6
 
 namespace PacketHacker {
-
-struct AdapterInfo
-{
-  uint32_t index;
-  std::string name;
-  std::string unicastAddress;
-  std::string anycastAddress;
-  std::string multicastAddress;
-  std::string dnsServerAddress;
-  std::wstring dnsSuffix;
-  std::wstring description;
-  std::wstring friendlyName;
-  std::string address;
-  std::string gatewayAddress;
-};
-
 namespace Utils {
-  std::vector<AdapterInfo> GetAdapters();
 
   uint64_t HardwareToLong(const char *hwAddress);
   std::string HardwareAddressToString(const uint8_t *hwAddress);
@@ -35,5 +18,6 @@ namespace Utils {
   bool IsIpv4AddressValid(const char *address);
 
   uint16_t CalcChecksum(void *vdata, uint32_t size);
+
 }// namespace Utils
 }// namespace PacketHacker

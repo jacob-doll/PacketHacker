@@ -2,64 +2,11 @@
 
 #ifdef _WIN32
 #include <winsock2.h>
-#include <iphlpapi.h>
 #include <WS2tcpip.h>
 #endif
 
 namespace PacketHacker {
 namespace Utils {
-
-#ifdef _WIN32
-  std::vector<AdapterInfo> GetAdapters()
-  {
-    std::vector<AdapterInfo> output;
-    ULONG size = 0;
-    PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
-    PIP_ADAPTER_ADDRESSES pCurrAddresses = nullptr;
-
-    ::GetAdaptersAddresses(AF_INET, 0, nullptr, nullptr, &size);
-    pAddresses = (IP_ADAPTER_ADDRESSES *)malloc(size);
-    if (::GetAdaptersAddresses(AF_INET, GAA_FLAG_INCLUDE_GATEWAYS, nullptr, pAddresses, &size) == NO_ERROR) {
-      pCurrAddresses = pAddresses;
-      while (pCurrAddresses) {
-        AdapterInfo info{};
-        info.index = pCurrAddresses->IfIndex;
-        info.name = "\\Device\\NPF_" + std::string(pCurrAddresses->AdapterName);
-        if (pCurrAddresses->FirstUnicastAddress) {
-          struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstUnicastAddress->Address.lpSockaddr;
-          info.unicastAddress = IPv4ToString(reinterpret_cast<uint8_t *>(&ipaddr->sin_addr));
-        }
-        if (pCurrAddresses->FirstAnycastAddress) {
-          struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstAnycastAddress->Address.lpSockaddr;
-          info.anycastAddress = IPv4ToString(reinterpret_cast<uint8_t *>(&ipaddr->sin_addr));
-        }
-        if (pCurrAddresses->FirstMulticastAddress) {
-          struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstMulticastAddress->Address.lpSockaddr;
-          info.multicastAddress = IPv4ToString(reinterpret_cast<uint8_t *>(&ipaddr->sin_addr));
-        }
-        if (pCurrAddresses->FirstDnsServerAddress) {
-          struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstDnsServerAddress->Address.lpSockaddr;
-          info.dnsServerAddress = IPv4ToString(reinterpret_cast<uint8_t *>(&ipaddr->sin_addr));
-        }
-        if (pCurrAddresses->FirstGatewayAddress) {
-          struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstGatewayAddress->Address.lpSockaddr;
-          info.gatewayAddress = IPv4ToString(reinterpret_cast<uint8_t *>(&ipaddr->sin_addr));
-        }
-        info.dnsSuffix = pCurrAddresses->DnsSuffix;
-        info.description = pCurrAddresses->Description;
-        info.friendlyName = pCurrAddresses->FriendlyName;
-        info.address = HardwareAddressToString(pCurrAddresses->PhysicalAddress);
-        output.emplace_back(info);
-        pCurrAddresses = pCurrAddresses->Next;
-      }
-    }
-
-    if (pAddresses) {
-      free(pAddresses);
-    }
-    return output;
-  }
-#endif
 
   uint32_t IPv4ToLong(const char *ipAddress)
   {

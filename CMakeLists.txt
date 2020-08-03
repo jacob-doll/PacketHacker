@@ -44,7 +44,11 @@ set(APP_SRCS
 )
 
 if (WIN32)
-    add_library(PacketHackerLib STATIC ${PACKET_SRCS})
+    set(PLATFORM_SRCS
+        src/packet/platform/win32adapter.cpp
+    )
+
+    add_library(PacketHackerLib STATIC ${PACKET_SRCS} ${PLATFORM_SRCS})
     target_link_libraries(PacketHackerLib ${PCAP_LIBRARY} IPHLPAPI Ws2_32)
 
     add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS})
@@ -52,7 +56,7 @@ if (WIN32)
 
     if (BUILD_SANDBOX)
         add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
-        target_link_libraries(TEST ${PCAP_LIBRARY} ${wxWidgets_LIBRARIES} IPHLPAPI Ws2_32)
+        target_link_libraries(TEST ${PCAP_LIBRARY} IPHLPAPI Ws2_32)
     endif()
 endif()
 

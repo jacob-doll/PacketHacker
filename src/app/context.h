@@ -5,11 +5,11 @@
 
 #include "packet/packet.h"
 #include "packet/packets.h"
-#include "packet/utils/adapter_utils.h"
+#include "packet/adapter.h"
 
 namespace PacketHacker {
 
-class Adapter;
+// class Adapter;
 class Context
 {
   friend class MainWindow;
@@ -33,15 +33,11 @@ public:
   void EndStream();
   const uint8_t *ReadNextPacket(uint32_t *size);
 
-
-  std::vector<AdapterInfo> &GetAdapters() { return m_adapters; }
-
   MainWindow *GetMainWindow() const { return m_MainWindow; }
 
 private:
   MainWindow *m_MainWindow;
 
-  std::vector<AdapterInfo> m_adapters;
   Adapter *m_CurrentAdapter;
   bool m_AdapterSet;
 

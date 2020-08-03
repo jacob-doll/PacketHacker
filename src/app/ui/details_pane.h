@@ -8,7 +8,7 @@
 
 #include <wx/propgrid/propgrid.h>
 
-#include "packet/utils/adapter_utils.h"
+#include "packet/adapter.h"
 
 namespace PacketHacker {
 namespace UI {

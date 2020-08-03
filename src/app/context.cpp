@@ -17,7 +17,6 @@ Context::Context(MainWindow *window)
     m_pBasePacket(),
     m_MainWindow(window)
 {
-  m_adapters = Utils::GetAdapters();
 }
 
 Context::~Context()
