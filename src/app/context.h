@@ -28,9 +28,6 @@ public:
   Packet *GetBasePacket() const { return m_pBasePacket; }
 
   bool SendPacket();
-
-  bool BeginStream();
-  void EndStream();
   const uint8_t *ReadNextPacket(uint32_t *size);
 
   MainWindow *GetMainWindow() const { return m_MainWindow; }

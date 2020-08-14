@@ -40,8 +40,11 @@ MainWindow::MainWindow()
   m_pDetailsPane = new UI::DetailsPane(this);
   m_mgr.AddPane(m_pDetailsPane, wxLEFT, wxT("Details Pane"));
 
+  // m_pReceivedPane = new UI::ReceivedPane(m_pContext, this);
+  // m_mgr.AddPane(m_pReceivedPane, wxRIGHT, wxT("Received Packet"));
+
   m_pStreamPane = new UI::StreamPane(m_pContext, this);
-  m_mgr.AddPane(m_pStreamPane, wxRIGHT, wxT("Received Packet"));
+  m_mgr.AddPane(m_pStreamPane, wxRIGHT, wxT("Stream"));
 
   m_pByteViewer = new UI::ByteViewer(this);
   m_mgr.AddPane(m_pByteViewer, wxBOTTOM, wxT("Byte Viewer"));
@@ -77,7 +80,7 @@ void MainWindow::OnButtonPressed(wxCommandEvent &event)
     wxLogMessage("Could not send data.");
     return;
   }
-  m_pStreamPane->OnPacketSent();
+  m_pReceivedPane->OnPacketSent();
 }
 
 void MainWindow::OnAdapterSelected(wxCommandEvent &event)
@@ -87,6 +90,7 @@ void MainWindow::OnAdapterSelected(wxCommandEvent &event)
   m_pContext->SetAdapter(info.name);
   m_pDetailsPane->SetAdapterInfo(info);
   this->SetStatusText(wxString::Format("Selected: %s", info.friendlyName));
+  m_pStreamPane->StartRead();
 }
 
 void MainWindow::OnPacketSelected(wxCommandEvent &event)

@@ -64,6 +64,11 @@ const std::vector<AdapterInfo> Adapter::s_availableAdapters = GetAdapters();
 
 bool Adapter::OpenPacketStream(char *errbuf)
 {
+  if (m_streamOpen) {
+    sprintf(errbuf, "Stream already opened!");
+    return false;
+  }
+
   char pcapErrbuf[PCAP_ERRBUF_SIZE];
 
   if ((m_handle = pcap_create(m_name.c_str(), pcapErrbuf)) == nullptr) {
@@ -81,16 +86,24 @@ bool Adapter::OpenPacketStream(char *errbuf)
     return false;
   }
 
+  m_streamOpen = true;
+
   return true;
 }
 
 void Adapter::ClosePacketStream()
 {
-  pcap_close(m_handle);
+  if (m_streamOpen) pcap_close(m_handle);
+  m_streamOpen = false;
 }
 
 bool Adapter::SendPacket(Packet *packet, char *errbuf)
 {
+  if (!m_streamOpen) {
+    sprintf(errbuf, "Stream not opened!");
+    return false;
+  }
+
   const uint32_t size = packet->Size();
   std::vector<uint8_t> data(size);
   packet->WriteToBuf(data.data(), size);
@@ -103,9 +116,13 @@ bool Adapter::SendPacket(Packet *packet, char *errbuf)
   return true;
 }
 
-// TODO: save pointer to last data and delete
 const uint8_t *Adapter::GetNextPacket(uint32_t *size, char *errbuf)
 {
+  if (!m_streamOpen) {
+    sprintf(errbuf, "Stream not opened!");
+    return false;
+  }
+
   int res;
   struct pcap_pkthdr *header;
   const uint8_t *pkt_data;

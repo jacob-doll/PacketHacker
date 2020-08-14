@@ -34,11 +34,14 @@ public:
   bool SendPacket(Packet *packet, char *errbuf);
   const uint8_t *GetNextPacket(uint32_t *size, char *errbuf);
 
+  bool IsStreamOpen() const { return m_streamOpen; }
+
   const static std::vector<AdapterInfo> &GetAvailableAdapters() { return s_availableAdapters; }
 
 private:
   const std::string m_name;
   pcap *m_handle;
+  bool m_streamOpen;
 
 private:
   const static std::vector<AdapterInfo> s_availableAdapters;

@@ -18,7 +18,7 @@ option(BUILD_SANDBOX "Build sandbox test of packet generation." OFF)
 set(PACKET_SRCS
     src/packet/adapter.cpp
     src/packet/packet.cpp
-    # src/packet/packet_queue.cpp
+    src/packet/packet_queue.cpp
     src/packet/packets/arp_packet.cpp
     src/packet/packets/data_packet.cpp
     src/packet/packets/eth_packet.cpp
@@ -40,6 +40,7 @@ set(APP_SRCS
     src/app/ui/byte_viewer.cpp
     src/app/ui/packet_tree.cpp
     src/app/ui/details_pane.cpp
+    src/app/ui/received_pane.cpp
     src/app/ui/stream_pane.cpp
 )
 

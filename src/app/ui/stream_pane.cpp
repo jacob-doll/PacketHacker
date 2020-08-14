@@ -1,9 +1,12 @@
 #include "stream_pane.h"
 
-#include "packet/packet.h"
 
 namespace PacketHacker {
 namespace UI {
+
+  int index = 0;
+
+  wxDEFINE_EVENT(myEVT_THREAD_UPDATE, wxThreadEvent);
 
   StreamPane::StreamPane(Context *context,
     wxWindow *parent,
@@ -13,60 +16,67 @@ namespace UI {
     long style,
     const wxString &name)
     : wxPanel(parent, winid, pos, size, style, name),
-      m_pContext(context)
+      m_pContext(context),
+      m_queue(5)
   {
-
     wxBoxSizer *sizer = new wxBoxSizer(wxHORIZONTAL);
+    m_pListView = new wxListView(this, wxID_ANY);
+    m_pListView->AppendColumn("Column 1");
+    sizer->Add(m_pListView, 1, wxEXPAND);
 
-    m_pPropGrid = new wxPropertyGrid(this, wxID_ANY);
-
-    sizer->Add(m_pPropGrid, 1, wxEXPAND);
+    this->Connect(wxEVT_CLOSE_WINDOW, wxCloseEventHandler(StreamPane::OnClose));
+    this->Connect(myEVT_THREAD_UPDATE, wxThreadEventHandler(StreamPane::OnThreadUpdate));
 
     this->SetSizerAndFit(sizer);
   }
 
-  void StreamPane::SetPacket(Packet *packet)
+  void StreamPane::StartRead()
   {
-    m_pPropGrid->Clear();
-    Packet *currentPacket = packet;
-    while (currentPacket) {
-      wxPGProperty *currProp = m_pPropGrid->Append(new wxPropertyCategory(currentPacket->GetName()));
-      for (HeaderField *field : currentPacket->GetFields()) {
-        m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal()))->ChangeFlag(wxPG_PROP_READONLY, true);
-        ;
-      }
-
-      currentPacket = currentPacket->GetInnerPacket();
+    if (CreateThread(wxTHREAD_JOINABLE) != wxTHREAD_NO_ERROR) {
+      wxLogError("Could not create the worker thread!");
+      return;
+    }
+    if (GetThread()->Run() != wxTHREAD_NO_ERROR) {
+      wxLogError("Could not run the worker thread!");
+      return;
     }
   }
 
-
-  void StreamPane::OnPacketSent()
+  wxThread::ExitCode StreamPane::Entry()
   {
-    if (!m_pContext->BeginStream()) {
-      return;
-    }
-    uint32_t size;
-    const uint8_t *data;
-    int counter = 0;
-    int timeout = 5;
-
-    while ((data = m_pContext->ReadNextPacket(&size))) {
-      if (counter >= timeout) {
-        wxLogMessage("Reply timed out!");
-        break;
+    while (!GetThread()->TestDestroy()) {
+      if (m_pContext->IsAdapterSet()) {
+        uint32_t size;
+        const uint8_t *data;
+        if ((data = m_pContext->ReadNextPacket(&size))) {
+          wxCriticalSectionLocker lock(m_queueCS);
+          Packet *received = new EthernetPacket(data, size);
+          m_queue.InsertPacket(received);
+          wxQueueEvent(this, new wxThreadEvent(myEVT_THREAD_UPDATE));
+        }
+        // GetThread()->Sleep(100);
       }
-      Packet *sent = m_pContext->GetBasePacket();
-      if (sent->DoesReplyMatch(data, size)) {
-        Packet *received = new EthernetPacket(data, size);
-        SetPacket(received);
-        delete received;
-        break;
-      }
-      counter++;
     }
 
-    m_pContext->EndStream();
+    return (wxThread::ExitCode)0;
+  }
+
+  void StreamPane::OnClose(wxCloseEvent &)
+  {
+
+    if (GetThread() && GetThread()->IsRunning())
+      GetThread()->Wait();
+    Destroy();
+  }
+
+  void StreamPane::OnThreadUpdate(wxThreadEvent &evt)
+  {
+    wxCriticalSectionLocker lock(m_queueCS);
+    Packet *packet = m_queue.GetPacket();
+    if (packet) {
+      m_pListView->InsertItem(index++, wxString::Format("%d", packet->Size()));
+    }
+    delete packet;
   }
 
 }// namespace UI

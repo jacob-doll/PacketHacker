@@ -12,6 +12,7 @@
 #include "ui/byte_viewer.h"
 #include "ui/packet_tree.h"
 #include "ui/details_pane.h"
+#include "ui/received_pane.h"
 #include "ui/stream_pane.h"
 
 namespace PacketHacker {
@@ -41,6 +42,7 @@ private:
   UI::PacketTree *m_pPacketTree;
   UI::ByteViewer *m_pByteViewer;
   UI::DetailsPane *m_pDetailsPane;
+  UI::ReceivedPane *m_pReceivedPane;
   UI::StreamPane *m_pStreamPane;
 };
 

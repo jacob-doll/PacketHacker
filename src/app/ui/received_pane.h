@@ -6,22 +6,19 @@
 #include <wx/wx.h>
 #endif
 
-#include <wx/thread.h>
-#include <wx/listctrl.h>
+#include <wx/propgrid/propgrid.h>
 
 #include "app/context.h"
-#include "packet/packet_queue.h"
+
 
 namespace PacketHacker {
 namespace UI {
 
-  wxDECLARE_EVENT(myEVT_THREAD_UPDATE, wxThreadEvent);
 
-  class StreamPane : public wxPanel
-    , public wxThreadHelper
+  class ReceivedPane : public wxPanel
   {
   public:
-    StreamPane(Context *context,
+    ReceivedPane(Context *context,
       wxWindow *parent,
       wxWindowID winid = wxID_ANY,
       const wxPoint &pos = wxDefaultPosition,
@@ -29,19 +26,12 @@ namespace UI {
       long style = wxTAB_TRAVERSAL | wxNO_BORDER,
       const wxString &name = wxPanelNameStr);
 
-    void StartRead();
-    void OnThreadUpdate(wxThreadEvent &evt);
-    void OnClose(wxCloseEvent &evt);
-
-  protected:
-    virtual wxThread::ExitCode Entry();
-
-    PacketQueue m_queue;
-    wxCriticalSection m_queueCS;
+    void SetPacket(Packet *packet);
+    void OnPacketSent();
 
   private:
     Context *m_pContext;
-    wxListView *m_pListView;
+    wxPropertyGrid *m_pPropGrid;
   };
 
 }// namespace UI

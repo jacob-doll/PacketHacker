@@ -21,6 +21,7 @@ Context::Context(MainWindow *window)
 
 Context::~Context()
 {
+  if (m_CurrentAdapter) m_CurrentAdapter->ClosePacketStream();
   delete m_CurrentAdapter;
   delete m_pBasePacket;
 }
@@ -29,9 +30,16 @@ void Context::SetAdapter(std::string name)
 {
   m_AdapterSet = true;
   if (m_CurrentAdapter) {
+    m_CurrentAdapter->ClosePacketStream();
     delete m_CurrentAdapter;
   }
   m_CurrentAdapter = new Adapter(name);
+
+  char errbuf[256];
+  if (!m_CurrentAdapter->OpenPacketStream(errbuf)) {
+    wxLogMessage("%s", errbuf);
+    m_AdapterSet = false;
+  }
 }
 
 void Context::SetBasePacket(int packetId)
@@ -88,44 +96,21 @@ bool Context::SendPacket()
   }
 
   char errbuf[256];
-  if (!m_CurrentAdapter->OpenPacketStream(errbuf)) {
-    wxLogMessage("%s", errbuf);
-    return false;
-  }
-
   if (!m_CurrentAdapter->SendPacket(m_pBasePacket, errbuf)) {
     wxLogMessage("%s", errbuf);
     return false;
   }
 
-  m_CurrentAdapter->ClosePacketStream();
-
   return true;
-}
-
-bool Context::BeginStream()
-{
-  if (!IsAdapterSet()) {
-    wxLogMessage("Adapter not set!");
-    return false;
-  }
-
-  char errbuf[256];
-  if (!m_CurrentAdapter->OpenPacketStream(errbuf)) {
-    wxLogMessage("%s", errbuf);
-    return false;
-  }
-
-  return true;
-}
-
-void Context::EndStream()
-{
-  m_CurrentAdapter->ClosePacketStream();
 }
 
 const uint8_t *Context::ReadNextPacket(uint32_t *size)
 {
+  if (!IsAdapterSet()) {
+    wxLogMessage("Adapter not set!");
+    return nullptr;
+  }
+
   char errbuf[256];
   const uint8_t *data;
   if ((data = m_CurrentAdapter->GetNextPacket(size, errbuf)) == nullptr) {
