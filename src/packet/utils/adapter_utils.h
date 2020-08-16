@@ -1,9 +1,6 @@
 #pragma once
 
 #include <string>
-#include <vector>
-
-#define PHYSICAL_ADDR_LEN 6
 
 namespace PacketHacker {
 namespace Utils {
