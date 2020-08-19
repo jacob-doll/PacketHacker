@@ -54,7 +54,7 @@ namespace UI {
           m_queue.InsertPacket(received);
           wxQueueEvent(this, new wxThreadEvent(myEVT_THREAD_UPDATE));
         }
-        // GetThread()->Sleep(100);
+        GetThread()->Sleep(100);
       }
     }
 
@@ -63,7 +63,6 @@ namespace UI {
 
   void StreamPane::OnClose(wxCloseEvent &)
   {
-
     if (GetThread() && GetThread()->IsRunning())
       GetThread()->Wait();
     Destroy();

@@ -17,7 +17,8 @@ option(BUILD_SANDBOX "Build sandbox test of packet generation." OFF)
 
 set(PACKET_SRCS
     src/packet/adapter.cpp
-    src/packet/addresses.cpp
+    src/packet/hardware_address.cpp
+    src/packet/ip_address.cpp
     src/packet/packet.cpp
     src/packet/packet_queue.cpp
     src/packet/packets/arp_packet.cpp

@@ -3,6 +3,9 @@
 #include <vector>
 #include <string>
 
+#include "hardware_address.h"
+#include "ip_address.h"
+
 namespace PacketHacker {
 
 enum PacketType {

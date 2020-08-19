@@ -18,7 +18,8 @@ namespace UI {
   bool HardwareAddressProperty::ValidateValue(wxVariant &value,
     wxPGValidationInfo &validationInfo) const
   {
-    return Utils::IsHardwareAddressValid(value.GetString().c_str().AsChar());
+    // return Utils::IsHardwareAddressValid(value.GetString().c_str().AsChar());
+    return HardwareAddress::IsHardwareAddressValid(value.GetString().c_str().AsChar());
   }
 
   // ------------------------------------------------------
@@ -35,7 +36,7 @@ namespace UI {
   bool IpAddressProperty::ValidateValue(wxVariant &value,
     wxPGValidationInfo &validationInfo) const
   {
-    return Utils::IsIpv4AddressValid(value.GetString().c_str().AsChar());
+    return IPv4Address::IsIpv4AddressValid(value.GetString().c_str().AsChar());
   }
 
   // ------------------------------------------------------

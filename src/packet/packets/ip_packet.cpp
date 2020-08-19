@@ -135,14 +135,14 @@ void IpPacket::SetChecksum(const char *val)
 
 void IpPacket::SetSourceIp(const char *val)
 {
-  uint32_t data = Utils::IPv4ToLong(val);
+  uint32_t data = Utils::StringToIPv4(val);
   m_header.sourceIp = BYTE_SWAP_32(data);
   GetField("Source")->SetValue(val);
 }
 
 void IpPacket::SetDestIp(const char *val)
 {
-  uint32_t data = Utils::IPv4ToLong(val);
+  uint32_t data = Utils::StringToIPv4(val);
   m_header.destIp = BYTE_SWAP_32(data);
   GetField("Destination")->SetValue(val);
 }

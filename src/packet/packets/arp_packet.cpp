@@ -47,9 +47,9 @@ ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
   GetField("Protocol Length")->SetValue(buf);
   sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.opcode));
   GetField("Opcode")->SetValue(buf);
-  GetField("Sender Hardware Address")->SetValue(Utils::HardwareAddressToString(m_header.senderMac).c_str());
+  GetField("Sender Hardware Address")->SetValue(Utils::HardwareAddressToString(m_header.senderMac, PHYSICAL_ADDR_LEN).c_str());
   GetField("Sender Protocol Address")->SetValue(Utils::IPv4ToString(m_header.senderIp).c_str());
-  GetField("Target Hardware Address")->SetValue(Utils::HardwareAddressToString(m_header.targetMac).c_str());
+  GetField("Target Hardware Address")->SetValue(Utils::HardwareAddressToString(m_header.targetMac, PHYSICAL_ADDR_LEN).c_str());
   GetField("Target Protocol Address")->SetValue(Utils::IPv4ToString(m_header.targetIp).c_str());
 }
 
@@ -90,32 +90,26 @@ void ArpPacket::SetOpcode(const char *val)
 
 void ArpPacket::SetSenderMac(const char *val)
 {
-  uint64_t data = Utils::HardwareToLong(val);
-  for (int i = 0; i < 6; i++) {
-    m_header.senderMac[6 - 1 - i] = (data >> (i * 8));
-  }
+  Utils::StringToHardwareAddress(val, m_header.senderMac, PHYSICAL_ADDR_LEN);
   GetField("Sender Hardware Address")->SetValue(val);
 }
 
 void ArpPacket::SetSenderIp(const char *val)
 {
-  uint32_t data = Utils::IPv4ToLong(val);
+  uint32_t data = Utils::StringToIPv4(val);
   m_header.senderIp = BYTE_SWAP_32(data);
   GetField("Sender Protocol Address")->SetValue(val);
 }
 
 void ArpPacket::SetTargetMac(const char *val)
 {
-  uint64_t data = Utils::HardwareToLong(val);
-  for (int i = 0; i < 6; i++) {
-    m_header.targetMac[6 - 1 - i] = (data >> (i * 8));
-  }
+  Utils::StringToHardwareAddress(val, m_header.targetMac, PHYSICAL_ADDR_LEN);
   GetField("Target Hardware Address")->SetValue(val);
 }
 
 void ArpPacket::SetTargetIp(const char *val)
 {
-  uint32_t data = Utils::IPv4ToLong(val);
+  uint32_t data = Utils::StringToIPv4(val);
   m_header.targetIp = BYTE_SWAP_32(data);
   GetField("Target Protocol Address")->SetValue(val);
 }

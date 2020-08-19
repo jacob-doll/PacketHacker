@@ -26,8 +26,8 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
   }
   Utils::ReadValue(data, m_header);
 
-  GetField("Dst")->SetValue(Utils::HardwareAddressToString(m_header.dstMac).c_str());
-  GetField("Src")->SetValue(Utils::HardwareAddressToString(m_header.srcMac).c_str());
+  GetField("Dst")->SetValue(Utils::HardwareAddressToString(m_header.dstMac, PHYSICAL_ADDR_LEN).c_str());
+  GetField("Src")->SetValue(Utils::HardwareAddressToString(m_header.srcMac, PHYSICAL_ADDR_LEN).c_str());
   char buf[8];
   sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.type));
   GetField("EtherType")->SetValue(buf);
@@ -40,19 +40,13 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
 
 void EthernetPacket::SetDst(const char *val)
 {
-  uint64_t data = Utils::HardwareToLong(val);
-  for (int i = 0; i < 6; i++) {
-    m_header.dstMac[6 - 1 - i] = (data >> (i * 8));
-  }
+  Utils::StringToHardwareAddress(val, m_header.dstMac, PHYSICAL_ADDR_LEN);
   GetField("Dst")->SetValue(val);
 }
 
 void EthernetPacket::SetSrc(const char *val)
 {
-  uint64_t data = Utils::HardwareToLong(val);
-  for (int i = 0; i < 6; i++) {
-    m_header.srcMac[6 - 1 - i] = (data >> (i * 8));
-  }
+  Utils::StringToHardwareAddress(val, m_header.srcMac, PHYSICAL_ADDR_LEN);
   GetField("Src")->SetValue(val);
 }
 
