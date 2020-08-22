@@ -10,15 +10,15 @@ public:
   ArpPacket();
   ArpPacket(const uint8_t *data, uint32_t size);
 
-  void SetHardwareType(const char *val);
-  void SetProtocolType(const char *val);
-  void SetHardwareLength(const char *val);
-  void SetProtocolLength(const char *val);
-  void SetOpcode(const char *val);
-  void SetSenderMac(const char *val);
-  void SetSenderIp(const char *val);
-  void SetTargetMac(const char *val);
-  void SetTargetIp(const char *val);
+  void SetHardwareType(const FieldData &val);
+  void SetProtocolType(const FieldData &val);
+  void SetHardwareLength(const FieldData &val);
+  void SetProtocolLength(const FieldData &val);
+  void SetOpcode(const FieldData &val);
+  void SetSenderMac(const FieldData &val);
+  void SetSenderIp(const FieldData &val);
+  void SetTargetMac(const FieldData &val);
+  void SetTargetIp(const FieldData &val);
 
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override;

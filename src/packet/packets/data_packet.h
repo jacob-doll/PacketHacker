@@ -11,7 +11,7 @@ public:
   DataPacket();
   DataPacket(const uint8_t *data, uint32_t size);
 
-  void SetData(const char *val);
+  void SetData(const FieldData &val);
 
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override { return true; }
   virtual uint32_t HeaderSize() const override { return m_size; }

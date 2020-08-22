@@ -30,9 +30,9 @@ namespace Utils {
     return true;
   }
 
-  inline void Write(uint8_t *buffer, const uint8_t *ptr, size_t size)
+  inline void Write(uint8_t *dst, const uint8_t *src, size_t size)
   {
-    std::memcpy(buffer, ptr, size);
+    std::memcpy(dst, src, size);
   }
 
   template<typename T>

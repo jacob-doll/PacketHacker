@@ -10,9 +10,9 @@ public:
   EthernetPacket();
   EthernetPacket(const uint8_t *data, uint32_t size);
 
-  void SetDst(const char *val);
-  void SetSrc(const char *val);
-  void SetType(const char *val);
+  void SetDst(const FieldData &val);
+  void SetSrc(const FieldData &val);
+  void SetType(const FieldData &val);
 
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override { return sizeof(EthernetHeader); }

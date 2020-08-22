@@ -10,10 +10,10 @@ public:
   IcmpPacket();
   IcmpPacket(const uint8_t *data, uint32_t size);
 
-  void SetType(const char *val);
-  void SetCode(const char *val);
-  void SetChecksum(const char *val);
-  void SetData(const char *val);
+  void SetType(const FieldData &val);
+  void SetCode(const FieldData &val);
+  void SetChecksum(const FieldData &val);
+  void SetData(const FieldData &val);
 
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
   virtual uint32_t HeaderSize() const override;

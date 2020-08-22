@@ -80,7 +80,7 @@ void MainWindow::OnButtonPressed(wxCommandEvent &event)
     wxLogMessage("Could not send data.");
     return;
   }
-  m_pReceivedPane->OnPacketSent();
+  // m_pReceivedPane->OnPacketSent();
 }
 
 void MainWindow::OnAdapterSelected(wxCommandEvent &event)
@@ -90,7 +90,7 @@ void MainWindow::OnAdapterSelected(wxCommandEvent &event)
   m_pContext->SetAdapter(info.name);
   m_pDetailsPane->SetAdapterInfo(info);
   this->SetStatusText(wxString::Format("Selected: %s", info.friendlyName));
-  m_pStreamPane->StartRead();
+  // m_pStreamPane->StartRead();
 }
 
 void MainWindow::OnPacketSelected(wxCommandEvent &event)

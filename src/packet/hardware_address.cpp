@@ -27,7 +27,7 @@ HardwareAddress::HardwareAddress(const uint8_t *address)
   if (address) {
     std::memcpy(m_data, address, PHYSICAL_ADDR_LEN);
   } else {
-    std::memcpy(m_data, 0, PHYSICAL_ADDR_LEN);
+    std::memset(m_data, 0, PHYSICAL_ADDR_LEN);
   }
 }
 

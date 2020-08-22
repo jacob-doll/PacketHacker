@@ -24,7 +24,7 @@ namespace UI {
   public:
     HardwareAddressProperty(const wxString &label = wxPG_LABEL,
       const wxString &name = wxPG_LABEL,
-      const wxString &value = wxEmptyString);
+      const HardwareAddress &value = HardwareAddress());
 
     virtual bool ValidateValue(wxVariant &value,
       wxPGValidationInfo &validationInfo) const override;
@@ -35,7 +35,7 @@ namespace UI {
   public:
     IpAddressProperty(const wxString &label = wxPG_LABEL,
       const wxString &name = wxPG_LABEL,
-      const wxString &value = wxEmptyString);
+      const IPv4Address &value = IPv4Address());
 
     virtual bool ValidateValue(wxVariant &value,
       wxPGValidationInfo &validationInfo) const override;

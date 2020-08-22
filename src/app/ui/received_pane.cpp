@@ -32,8 +32,7 @@ namespace UI {
     while (currentPacket) {
       wxPGProperty *currProp = m_pPropGrid->Append(new wxPropertyCategory(currentPacket->GetName()));
       for (HeaderField *field : currentPacket->GetFields()) {
-        m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal()))->ChangeFlag(wxPG_PROP_READONLY, true);
-        ;
+        // m_pPropGrid->AppendIn(currProp, new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal()))->ChangeFlag(wxPG_PROP_READONLY, true);
       }
 
       currentPacket = currentPacket->GetInnerPacket();

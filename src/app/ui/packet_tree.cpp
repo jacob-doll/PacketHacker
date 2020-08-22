@@ -10,15 +10,14 @@ namespace UI {
   // ------------------------------------------------------
   HardwareAddressProperty::HardwareAddressProperty(const wxString &label,
     const wxString &name,
-    const wxString &value)
-    : wxStringProperty(label, name, value)
+    const HardwareAddress &value)
+    : wxStringProperty(label, name, value.ToString())
   {
   }
 
   bool HardwareAddressProperty::ValidateValue(wxVariant &value,
     wxPGValidationInfo &validationInfo) const
   {
-    // return Utils::IsHardwareAddressValid(value.GetString().c_str().AsChar());
     return HardwareAddress::IsHardwareAddressValid(value.GetString().c_str().AsChar());
   }
 
@@ -28,8 +27,8 @@ namespace UI {
   // ------------------------------------------------------
   IpAddressProperty::IpAddressProperty(const wxString &label,
     const wxString &name,
-    const wxString &value)
-    : wxStringProperty(label, name, value)
+    const IPv4Address &value)
+    : wxStringProperty(label, name, value.ToString())
   {
   }
 
@@ -84,13 +83,25 @@ namespace UI {
         wxPGProperty *fieldProp;
         switch (field->GetType()) {
         case FieldType::FIELD_HARDWARE:
-          fieldProp = new HardwareAddressProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal());
+          fieldProp = new HardwareAddressProperty(field->GetName(), wxPG_LABEL, std::get<HardwareAddress>(field->GetCurrentVal()));
           break;
         case FieldType::FIELD_IP:
-          fieldProp = new IpAddressProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal());
+          fieldProp = new IpAddressProperty(field->GetName(), wxPG_LABEL, std::get<IPv4Address>(field->GetCurrentVal()));
+          break;
+        case FieldType::FIELD_INT8:
+          fieldProp = new wxIntProperty(field->GetName(), wxPG_LABEL, std::get<uint8_t>(field->GetCurrentVal()));
+          break;
+        case FieldType::FIELD_INT16:
+          fieldProp = new wxIntProperty(field->GetName(), wxPG_LABEL, std::get<uint16_t>(field->GetCurrentVal()));
+          break;
+        case FieldType::FIELD_INT32:
+          fieldProp = new wxIntProperty(field->GetName(), wxPG_LABEL, std::get<uint32_t>(field->GetCurrentVal()));
+          break;
+        case FieldType::FIELD_INT64:
+          fieldProp = new wxIntProperty(field->GetName(), wxPG_LABEL, std::get<uint64_t>(field->GetCurrentVal()));
           break;
         default:
-          fieldProp = new wxStringProperty(field->GetName(), wxPG_LABEL, field->GetCurrentVal());
+          break;
         }
         fieldProp->Enable(field->IsEditable());
         m_pPropGrid->AppendIn(currProp, fieldProp);
@@ -106,9 +117,9 @@ namespace UI {
     while (currentPacket) {
       for (HeaderField *field : currentPacket->GetFields()) {
         wxPGProperty *property = m_pPropGrid->GetProperty(field->GetName());
-        if (property->GetValue() != field->GetCurrentVal()) {
-          property->SetValue(field->GetCurrentVal());
-        }
+        // if (property->GetValue() != field->GetCurrentVal()) {
+        //   property->SetValue(field->GetCurrentVal());
+        // }
       }
       currentPacket = currentPacket->GetInnerPacket();
     }
@@ -121,7 +132,29 @@ namespace UI {
     MainWindow *window = m_pContext->GetMainWindow();
     const Packet *packet = m_pContext->GetBasePacket()->GetPacket(outerPropName);
     HeaderField *field = packet->GetField(name);
-    field->HandleData(event.GetValue().GetString().c_str());
+
+    switch (field->GetType()) {
+    case FieldType::FIELD_HARDWARE:
+      field->HandleData(HardwareAddress(event.GetValue().GetString().c_str().AsChar()));
+      break;
+    case FieldType::FIELD_IP:
+      field->HandleData(IPv4Address(event.GetValue().GetString().c_str().AsChar()));
+      break;
+    case FieldType::FIELD_INT8:
+      field->HandleData((uint8_t)event.GetValue().GetInteger());
+      break;
+    case FieldType::FIELD_INT16:
+      field->HandleData((uint16_t)event.GetValue().GetInteger());
+      break;
+    case FieldType::FIELD_INT32:
+      field->HandleData((uint32_t)event.GetValue().GetInteger());
+      break;
+    case FieldType::FIELD_INT64:
+      field->HandleData((uint32_t)event.GetValue().GetInteger());
+      break;
+    default:
+      break;
+    }
     window->GetByteViewer()->Update(m_pContext->GetBasePacket());
     Reload();
   }

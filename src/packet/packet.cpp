@@ -29,7 +29,7 @@ const uint32_t Packet::Size() const
 void Packet::Init()
 {
   for (HeaderField *field : m_fields) {
-    field->HandleData(field->GetDefaultVal().c_str());
+    field->HandleData(field->GetCurrentVal());
   }
 }
 
@@ -91,7 +91,7 @@ std::string Packet::ToString() const
   std::stringstream ss;
   ss << GetName() << ": " << HeaderSize() << " {\n";
   for (HeaderField *field : GetFields()) {
-    ss << "\t" << field->GetName() << ": " << field->GetCurrentVal() << "\n";
+    ss << "\t" << field->GetName() << ": " /*<< field->GetCurrentVal()*/ << "\n";
   }
   if (m_innerPacket) {
     ss << m_innerPacket->ToString();

@@ -10,18 +10,18 @@ public:
   IpPacket();
   IpPacket(const uint8_t *data, uint32_t size);
 
-  void SetVersion(const char *val);
-  void SetHeaderLength(const char *val);
-  void SetDiffServices(const char *val);
-  void SetTotalLength(const char *val);
-  void SetId(const char *val);
-  void SetFlags(const char *val);
-  void SetFragOffset(const char *val);
-  void SetTtl(const char *val);
-  void SetProtocol(const char *val);
-  void SetChecksum(const char *val);
-  void SetSourceIp(const char *val);
-  void SetDestIp(const char *val);
+  void SetVersion(const FieldData &val);
+  void SetHeaderLength(const FieldData &val);
+  void SetDiffServices(const FieldData &val);
+  void SetTotalLength(const FieldData &val);
+  void SetId(const FieldData &val);
+  void SetFlags(const FieldData &val);
+  void SetFragOffset(const FieldData &val);
+  void SetTtl(const FieldData &val);
+  void SetProtocol(const FieldData &val);
+  void SetChecksum(const FieldData &val);
+  void SetSourceIp(const FieldData &val);
+  void SetDestIp(const FieldData &val);
 
   const uint32_t GetSourceIp() const { return m_header.sourceIp; }
   const uint32_t GetDestIp() const { return m_header.destIp; }
