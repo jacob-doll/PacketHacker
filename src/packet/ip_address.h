@@ -11,7 +11,8 @@ namespace Utils {
 class IPv4Address
 {
 public:
-  explicit IPv4Address(const uint32_t address = 0u);
+  IPv4Address();
+  explicit IPv4Address(const uint32_t address);
   explicit IPv4Address(const std::string &address);
 
   uint32_t GetData() { return m_data; }

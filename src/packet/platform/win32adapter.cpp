@@ -27,28 +27,28 @@ const std::vector<AdapterInfo> GetAdapters()
       info.name = "\\Device\\NPF_" + std::string(pCurrAddresses->AdapterName);
       if (pCurrAddresses->FirstUnicastAddress) {
         struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstUnicastAddress->Address.lpSockaddr;
-        info.unicastAddress = Utils::IPv4ToString(ipaddr->sin_addr.s_addr);
+        info.unicastAddress = IPv4Address(ipaddr->sin_addr.s_addr);
       }
       if (pCurrAddresses->FirstAnycastAddress) {
         struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstAnycastAddress->Address.lpSockaddr;
-        info.anycastAddress = Utils::IPv4ToString(ipaddr->sin_addr.s_addr);
+        info.anycastAddress = IPv4Address(ipaddr->sin_addr.s_addr);
       }
       if (pCurrAddresses->FirstMulticastAddress) {
         struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstMulticastAddress->Address.lpSockaddr;
-        info.multicastAddress = Utils::IPv4ToString(ipaddr->sin_addr.s_addr);
+        info.multicastAddress = IPv4Address(ipaddr->sin_addr.s_addr);
       }
       if (pCurrAddresses->FirstDnsServerAddress) {
         struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstDnsServerAddress->Address.lpSockaddr;
-        info.dnsServerAddress = Utils::IPv4ToString(ipaddr->sin_addr.s_addr);
+        info.dnsServerAddress = IPv4Address(ipaddr->sin_addr.s_addr);
       }
       if (pCurrAddresses->FirstGatewayAddress) {
         struct sockaddr_in *ipaddr = (sockaddr_in *)pCurrAddresses->FirstGatewayAddress->Address.lpSockaddr;
-        info.gatewayAddress = Utils::IPv4ToString(ipaddr->sin_addr.s_addr);
+        info.gatewayAddress = IPv4Address(ipaddr->sin_addr.s_addr);
       }
       info.dnsSuffix = pCurrAddresses->DnsSuffix;
       info.description = pCurrAddresses->Description;
       info.friendlyName = pCurrAddresses->FriendlyName;
-      info.address = Utils::HardwareAddressToString(pCurrAddresses->PhysicalAddress, PHYSICAL_ADDR_LEN);
+      info.address = HardwareAddress(pCurrAddresses->PhysicalAddress);
       output.emplace_back(info);
       pCurrAddresses = pCurrAddresses->Next;
     }

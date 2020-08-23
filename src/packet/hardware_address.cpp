@@ -22,6 +22,11 @@ namespace Utils {
   }
 }// namespace Utils
 
+HardwareAddress::HardwareAddress()
+  : HardwareAddress(0)
+{
+}
+
 HardwareAddress::HardwareAddress(const uint8_t *address)
 {
   if (address) {

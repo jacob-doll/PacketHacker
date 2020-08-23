@@ -35,15 +35,15 @@ namespace UI {
   {
     m_pPropGrid->GetProperty("Index")->SetValue((long)info.index);
     m_pPropGrid->GetProperty("Name")->SetValue(info.name);
-    m_pPropGrid->GetProperty("Unicast address")->SetValue(info.unicastAddress);
-    m_pPropGrid->GetProperty("Anycast address")->SetValue(info.anycastAddress);
-    m_pPropGrid->GetProperty("Multicast address")->SetValue(info.multicastAddress);
-    m_pPropGrid->GetProperty("DnsServer address")->SetValue(info.dnsServerAddress);
-    m_pPropGrid->GetProperty("Gateway address")->SetValue(info.gatewayAddress);
+    m_pPropGrid->GetProperty("Unicast address")->SetValue(info.unicastAddress.ToString());
+    m_pPropGrid->GetProperty("Anycast address")->SetValue(info.anycastAddress.ToString());
+    m_pPropGrid->GetProperty("Multicast address")->SetValue(info.multicastAddress.ToString());
+    m_pPropGrid->GetProperty("DnsServer address")->SetValue(info.dnsServerAddress.ToString());
+    m_pPropGrid->GetProperty("Gateway address")->SetValue(info.gatewayAddress.ToString());
     m_pPropGrid->GetProperty("DnsSuffix")->SetValue(info.dnsSuffix);
     m_pPropGrid->GetProperty("Description")->SetValue(info.description);
     m_pPropGrid->GetProperty("FriendlyName")->SetValue(info.friendlyName);
-    m_pPropGrid->GetProperty("Physical Address")->SetValue(info.address);
+    m_pPropGrid->GetProperty("Physical Address")->SetValue(info.address.ToString());
   }
 
 }// namespace UI

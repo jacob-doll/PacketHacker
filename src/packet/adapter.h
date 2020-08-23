@@ -13,15 +13,15 @@ struct AdapterInfo
 {
   uint32_t index;
   std::string name;
-  std::string unicastAddress;
-  std::string anycastAddress;
-  std::string multicastAddress;
-  std::string dnsServerAddress;
+  IPv4Address unicastAddress;
+  IPv4Address anycastAddress;
+  IPv4Address multicastAddress;
+  IPv4Address dnsServerAddress;
   std::wstring dnsSuffix;
   std::wstring description;
   std::wstring friendlyName;
-  std::string address;
-  std::string gatewayAddress;
+  HardwareAddress address;
+  IPv4Address gatewayAddress;
 };
 
 class Adapter

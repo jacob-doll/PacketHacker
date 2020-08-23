@@ -26,6 +26,11 @@ namespace Utils {
   }
 }// namespace Utils
 
+IPv4Address::IPv4Address()
+  : m_data(0)
+{
+}
+
 IPv4Address::IPv4Address(const uint32_t address)
   : m_data(address)
 {

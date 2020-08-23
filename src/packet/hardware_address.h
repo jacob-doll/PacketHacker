@@ -13,7 +13,8 @@ namespace Utils {
 class HardwareAddress
 {
 public:
-  explicit HardwareAddress(const uint8_t *address = 0);
+  HardwareAddress();
+  explicit HardwareAddress(const uint8_t *address);
   explicit HardwareAddress(const std::string &address);
 
   uint8_t *GetData() { return m_data; }
