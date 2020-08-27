@@ -18,15 +18,6 @@ enum PacketType {
   UDP
 };
 
-enum FieldType {
-  FIELD_HARDWARE,
-  FIELD_IP,
-  FIELD_INT8,
-  FIELD_INT16,
-  FIELD_INT32,
-  FIELD_INT64
-};
-
 class HeaderField;
 
 class Packet
@@ -67,6 +58,15 @@ protected:
 private:
   Packet *m_outerPacket;
   Packet *m_innerPacket;
+};
+
+enum FieldType {
+  FIELD_HARDWARE,
+  FIELD_IP,
+  FIELD_INT8,
+  FIELD_INT16,
+  FIELD_INT32,
+  FIELD_INT64
 };
 
 using FieldData = std::variant<HardwareAddress, IPv4Address, uint8_t, uint16_t, uint32_t, uint64_t>;

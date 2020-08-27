@@ -24,22 +24,34 @@ struct AdapterInfo
   IPv4Address gatewayAddress;
 };
 
+struct ArpEntry
+{
+  HardwareAddress hwAddress;
+  IPv4Address ipAddress;
+  std::string type;
+};
+
 class Adapter
 {
 public:
-  Adapter(std::string name);
+  Adapter(const AdapterInfo &info);
 
+  // Packet Streams
   bool OpenPacketStream(char *errbuf);
   void ClosePacketStream();
   bool SendPacket(Packet *packet, char *errbuf);
   const uint8_t *GetNextPacket(uint32_t *size, char *errbuf);
-
   bool IsStreamOpen() const { return m_streamOpen; }
+
+  // Arp table for given adapter
+  const std::vector<ArpEntry> GetArpTable();
 
   const static std::vector<AdapterInfo> &GetAvailableAdapters() { return s_availableAdapters; }
 
 private:
   const std::string m_name;
+  const uint32_t m_index;
+
   pcap *m_handle;
   bool m_streamOpen;
 

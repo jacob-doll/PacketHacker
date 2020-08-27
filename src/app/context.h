@@ -18,7 +18,7 @@ public:
   Context(MainWindow *window);
   ~Context();
 
-  void SetAdapter(std::string name);
+  void SetAdapter(const AdapterInfo &info);
   Adapter *GetAdapter() { return m_CurrentAdapter; }
   bool IsAdapterSet() const { return m_AdapterSet; }
 

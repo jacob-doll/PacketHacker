@@ -26,14 +26,14 @@ Context::~Context()
   delete m_pBasePacket;
 }
 
-void Context::SetAdapter(std::string name)
+void Context::SetAdapter(const AdapterInfo &info)
 {
   m_AdapterSet = true;
   if (m_CurrentAdapter) {
     m_CurrentAdapter->ClosePacketStream();
     delete m_CurrentAdapter;
   }
-  m_CurrentAdapter = new Adapter(name);
+  m_CurrentAdapter = new Adapter(info);
 
   char errbuf[256];
   if (!m_CurrentAdapter->OpenPacketStream(errbuf)) {

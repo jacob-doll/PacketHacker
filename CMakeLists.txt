@@ -13,7 +13,7 @@ include(${wxWidgets_USE_FILE})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
-option(BUILD_SANDBOX "Build sandbox test of packet generation." OFF)
+option(BUILD_SANDBOX "Build sandbox test of packet generation." ON)
 
 set(PACKET_SRCS
     src/packet/adapter.cpp
@@ -58,8 +58,8 @@ if (WIN32)
     target_link_libraries(${PROJECT_NAME} PacketHackerLib ${wxWidgets_LIBRARIES})
 
     if (BUILD_SANDBOX)
-        add_executable(TEST ${TEST_SRCS} ${PACKET_SRCS})
-        target_link_libraries(TEST ${PCAP_LIBRARY} IPHLPAPI Ws2_32)
+        add_executable(SANDBOX ${SANDBOX_SRCS} ${PACKET_SRCS})
+        target_link_libraries(SANDBOX PacketHackerLib)
     endif()
 endif()
 

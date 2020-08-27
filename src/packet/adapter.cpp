@@ -5,8 +5,8 @@
 
 namespace PacketHacker {
 
-Adapter::Adapter(std::string name)
-  : m_name(std::move(name)), m_streamOpen(false)
+Adapter::Adapter(const AdapterInfo &info)
+  : m_name(info.name), m_index(info.index), m_streamOpen(false)
 {
 }
 

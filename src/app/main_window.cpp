@@ -87,7 +87,7 @@ void MainWindow::OnAdapterSelected(wxCommandEvent &event)
 {
   if (event.GetId() >= Adapter::GetAvailableAdapters().size() - ADAPTER_OFFSET) return;
   AdapterInfo info = Adapter::GetAvailableAdapters()[event.GetId() - ADAPTER_OFFSET];
-  m_pContext->SetAdapter(info.name);
+  m_pContext->SetAdapter(info);
   m_pDetailsPane->SetAdapterInfo(info);
   this->SetStatusText(wxString::Format("Selected: %s", info.friendlyName));
   // m_pStreamPane->StartRead();
