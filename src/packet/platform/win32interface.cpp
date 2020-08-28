@@ -1,4 +1,4 @@
-#include "packet/adapter.h"
+#include "packet/interface.h"
 
 #include <winsock2.h>
 #include <iphlpapi.h>
@@ -10,9 +10,9 @@
 
 namespace PacketHacker {
 
-const std::vector<AdapterInfo> GetAdapters()
+const std::vector<Interface> GetInterfaces()
 {
-  std::vector<AdapterInfo> output;
+  std::vector<Interface> output;
   ULONG size = 0;
   PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
   PIP_ADAPTER_ADDRESSES pCurrAddresses = nullptr;
@@ -22,7 +22,7 @@ const std::vector<AdapterInfo> GetAdapters()
   if (::GetAdaptersAddresses(AF_INET, GAA_FLAG_INCLUDE_GATEWAYS, nullptr, pAddresses, &size) == NO_ERROR) {
     pCurrAddresses = pAddresses;
     while (pCurrAddresses) {
-      AdapterInfo info{};
+      InterfaceInfo info{};
       info.index = pCurrAddresses->IfIndex;
       info.name = "\\Device\\NPF_" + std::string(pCurrAddresses->AdapterName);
       if (pCurrAddresses->FirstUnicastAddress) {
@@ -60,9 +60,9 @@ const std::vector<AdapterInfo> GetAdapters()
   return output;
 }
 
-const std::vector<AdapterInfo> Adapter::s_availableAdapters = GetAdapters();
+const std::vector<Interface> Interface::s_availableInterfaces = GetInterfaces();
 
-bool Adapter::OpenPacketStream(char *errbuf)
+bool Interface::OpenPacketStream(char *errbuf)
 {
   if (m_streamOpen) {
     sprintf(errbuf, "Stream already opened!");
@@ -71,8 +71,8 @@ bool Adapter::OpenPacketStream(char *errbuf)
 
   char pcapErrbuf[PCAP_ERRBUF_SIZE];
 
-  if ((m_handle = pcap_create(m_name.c_str(), pcapErrbuf)) == nullptr) {
-    sprintf(errbuf, "Unable to open the adapter. %s is not supported by Npcap", m_name.c_str());
+  if ((m_handle = pcap_create(m_info.name.c_str(), pcapErrbuf)) == nullptr) {
+    sprintf(errbuf, "Unable to open the adapter. %s is not supported by Npcap", m_info.name.c_str());
     return false;
   }
 
@@ -91,13 +91,13 @@ bool Adapter::OpenPacketStream(char *errbuf)
   return true;
 }
 
-void Adapter::ClosePacketStream()
+void Interface::ClosePacketStream()
 {
   if (m_streamOpen) pcap_close(m_handle);
   m_streamOpen = false;
 }
 
-bool Adapter::SendPacket(Packet *packet, char *errbuf)
+bool Interface::SendPacket(Packet *packet, char *errbuf)
 {
   if (!m_streamOpen) {
     sprintf(errbuf, "Stream not opened!");
@@ -116,7 +116,7 @@ bool Adapter::SendPacket(Packet *packet, char *errbuf)
   return true;
 }
 
-const uint8_t *Adapter::GetNextPacket(uint32_t *size, char *errbuf)
+const uint8_t *Interface::GetNextPacket(uint32_t *size, char *errbuf)
 {
   if (!m_streamOpen) {
     sprintf(errbuf, "Stream not opened!");
@@ -142,7 +142,7 @@ const uint8_t *Adapter::GetNextPacket(uint32_t *size, char *errbuf)
   return nullptr;
 }
 
-const std::vector<ArpEntry> Adapter::GetArpTable()
+const std::vector<ArpEntry> Interface::GetArpTable()
 {
   std::vector<ArpEntry> output;
   ULONG size = 0;
@@ -154,7 +154,7 @@ const std::vector<ArpEntry> Adapter::GetArpTable()
   if (GetIpNetTable(IpNetTable, &size, FALSE) == NO_ERROR) {
     for (int i = 0; i < IpNetTable->dwNumEntries; i++) {
       MIB_IPNETROW IpNetRow = IpNetTable->table[i];
-      if (IpNetRow.dwIndex != m_index) continue;
+      if (IpNetRow.dwIndex != m_info.index) continue;
       ArpEntry entry{};
       entry.hwAddress = HardwareAddress(IpNetRow.bPhysAddr);
       entry.ipAddress = IPv4Address(IpNetRow.dwAddr);
@@ -181,6 +181,17 @@ const std::vector<ArpEntry> Adapter::GetArpTable()
   }
 
   return output;
+}
+
+const Interface Interface::BestInterface(IPv4Address &address)
+{
+  DWORD dwBestIfIndex;
+  GetBestInterface((IPAddr)address.GetData(), &dwBestIfIndex);
+  auto iterator = s_availableInterfaces.begin();
+  for (auto it = s_availableInterfaces.begin(); it != s_availableInterfaces.end(); it++) {
+    if (it->m_info.index == dwBestIfIndex) return *it;
+  }
+  return Interface();
 }
 
 }// namespace PacketHacker
