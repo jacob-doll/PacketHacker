@@ -16,6 +16,7 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 option(BUILD_SANDBOX "Build sandbox test of packet generation." ON)
 
 set(PACKET_SRCS
+    src/packet/arp_table.cpp
     src/packet/hardware_address.cpp
     src/packet/interface.cpp
     src/packet/ip_address.cpp
@@ -49,6 +50,7 @@ set(APP_SRCS
 if (WIN32)
     set(PLATFORM_SRCS
         src/packet/platform/win32interface.cpp
+        src/packet/platform/win32arp_table.cpp
     )
 
     add_library(PacketHackerLib STATIC ${PACKET_SRCS} ${PLATFORM_SRCS})
@@ -58,7 +60,7 @@ if (WIN32)
     # target_link_libraries(${PROJECT_NAME} PacketHackerLib ${wxWidgets_LIBRARIES})
 
     if (BUILD_SANDBOX)
-        add_executable(SANDBOX ${SANDBOX_SRCS} ${PACKET_SRCS})
+        add_executable(SANDBOX ${SANDBOX_SRCS})
         target_link_libraries(SANDBOX PacketHackerLib)
     endif()
 endif()

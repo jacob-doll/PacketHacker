@@ -3,7 +3,8 @@
 #include <string>
 #include <stdint.h>
 
-#include "packet/packet.h"
+#include "packet.h"
+#include "arp_table.h"
 
 struct pcap;
 
@@ -22,13 +23,6 @@ struct InterfaceInfo
   std::wstring dnsSuffix;
   std::wstring description;
   std::wstring friendlyName;
-};
-
-struct ArpEntry
-{
-  HardwareAddress hwAddress;
-  IPv4Address ipAddress;
-  std::string type;
 };
 
 class Interface
@@ -58,7 +52,7 @@ public:
   bool IsStreamOpen() const { return m_streamOpen; }
 
   // Arp table for given adapter
-  const std::vector<ArpEntry> GetArpTable();
+  ArpTable GetArpTable() { return m_arpTable; }
 
   static const Interface DefaultInterface() { return s_availableInterfaces[0]; }
   static const Interface BestInterface(IPv4Address &address);
@@ -66,6 +60,7 @@ public:
 
 private:
   const InterfaceInfo m_info;
+  ArpTable m_arpTable;
 
   pcap *m_handle;
   bool m_streamOpen;
