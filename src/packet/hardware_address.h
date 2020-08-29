@@ -17,7 +17,7 @@ public:
   explicit HardwareAddress(const uint8_t *address);
   explicit HardwareAddress(const std::string &address);
 
-  uint8_t *GetData() { return m_data; }
+  const uint8_t *GetData() const { return m_data; }
   std::string ToString() const { return Utils::HardwareAddressToString(m_data, PHYSICAL_ADDR_LEN); }
 
   static bool IsHardwareAddressValid(const std::string &hwAddress);

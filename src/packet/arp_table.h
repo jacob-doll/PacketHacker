@@ -10,25 +10,26 @@ namespace PacketHacker {
 
 struct ArpEntry
 {
-  IPv4Address ipAddress;
   HardwareAddress hwAddress;
+  IPv4Address ipAddress;
 };
 
 class ArpTable
 {
 public:
-  ArpTable(uint32_t ifIndex);
+  ArpTable(const uint32_t ifIndex);
 
   void RefreshTable();
   void FlushTable();
 
-  void AddEntry(IPv4Address ipAddress, HardwareAddress hwAddress);
-  HardwareAddress &GetEntry(IPv4Address ipAddress);
+  void AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress);
+  void DeleteEntry(const IPv4Address &ipAddress);
+  HardwareAddress &GetEntry(const IPv4Address &ipAddress);
 
   std::vector<ArpEntry> &GetEntries() { return m_entries; }
 
 private:
-  uint32_t m_ifIndex;
+  const uint32_t m_ifIndex;
   std::vector<ArpEntry> m_entries;
 };
 

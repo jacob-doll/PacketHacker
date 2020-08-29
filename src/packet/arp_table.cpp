@@ -2,7 +2,7 @@
 
 namespace PacketHacker {
 
-ArpTable::ArpTable(uint32_t ifIndex)
+ArpTable::ArpTable(const uint32_t ifIndex)
   : m_ifIndex(ifIndex)
 {}
 

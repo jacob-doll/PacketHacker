@@ -52,7 +52,7 @@ public:
   bool IsStreamOpen() const { return m_streamOpen; }
 
   // Arp table for given adapter
-  ArpTable GetArpTable() { return m_arpTable; }
+  ArpTable &GetArpTable() { return m_arpTable; }
 
   static const Interface DefaultInterface() { return s_availableInterfaces[0]; }
   static const Interface BestInterface(IPv4Address &address);
