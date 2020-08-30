@@ -22,6 +22,7 @@ set(PACKET_SRCS
     src/packet/ip_address.cpp
     src/packet/packet.cpp
     src/packet/packet_queue.cpp
+    src/packet/routing_table.cpp
     src/packet/packets/arp_packet.cpp
     src/packet/packets/data_packet.cpp
     src/packet/packets/eth_packet.cpp
@@ -51,6 +52,7 @@ if (WIN32)
     set(PLATFORM_SRCS
         src/packet/platform/win32interface.cpp
         src/packet/platform/win32arp_table.cpp
+        src/packet/platform/win32routing_table.cpp
     )
 
     add_library(PacketHackerLib STATIC ${PACKET_SRCS} ${PLATFORM_SRCS})
