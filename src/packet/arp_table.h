@@ -24,7 +24,7 @@ public:
 
   void AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress);
   void DeleteEntry(const IPv4Address &ipAddress);
-  HardwareAddress &GetEntry(const IPv4Address &ipAddress);
+  ArpEntry &GetEntry(const IPv4Address &ipAddress);
 
   std::vector<ArpEntry> &GetEntries() { return m_entries; }
 

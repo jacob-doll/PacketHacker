@@ -5,6 +5,7 @@
 
 #include "packet.h"
 #include "arp_table.h"
+#include "routing_table.h"
 
 struct pcap;
 
@@ -53,6 +54,7 @@ public:
 
   // Arp table for given adapter
   ArpTable &GetArpTable() { return m_arpTable; }
+  RoutingTable &GetRoutingTable() { return m_routingTable; }
 
   static const Interface DefaultInterface() { return s_availableInterfaces[0]; }
   static const Interface BestInterface(IPv4Address &address);
@@ -61,6 +63,7 @@ public:
 private:
   const InterfaceInfo m_info;
   ArpTable m_arpTable;
+  RoutingTable m_routingTable;
 
   pcap *m_handle;
   bool m_streamOpen;

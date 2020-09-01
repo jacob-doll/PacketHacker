@@ -6,13 +6,14 @@
 namespace PacketHacker {
 
 Interface::Interface()
-  : m_info(), m_arpTable(0), m_streamOpen(false)
+  : m_info(), m_arpTable(0), m_routingTable(0), m_streamOpen(false)
 {}
 
 Interface::Interface(const InterfaceInfo &info)
-  : m_info(info), m_arpTable(info.index), m_streamOpen(false)
+  : m_info(info), m_arpTable(info.index), m_routingTable(info.index), m_streamOpen(false)
 {
   m_arpTable.RefreshTable();
+  m_routingTable.RefreshTable();
 }
 
 }// namespace PacketHacker

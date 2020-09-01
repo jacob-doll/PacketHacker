@@ -60,14 +60,14 @@ void ArpTable::DeleteEntry(const IPv4Address &ipAddress)
   }
 }
 
-HardwareAddress &ArpTable::GetEntry(const IPv4Address &ipAddress)
+ArpEntry &ArpTable::GetEntry(const IPv4Address &ipAddress)
 {
   auto first = m_entries.begin();
   while (first != m_entries.end()) {
-    if (first->ipAddress.GetData() == ipAddress.GetData()) return first->hwAddress;
+    if (first->ipAddress == ipAddress) return *first;
     first++;
   }
-  return m_entries.end()->hwAddress;
+  return *m_entries.end();
 }
 
 }// namespace PacketHacker

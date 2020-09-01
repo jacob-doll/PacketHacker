@@ -18,6 +18,16 @@ public:
   const uint32_t GetData() const { return m_data; }
   std::string ToString() const { return Utils::IPv4ToString(m_data); }
 
+  bool operator==(const IPv4Address &rhs) const
+  {
+    return m_data == rhs.m_data;
+  }
+
+  bool operator!=(const IPv4Address &rhs) const
+  {
+    return !(*this == rhs);
+  }
+
   static bool IsIpv4AddressValid(const std::string &hwAddress);
 
 private:
