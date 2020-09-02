@@ -55,27 +55,18 @@ void RoutingTable::AddEntry(const IPv4Address &networkDest,
 
 void RoutingTable::DeleteEntry(const IPv4Address &networkDest)
 {
-  RouteEntry entry = GetEntry(networkDest);
+  RouteEntry *entry = GetEntry(networkDest);
+  if (!entry) return;
   MIB_IPFORWARDROW IpForwardRow{};
   IpForwardRow.dwForwardIfIndex = m_ifIndex;
   IpForwardRow.dwForwardDest = BYTE_SWAP_32(networkDest.GetData());
-  IpForwardRow.dwForwardMask = BYTE_SWAP_32(entry.netmask.GetData());
-  IpForwardRow.dwForwardNextHop = BYTE_SWAP_32(entry.nextHop.GetData());
+  IpForwardRow.dwForwardMask = BYTE_SWAP_32(entry->netmask.GetData());
+  IpForwardRow.dwForwardNextHop = BYTE_SWAP_32(entry->nextHop.GetData());
   IpForwardRow.dwForwardProto = MIB_IPPROTO_NETMGMT;
   DWORD ret = DeleteIpForwardEntry(&IpForwardRow);
   if (ret == NO_ERROR) {
     RefreshTable();
   }
-}
-
-RouteEntry &RoutingTable::GetEntry(const IPv4Address &networkDest)
-{
-  auto first = m_entries.begin();
-  while (first != m_entries.end()) {
-    if (first->networkDest == networkDest) return *first;
-    first++;
-  }
-  return *m_entries.end();
 }
 
 };// namespace PacketHacker

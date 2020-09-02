@@ -1,10 +1,10 @@
 #pragma once
 
 #include <string>
+#include <array>
 
 namespace PacketHacker {
 namespace Utils {
-  std::string IPv4ToString(const uint32_t ipv4Address);
   uint32_t StringToIPv4(const std::string &ipv4Address);
 }// namespace Utils
 
@@ -12,11 +12,35 @@ class IPv4Address
 {
 public:
   IPv4Address();
+  IPv4Address(const uint8_t b1, const uint8_t b2, const uint8_t b3, const uint8_t b4);
+  IPv4Address(const std::array<uint8_t, 4> &data);
+  IPv4Address(const std::string &address);
   explicit IPv4Address(const uint32_t address);
-  explicit IPv4Address(const std::string &address);
 
   const uint32_t GetData() const { return m_data; }
-  std::string ToString() const { return Utils::IPv4ToString(m_data); }
+  std::string ToString() const;
+
+  static bool IsIpv4AddressValid(const std::string &hwAddress);
+
+  bool operator<(const IPv4Address &rhs) const
+  {
+    return m_data < rhs.m_data;
+  }
+
+  bool operator<=(const IPv4Address &rhs) const
+  {
+    return !operator>(rhs);
+  }
+
+  bool operator>(const IPv4Address &rhs) const
+  {
+    return m_data > rhs.m_data;
+  }
+
+  bool operator>=(const IPv4Address &rhs) const
+  {
+    return !operator<(rhs);
+  }
 
   bool operator==(const IPv4Address &rhs) const
   {
@@ -25,13 +49,26 @@ public:
 
   bool operator!=(const IPv4Address &rhs) const
   {
-    return !(*this == rhs);
+    return !((*this) == rhs);
   }
 
-  static bool IsIpv4AddressValid(const std::string &hwAddress);
+  IPv4Address operator&(const IPv4Address &mask) const;
+  IPv4Address operator|(const IPv4Address &mask) const;
+
+  friend std::ostream &operator<<(std::ostream &output, const IPv4Address &ipAddress);
 
 private:
-  uint32_t m_data;
+  union {
+    struct
+    {
+      uint8_t m_b1;
+      uint8_t m_b2;
+      uint8_t m_b3;
+      uint8_t m_b4;
+    };
+    uint32_t m_data;
+  };
 };
+
 
 }// namespace PacketHacker

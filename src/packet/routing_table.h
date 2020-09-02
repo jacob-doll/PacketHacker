@@ -26,7 +26,7 @@ public:
     const IPv4Address &nextHop,
     const uint32_t metric);
   void DeleteEntry(const IPv4Address &networkDest);
-  RouteEntry &GetEntry(const IPv4Address &networkDest);
+  RouteEntry *GetEntry(const IPv4Address &networkDest);
 
   std::vector<RouteEntry> &GetEntries() { return m_entries; }
 
