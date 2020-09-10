@@ -95,7 +95,7 @@ void ArpPacket::SetSenderMac(const FieldData &val)
 {
   HardwareAddress data = std::get<HardwareAddress>(val);
   // Utils::StringToHardwareAddress(val, m_header.senderMac, PHYSICAL_ADDR_LEN);
-  Utils::Write(m_header.senderMac, data.GetData(), PHYSICAL_ADDR_LEN);
+  Utils::Write(m_header.senderMac, data.GetData().data(), PHYSICAL_ADDR_LEN);
   GetField("Sender Hardware Address")->SetValue(val);
 }
 
@@ -111,7 +111,7 @@ void ArpPacket::SetTargetMac(const FieldData &val)
 {
   HardwareAddress data = std::get<HardwareAddress>(val);
   // Utils::StringToHardwareAddress(val, m_header.targetMac, PHYSICAL_ADDR_LEN);
-  Utils::Write(m_header.targetMac, data.GetData(), PHYSICAL_ADDR_LEN);
+  Utils::Write(m_header.targetMac, data.GetData().data(), PHYSICAL_ADDR_LEN);
   GetField("Target Hardware Address")->SetValue(val);
 }
 

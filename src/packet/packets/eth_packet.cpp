@@ -46,7 +46,7 @@ void EthernetPacket::SetDst(const FieldData &val)
   HardwareAddress data = std::get<HardwareAddress>(val);
 
   // Utils::StringToHardwareAddress(val, m_header.dstMac, PHYSICAL_ADDR_LEN);
-  Utils::Write(m_header.dstMac, data.GetData(), PHYSICAL_ADDR_LEN);
+  Utils::Write(m_header.dstMac, data.GetData().data(), PHYSICAL_ADDR_LEN);
   GetField("Dst")->SetValue(val);
 }
 
@@ -54,7 +54,7 @@ void EthernetPacket::SetSrc(const FieldData &val)
 {
   HardwareAddress data = std::get<HardwareAddress>(val);
   // Utils::StringToHardwareAddress(val, m_header.srcMac, PHYSICAL_ADDR_LEN);
-  Utils::Write(m_header.srcMac, data.GetData(), PHYSICAL_ADDR_LEN);
+  Utils::Write(m_header.srcMac, data.GetData().data(), PHYSICAL_ADDR_LEN);
   GetField("Src")->SetValue(val);
 }
 

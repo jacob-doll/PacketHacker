@@ -20,8 +20,7 @@ void ArpTable::RefreshTable()
   if (GetIpNetTable(IpNetTable, &size, FALSE) == NO_ERROR) {
     for (int i = 0; i < IpNetTable->dwNumEntries; i++) {
       MIB_IPNETROW IpNetRow = IpNetTable->table[i];
-      if (IpNetRow.dwIndex != m_ifIndex) continue;
-      m_entries.emplace_back(ArpEntry{ HardwareAddress(IpNetRow.bPhysAddr), IPv4Address(IpNetRow.dwAddr) });
+      m_entries.emplace_back(ArpEntry{ HardwareAddress(IpNetRow.bPhysAddr), IPv4Address(IpNetRow.dwAddr), IpNetRow.dwIndex });
     }
   }
 
@@ -30,17 +29,17 @@ void ArpTable::RefreshTable()
   }
 }
 
-void ArpTable::FlushTable()
+void ArpTable::FlushTable(uint32_t ifIndex)
 {
-  FlushIpNetTable(m_ifIndex);
+  FlushIpNetTable(ifIndex);
 }
 
-void ArpTable::AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress)
+void ArpTable::AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress, uint32_t ifIndex)
 {
   MIB_IPNETROW IpNetRow{};
-  IpNetRow.dwIndex = m_ifIndex;
+  IpNetRow.dwIndex = ifIndex;
   IpNetRow.dwPhysAddrLen = PHYSICAL_ADDR_LEN;
-  Utils::Write(IpNetRow.bPhysAddr, hwAddress.GetData(), PHYSICAL_ADDR_LEN);
+  Utils::Write(IpNetRow.bPhysAddr, hwAddress.GetData().data(), PHYSICAL_ADDR_LEN);
   IpNetRow.dwAddr = BYTE_SWAP_32(ipAddress.GetData());
   IpNetRow.dwType = MIB_IPNET_TYPE_STATIC;
   DWORD ret = CreateIpNetEntry(&IpNetRow);
@@ -49,10 +48,10 @@ void ArpTable::AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwA
   }
 }
 
-void ArpTable::DeleteEntry(const IPv4Address &ipAddress)
+void ArpTable::DeleteEntry(const IPv4Address &ipAddress, uint32_t ifIndex)
 {
   MIB_IPNETROW IpNetRow{};
-  IpNetRow.dwIndex = m_ifIndex;
+  IpNetRow.dwIndex = ifIndex;
   IpNetRow.dwAddr = BYTE_SWAP_32(ipAddress.GetData());
   DWORD ret = DeleteIpNetEntry(&IpNetRow);
   if (ret == NO_ERROR) {

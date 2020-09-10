@@ -1,12 +1,12 @@
 #pragma once
 
 #include <string>
+#include <array>
 
 #define PHYSICAL_ADDR_LEN 6
 
 namespace PacketHacker {
 namespace Utils {
-  std::string HardwareAddressToString(const uint8_t *hwAddress, size_t size);
   void StringToHardwareAddress(const std::string &hwAddress, uint8_t *buf, size_t bufSize);
 }// namespace Utils
 
@@ -14,20 +14,35 @@ class HardwareAddress
 {
 public:
   HardwareAddress();
-  explicit HardwareAddress(const uint8_t *address);
-  explicit HardwareAddress(const std::string &address);
+  HardwareAddress(const uint8_t b1,
+    const uint8_t b2,
+    const uint8_t b3,
+    const uint8_t b4,
+    const uint8_t b5,
+    const uint8_t b6);
+  HardwareAddress(const std::array<uint8_t, PHYSICAL_ADDR_LEN> &data);
+  HardwareAddress(const std::string &address);
+  explicit HardwareAddress(const uint8_t *data);
 
-  const uint8_t *GetData() const { return m_data; }
-  std::string ToString() const { return Utils::HardwareAddressToString(m_data, PHYSICAL_ADDR_LEN); }
+  const std::array<uint8_t, PHYSICAL_ADDR_LEN> &GetData() const { return m_data; }
+  std::string ToString() const;
 
   static bool IsHardwareAddressValid(const std::string &hwAddress);
-  const static HardwareAddress &GetBroadCastAddress() { return s_hardwareAddress; }
+
+  bool operator==(const HardwareAddress &rhs) const
+  {
+    return m_data == rhs.m_data;
+  }
+
+  bool operator!=(const HardwareAddress &rhs) const
+  {
+    return !((*this) == rhs);
+  }
+
+  friend std::ostream &operator<<(std::ostream &output, const HardwareAddress &hwAddress);
 
 private:
-  uint8_t m_data[PHYSICAL_ADDR_LEN];
-
-private:
-  const static HardwareAddress s_hardwareAddress;
+  std::array<uint8_t, PHYSICAL_ADDR_LEN> m_data;
 };
 
 

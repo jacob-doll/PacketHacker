@@ -1,5 +1,9 @@
 #include "hardware_address.h"
 
+#include <iostream>
+#include <sstream>
+#include "packet/utils/buffer_utils.h"
+
 namespace PacketHacker {
 namespace Utils {
   std::string HardwareAddressToString(const uint8_t *hwAddress, size_t size)
@@ -23,22 +27,49 @@ namespace Utils {
 }// namespace Utils
 
 HardwareAddress::HardwareAddress()
-  : HardwareAddress(0)
 {
+  m_data.fill(0);
 }
 
-HardwareAddress::HardwareAddress(const uint8_t *address)
+HardwareAddress::HardwareAddress(const uint8_t b1,
+  const uint8_t b2,
+  const uint8_t b3,
+  const uint8_t b4,
+  const uint8_t b5,
+  const uint8_t b6)
 {
-  if (address) {
-    std::memcpy(m_data, address, PHYSICAL_ADDR_LEN);
-  } else {
-    std::memset(m_data, 0, PHYSICAL_ADDR_LEN);
-  }
+  m_data.at(0) = b1;
+  m_data.at(1) = b2;
+  m_data.at(2) = b3;
+  m_data.at(3) = b4;
+  m_data.at(4) = b5;
+  m_data.at(5) = b6;
+}
+
+HardwareAddress::HardwareAddress(const std::array<uint8_t, PHYSICAL_ADDR_LEN> &data)
+  : m_data(data)
+{
 }
 
 HardwareAddress::HardwareAddress(const std::string &address)
 {
-  Utils::StringToHardwareAddress(address, m_data, PHYSICAL_ADDR_LEN);
+  Utils::StringToHardwareAddress(address, m_data.data(), PHYSICAL_ADDR_LEN);
+}
+
+HardwareAddress::HardwareAddress(const uint8_t *data)
+{
+  if (data) {
+    Utils::Write(m_data.data(), data, PHYSICAL_ADDR_LEN);
+  } else {
+    m_data.fill(0);
+  }
+}
+
+std::string HardwareAddress::ToString() const
+{
+  std::ostringstream string_stream;
+  string_stream << (*this);
+  return string_stream.str();
 }
 
 bool HardwareAddress::IsHardwareAddressValid(const std::string &hwAddress)
@@ -51,6 +82,21 @@ bool HardwareAddress::IsHardwareAddressValid(const std::string &hwAddress)
   return true;
 }
 
-const HardwareAddress HardwareAddress::s_hardwareAddress = HardwareAddress("ff:ff:ff:ff:ff:ff");
+std::ostream &operator<<(std::ostream &output, const HardwareAddress &hwAddress)
+{
+  constexpr uint32_t bufferSize = 6 * 3;
+  char buffer[bufferSize];
+  snprintf(buffer,
+    bufferSize,
+    "%02x:%02x:%02x:%02x:%02x:%02x",
+    hwAddress.m_data.at(0),
+    hwAddress.m_data.at(1),
+    hwAddress.m_data.at(2),
+    hwAddress.m_data.at(3),
+    hwAddress.m_data.at(4),
+    hwAddress.m_data.at(5));
+  output << buffer;
+  return output;
+}
 
 }// namespace PacketHacker

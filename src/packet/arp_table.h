@@ -12,24 +12,29 @@ struct ArpEntry
 {
   HardwareAddress hwAddress;
   IPv4Address ipAddress;
+  uint32_t ifIndex;
 };
 
 class ArpTable
 {
 public:
-  ArpTable(const uint32_t ifIndex);
-
   void RefreshTable();
-  void FlushTable();
+  void FlushTable(uint32_t ifIndex);
 
-  void AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress);
-  void DeleteEntry(const IPv4Address &ipAddress);
+  void AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress, uint32_t ifIndex);
+  void DeleteEntry(const IPv4Address &ipAddress, uint32_t ifIndex);
   ArpEntry *GetEntry(const IPv4Address &ipAddress);
 
   std::vector<ArpEntry> &GetEntries() { return m_entries; }
 
+  static ArpTable &GetInstance()
+  {
+    static ArpTable instance;
+    return instance;
+  }
+
 private:
-  const uint32_t m_ifIndex;
+  ArpTable();
   std::vector<ArpEntry> m_entries;
 };
 

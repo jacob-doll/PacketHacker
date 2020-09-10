@@ -5,7 +5,6 @@
 
 #include "packet.h"
 #include "arp_table.h"
-#include "routing_table.h"
 
 struct pcap;
 
@@ -33,17 +32,17 @@ public:
   Interface(const InterfaceInfo &info);
 
   // Getters for adapter info
-  const uint32_t GetIndex() { return m_info.index; }
-  const HardwareAddress &GetAddress() { return m_info.address; }
-  const IPv4Address &GetUnicastAddress() { return m_info.unicastAddress; }
-  const IPv4Address &GetAnycastAddress() { return m_info.anycastAddress; }
-  const IPv4Address &GetMulticastAddress() { return m_info.multicastAddress; }
-  const IPv4Address &GetDnsServerAddress() { return m_info.dnsServerAddress; }
-  const IPv4Address &GetGatewayAddress() { return m_info.gatewayAddress; }
-  const std::string &GetName() { return m_info.name; }
-  const std::wstring &GetDnsSuffix() { return m_info.dnsSuffix; }
-  const std::wstring &GetDescription() { return m_info.description; }
-  const std::wstring &GetFriendlyName() { return m_info.friendlyName; }
+  const uint32_t GetIndex() const { return m_info.index; }
+  const HardwareAddress &GetAddress() const { return m_info.address; }
+  const IPv4Address &GetUnicastAddress() const { return m_info.unicastAddress; }
+  const IPv4Address &GetAnycastAddress() const { return m_info.anycastAddress; }
+  const IPv4Address &GetMulticastAddress() const { return m_info.multicastAddress; }
+  const IPv4Address &GetDnsServerAddress() const { return m_info.dnsServerAddress; }
+  const IPv4Address &GetGatewayAddress() const { return m_info.gatewayAddress; }
+  const std::string &GetName() const { return m_info.name; }
+  const std::wstring &GetDnsSuffix() const { return m_info.dnsSuffix; }
+  const std::wstring &GetDescription() const { return m_info.description; }
+  const std::wstring &GetFriendlyName() const { return m_info.friendlyName; }
 
   // Packet Streams
   bool OpenPacketStream(char *errbuf);
@@ -52,18 +51,12 @@ public:
   const uint8_t *GetNextPacket(uint32_t *size, char *errbuf);
   bool IsStreamOpen() const { return m_streamOpen; }
 
-  // Arp table for given adapter
-  ArpTable &GetArpTable() { return m_arpTable; }
-  RoutingTable &GetRoutingTable() { return m_routingTable; }
-
-  static const Interface DefaultInterface() { return s_availableInterfaces[0]; }
-  static const Interface BestInterface(IPv4Address &address);
+  static const Interface &DefaultInterface() { return s_availableInterfaces.at(0); }
+  static const Interface &BestInterface(IPv4Address &address);
   static const std::vector<Interface> &GetAvailableInterfaces() { return s_availableInterfaces; }
 
 private:
   const InterfaceInfo m_info;
-  ArpTable m_arpTable;
-  RoutingTable m_routingTable;
 
   pcap *m_handle;
   bool m_streamOpen;

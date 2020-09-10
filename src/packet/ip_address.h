@@ -20,7 +20,7 @@ public:
   const uint32_t GetData() const { return m_data; }
   std::string ToString() const;
 
-  static bool IsIpv4AddressValid(const std::string &hwAddress);
+  static bool IsIpv4AddressValid(const std::string &ipAddress);
 
   bool operator<(const IPv4Address &rhs) const
   {

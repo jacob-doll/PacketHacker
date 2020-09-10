@@ -1,20 +1,31 @@
 #include "packet/packet.h"
 #include "packet/packets.h"
 #include "packet/interface.h"
+#include "packet/routing_table.h"
+
+#include <iostream>
 
 int main()
 {
   using namespace PacketHacker;
-  IPv4Address a1;
-  IPv4Address a2(1, 1, 1, 1);
-  IPv4Address a3(std::array<uint8_t, 4>{});
-  IPv4Address a4 = { 1, 1, 1, 1 };
-  IPv4Address a5("1.1.1.1");
-  IPv4Address a6 = "1.1.1.1";
-  IPv4Address a7(a1.GetData());
+  Interface interface = Interface::BestInterface(IPv4Address(8, 8, 8, 8));
+  std::cout << interface.GetUnicastAddress() << "\n";
 
-  IPv4Address mask(255, 0, 0, 0);
-  IPv4Address a2mask = a2 & mask;
+  std::cout << "ROUTING TABLE\n";
+  for (RouteEntry entry : RoutingTable::GetInstance().GetEntries()) {
+    std::cout << entry.networkDest << "\t";
+    std::cout << entry.netmask << "\t";
+    std::cout << entry.nextHop << "\t";
+    std::cout << entry.metric << "\t";
+    std::cout << entry.ifIndex << "\n";
+  }
+  std::cout << "\n";
+  std::cout << "ARP TABLE\n";
+  for (ArpEntry entry : ArpTable::GetInstance().GetEntries()) {
+    std::cout << entry.ipAddress << "\t";
+    std::cout << entry.hwAddress << "\t";
+    std::cout << entry.ifIndex << "\n";
+  }
 
   return 0;
 }

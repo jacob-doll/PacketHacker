@@ -142,48 +142,7 @@ const uint8_t *Interface::GetNextPacket(uint32_t *size, char *errbuf)
   return nullptr;
 }
 
-// const std::vector<ArpEntry> Interface::GetArpTable()
-// {
-//   std::vector<ArpEntry> output;
-//   ULONG size = 0;
-//   PMIB_IPNETTABLE IpNetTable = nullptr;
-
-//   GetIpNetTable(nullptr, &size, FALSE);
-//   IpNetTable = (MIB_IPNETTABLE *)malloc(size);
-
-//   if (GetIpNetTable(IpNetTable, &size, FALSE) == NO_ERROR) {
-//     for (int i = 0; i < IpNetTable->dwNumEntries; i++) {
-//       MIB_IPNETROW IpNetRow = IpNetTable->table[i];
-//       if (IpNetRow.dwIndex != m_info.index) continue;
-//       ArpEntry entry{};
-//       entry.hwAddress = HardwareAddress(IpNetRow.bPhysAddr);
-//       entry.ipAddress = IPv4Address(IpNetRow.dwAddr);
-//       switch (IpNetRow.dwType) {
-//       case MIB_IPNET_TYPE_OTHER:
-//         entry.type = "OTHER";
-//         break;
-//       case MIB_IPNET_TYPE_INVALID:
-//         entry.type = "INVALID";
-//         break;
-//       case MIB_IPNET_TYPE_DYNAMIC:
-//         entry.type = "DYNAMIC";
-//         break;
-//       case MIB_IPNET_TYPE_STATIC:
-//         entry.type = "STATIC";
-//         break;
-//       }
-//       output.emplace_back(entry);
-//     }
-//   }
-
-//   if (IpNetTable) {
-//     free(IpNetTable);
-//   }
-
-//   return output;
-// }
-
-const Interface Interface::BestInterface(IPv4Address &address)
+const Interface &Interface::BestInterface(IPv4Address &address)
 {
   DWORD dwBestIfIndex;
   GetBestInterface((IPAddr)address.GetData(), &dwBestIfIndex);
@@ -191,7 +150,7 @@ const Interface Interface::BestInterface(IPv4Address &address)
   for (auto it = s_availableInterfaces.begin(); it != s_availableInterfaces.end(); it++) {
     if (it->m_info.index == dwBestIfIndex) return *it;
   }
-  return Interface();
+  return s_availableInterfaces.at(0);
 }
 
 }// namespace PacketHacker

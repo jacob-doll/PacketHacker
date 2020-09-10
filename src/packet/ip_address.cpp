@@ -57,10 +57,10 @@ std::string IPv4Address::ToString() const
   return string_stream.str();
 }
 
-bool IPv4Address::IsIpv4AddressValid(const std::string &hwAddress)
+bool IPv4Address::IsIpv4AddressValid(const std::string &ipAddress)
 {
   uint32_t b1, b2, b3, b4 = 0;
-  int rc = sscanf(hwAddress.c_str(), "%u.%u.%u.%u", &b1, &b2, &b3, &b4);
+  int rc = sscanf(ipAddress.c_str(), "%u.%u.%u.%u", &b1, &b2, &b3, &b4);
   if (rc != 4 || b1 > 255 || b2 > 255 || b3 > 255 || b4 > 255) {
     return false;
   }

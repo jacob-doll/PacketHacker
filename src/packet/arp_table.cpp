@@ -2,9 +2,10 @@
 
 namespace PacketHacker {
 
-ArpTable::ArpTable(const uint32_t ifIndex)
-  : m_ifIndex(ifIndex)
-{}
+ArpTable::ArpTable()
+{
+  RefreshTable();
+}
 
 ArpEntry *ArpTable::GetEntry(const IPv4Address &ipAddress)
 {
