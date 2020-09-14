@@ -1,4 +1,4 @@
-#include "packet/routing_table.h"
+#include "routing_table.h"
 
 namespace PacketHacker {
 

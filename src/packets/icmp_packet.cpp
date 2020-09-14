@@ -1,7 +1,7 @@
-#include "icmp_packet.h"
-#include "packet/utils/buffer_utils.h"
-#include "packet/utils/adapter_utils.h"
-#include "data_packet.h"
+#include "packets/icmp_packet.h"
+#include "utils/buffer_utils.h"
+#include "utils/adapter_utils.h"
+#include "packets/data_packet.h"
 
 namespace PacketHacker {
 

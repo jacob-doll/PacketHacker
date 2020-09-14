@@ -8,63 +8,30 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Mod
 find_package(PCAP REQUIRED)
 include_directories(${PROJECT_NAME} ${PCAP_INCLUDE_DIR})
 
-find_package(wxWidgets COMPONENTS core base propgrid aui REQUIRED)
-include(${wxWidgets_USE_FILE})
+include_directories(${PROJECT_SOURCE_DIR}/include/packethacker)
 
-include_directories(${PROJECT_SOURCE_DIR}/src)
+add_subdirectory(src)
 
 option(BUILD_SANDBOX "Build sandbox test of packet generation." ON)
 
-set(PACKET_SRCS
-    src/packet/arp_table.cpp
-    src/packet/hardware_address.cpp
-    src/packet/interface_table.cpp
-    src/packet/ip_address.cpp
-    src/packet/packet.cpp
-    src/packet/packet_queue.cpp
-    src/packet/packet_stream.cpp
-    src/packet/routing_table.cpp
-    src/packet/packets/arp_packet.cpp
-    src/packet/packets/data_packet.cpp
-    src/packet/packets/eth_packet.cpp
-    src/packet/packets/icmp_packet.cpp
-    src/packet/packets/ip_packet.cpp
-    src/packet/packets/udp_packet.cpp
-    src/packet/utils/adapter_utils.cpp
-    src/packet/utils/packet_utils.cpp
-)
-
-set(SANDBOX_SRCS
-    sandbox/sandbox.cpp
-)
-
-set(APP_SRCS 
-    src/main.cpp
-    src/app/main_window.cpp
-    src/app/context.cpp
-    src/app/ui/byte_viewer.cpp
-    src/app/ui/packet_tree.cpp
-    src/app/ui/details_pane.cpp
-    src/app/ui/received_pane.cpp
-    src/app/ui/stream_pane.cpp
-)
-
-if (WIN32)
-    set(PLATFORM_SRCS
-        src/packet/platform/win32interface.cpp
-        src/packet/platform/win32arp_table.cpp
-        src/packet/platform/win32routing_table.cpp
-    )
-
-    add_library(PacketHackerLib STATIC ${PACKET_SRCS} ${PLATFORM_SRCS})
-    target_link_libraries(PacketHackerLib ${PCAP_LIBRARY} IPHLPAPI Ws2_32)
-
-    # add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS})
-    # target_link_libraries(${PROJECT_NAME} PacketHackerLib ${wxWidgets_LIBRARIES})
-
-    if (BUILD_SANDBOX)
-        add_executable(SANDBOX ${SANDBOX_SRCS})
-        target_link_libraries(SANDBOX PacketHackerLib)
-    endif()
+if (BUILD_SANDBOX)
+    add_subdirectory(sandbox)
 endif()
+
+# find_package(wxWidgets COMPONENTS core base propgrid aui REQUIRED)
+# include(${wxWidgets_USE_FILE})
+
+# set(APP_SRCS 
+#     src/main.cpp
+#     src/app/main_window.cpp
+#     src/app/context.cpp
+#     src/app/ui/byte_viewer.cpp
+#     src/app/ui/packet_tree.cpp
+#     src/app/ui/details_pane.cpp
+#     src/app/ui/received_pane.cpp
+#     src/app/ui/stream_pane.cpp
+# )
+
+# add_executable(${PROJECT_NAME} WIN32 ${APP_SRCS})
+# target_link_libraries(${PROJECT_NAME} PacketHackerLib ${wxWidgets_LIBRARIES})
 

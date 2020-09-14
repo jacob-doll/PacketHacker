@@ -1,5 +1,5 @@
-#include "data_packet.h"
-#include "packet/utils/buffer_utils.h"
+#include "packets/data_packet.h"
+#include "utils/buffer_utils.h"
 
 namespace PacketHacker {
 

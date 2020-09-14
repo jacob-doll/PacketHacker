@@ -44,8 +44,6 @@ public:
   HeaderField *GetField(const std::string &name) const;
   std::vector<HeaderField *> GetFields() const { return m_fields; }
 
-  std::string ToString() const;
-
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer) = 0;
 

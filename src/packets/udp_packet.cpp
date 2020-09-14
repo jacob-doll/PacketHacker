@@ -1,9 +1,9 @@
-#include "udp_packet.h"
-#include "data_packet.h"
-#include "ip_packet.h"
-#include "packet/utils/buffer_utils.h"
-#include "packet/utils/adapter_utils.h"
-#include "packet/constants.h"
+#include "packets/udp_packet.h"
+#include "packets/data_packet.h"
+#include "packets/ip_packet.h"
+#include "utils/buffer_utils.h"
+#include "utils/adapter_utils.h"
+#include "constants.h"
 
 namespace PacketHacker {
 
@@ -16,9 +16,9 @@ UdpPacket::UdpPacket()
   // HeaderField *checksum = new HeaderFieldImpl<UdpPacket>(this, "Udp Checksum", 0u, FieldType::FIELD_INT16, &UdpPacket::SetChecksum, false);
 
   HeaderField *srcPort = HEADER_FIELD_INT16(UdpPacket, "Src Port", 0u, true, SetSrcPort);
-  HeaderField *dstPort = HEADER_FIELD_INT16(UdpPacket, "Src Port", 0u, true, SetSrcPort);
-  HeaderField *length = HEADER_FIELD_INT16(UdpPacket, "Udp Length", 0u, true, SetSrcPort);
-  HeaderField *checksum = HEADER_FIELD_INT16(UdpPacket, "Udp Checksum", 0u, true, SetSrcPort);
+  HeaderField *dstPort = HEADER_FIELD_INT16(UdpPacket, "Dst Port", 0u, true, SetDstPort);
+  HeaderField *length = HEADER_FIELD_INT16(UdpPacket, "Udp Length", 0u, true, SetLength);
+  HeaderField *checksum = HEADER_FIELD_INT16(UdpPacket, "Udp Checksum", 0u, true, SetChecksum);
 
   m_fields = { srcPort, dstPort, length, checksum };
   Init();

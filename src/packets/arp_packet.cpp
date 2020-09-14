@@ -1,6 +1,6 @@
-#include "arp_packet.h"
-#include "packet/utils/buffer_utils.h"
-#include "packet/utils/adapter_utils.h"
+#include "packets/arp_packet.h"
+#include "utils/buffer_utils.h"
+#include "utils/adapter_utils.h"
 
 namespace PacketHacker {
 

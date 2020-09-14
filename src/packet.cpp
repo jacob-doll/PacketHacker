@@ -86,19 +86,4 @@ void Packet::WriteToBuf(uint8_t *buffer, const uint32_t size)
   DoWriteToBuf(buffer);
 }
 
-std::string Packet::ToString() const
-{
-  std::stringstream ss;
-  ss << GetName() << ": " << HeaderSize() << " {\n";
-  for (HeaderField *field : GetFields()) {
-    ss << "\t" << field->GetName() << ": " /*<< field->GetCurrentVal()*/ << "\n";
-  }
-  if (m_innerPacket) {
-    ss << m_innerPacket->ToString();
-  }
-  ss << "}";
-  return ss.str();
-}
-
-
 }// namespace PacketHacker

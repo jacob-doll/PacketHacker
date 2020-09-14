@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include <sstream>
-#include "packet/utils/buffer_utils.h"
+#include "utils/buffer_utils.h"
 
 namespace PacketHacker {
 namespace Utils {

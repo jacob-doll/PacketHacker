@@ -1,9 +1,9 @@
-#include "packet/packet.h"
-#include "packet/packets.h"
-#include "packet/interface_table.h"
-#include "packet/routing_table.h"
-#include "packet/arp_table.h"
-#include "packet/packet_stream.h"
+#include "packet.h"
+#include "packets.h"
+#include "interface_table.h"
+#include "routing_table.h"
+#include "arp_table.h"
+#include "packet_stream.h"
 
 #include <iostream>
 
@@ -24,7 +24,7 @@ int main()
     uint32_t size;
     const uint8_t *data = stream.GetNextPacket(&size, errbuf);
     if (data) {
-      std::cout << size << "\n";
+      std::cout << "Recieved packet: " << size << "\n";
     }
   }
 

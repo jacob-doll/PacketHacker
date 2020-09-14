@@ -1,8 +1,8 @@
 #pragma once
 
-#include "packet/packet.h"
-#include "packet/packets.h"
-#include "packet/constants.h"
+#include "packet.h"
+#include "packets.h"
+#include "constants.h"
 
 namespace PacketHacker {
 namespace Utils {

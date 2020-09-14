@@ -1,10 +1,10 @@
-#include "packet/arp_table.h"
+#include "arp_table.h"
 
 #include <winsock2.h>
 #include <iphlpapi.h>
 #include <WS2tcpip.h>
 
-#include "packet/utils/buffer_utils.h"
+#include "utils/buffer_utils.h"
 
 namespace PacketHacker {
 
