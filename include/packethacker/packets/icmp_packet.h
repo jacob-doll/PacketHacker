@@ -2,6 +2,8 @@
 
 #include "packet.h"
 
+#include "utils/buffer_utils.h"
+
 namespace PacketHacker {
 
 class IcmpPacket : public Packet
@@ -9,6 +11,11 @@ class IcmpPacket : public Packet
 public:
   IcmpPacket();
   IcmpPacket(const uint8_t *data, uint32_t size);
+
+  uint8_t GetType() { return m_header.type; }
+  uint8_t GetCode() { return m_header.code; }
+  uint16_t GetChecksum() { return BYTE_SWAP_16(m_header.checksum); }
+  uint32_t GetData() { return BYTE_SWAP_32(m_header.data); }
 
   void SetType(const uint8_t type);
   void SetCode(const uint8_t code);

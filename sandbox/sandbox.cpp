@@ -22,6 +22,13 @@ int main()
     return 1;
   }
 
+  while (stream.IsStreamOpen()) {
+    uint32_t size;
+    const uint8_t *data = stream.GetNextPacket(&size, errbuf);
+    EthernetPacket eth(data, size);
+    std::cout << "Eth{" << eth.GetDst() << ", " << eth.GetSrc() << "}\n";
+  }
+
   stream.ClosePacketStream();
 
   return 0;

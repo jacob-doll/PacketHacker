@@ -3,6 +3,7 @@
 #include "packet.h"
 
 #include "ip_address.h"
+#include "utils/buffer_utils.h"
 
 namespace PacketHacker {
 
@@ -11,6 +12,19 @@ class IpPacket : public Packet
 public:
   IpPacket();
   IpPacket(const uint8_t *data, uint32_t size);
+
+  uint8_t GetVersion() { return m_header.version; }
+  uint8_t GetHeaderLength() { return m_header.headerLength; }
+  uint8_t GetDiffServices() { return m_header.diffServices; }
+  uint16_t GetTotalLength() { return BYTE_SWAP_16(m_header.totalLength); }
+  uint16_t GetId() { return BYTE_SWAP_16(m_header.id); }
+  uint16_t GetFlags() { return BYTE_SWAP_16(m_header.flags); }
+  uint16_t GetFragOffset() { return BYTE_SWAP_16(m_header.fragOffset); }
+  uint8_t GetTtl() { return m_header.ttl; }
+  uint8_t GetProtocol() { return m_header.protocol; }
+  uint16_t GetChecksum() { return BYTE_SWAP_16(m_header.checksum); }
+  IPv4Address GetSourceIp() { return IPv4Address(m_header.sourceIp); }
+  IPv4Address GetDestIp() { return IPv4Address(m_header.destIp); }
 
   void SetVersion(const uint8_t version);
   void SetHeaderLength(const uint8_t headerLength);
@@ -24,9 +38,6 @@ public:
   void SetChecksum(const uint16_t checksum);
   void SetSourceIp(const IPv4Address &sourceIp);
   void SetDestIp(const IPv4Address &destIp);
-
-  const uint32_t GetSourceIp() const { return m_header.sourceIp; }
-  const uint32_t GetDestIp() const { return m_header.destIp; }
 
   virtual const PacketType GetPacketType() const override { return PacketType::IP; }
   virtual const std::string GetName() const override { return "IPv4"; }

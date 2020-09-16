@@ -2,6 +2,8 @@
 
 #include "packet.h"
 
+#include "utils/buffer_utils.h"
+
 namespace PacketHacker {
 
 class UdpPacket : public Packet
@@ -9,6 +11,11 @@ class UdpPacket : public Packet
 public:
   UdpPacket();
   UdpPacket(const uint8_t *data, uint32_t size);
+
+  uint16_t GetSrcPort() { return BYTE_SWAP_16(m_header.srcPort); }
+  uint16_t GetDstPort() { return BYTE_SWAP_16(m_header.dstPort); }
+  uint16_t GetLength() { return BYTE_SWAP_16(m_header.length); }
+  uint16_t GetChecksum() { return BYTE_SWAP_16(m_header.checksum); }
 
   void SetSrcPort(const uint16_t srcPort);
   void SetDstPort(const uint16_t dstPort);
