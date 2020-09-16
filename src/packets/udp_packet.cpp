@@ -27,7 +27,7 @@ UdpPacket::UdpPacket()
 UdpPacket::UdpPacket(const uint8_t *data, uint32_t size)
   : UdpPacket()
 {
-  uint32_t headerSize = HeaderSize();
+  uint32_t headerSize = sizeof(UdpHeader);
   if (size < headerSize) {
     return;
   }
@@ -48,33 +48,33 @@ UdpPacket::UdpPacket(const uint8_t *data, uint32_t size)
 
   size = size - headerSize;
   if (size > 0) {
-    SetInnerPacket(new DataPacket((uint8_t *)(data + headerSize), size));
+    innerPacket(new DataPacket((uint8_t *)(data + headerSize), size));
   }
 }
 
-void UdpPacket::SetSrcPort(const uint16_t srcPort)
+void UdpPacket::srcPort(const uint16_t srcPort)
 {
   m_header.srcPort = BYTE_SWAP_16(srcPort);
 }
 
-void UdpPacket::SetDstPort(const uint16_t dstPort)
+void UdpPacket::dstPort(const uint16_t dstPort)
 {
   m_header.dstPort = BYTE_SWAP_16(dstPort);
 }
 
-void UdpPacket::SetLength(const uint16_t length)
+void UdpPacket::length(const uint16_t length)
 {
   m_header.length = BYTE_SWAP_16(length);
 }
 
-void UdpPacket::SetChecksum(const uint16_t checksum)
+void UdpPacket::checksum(const uint16_t checksum)
 {
   m_header.checksum = BYTE_SWAP_16(checksum);
 }
 
-bool UdpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
+bool UdpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
 {
-  uint16_t headerSize = HeaderSize();
+  uint16_t headerSize = sizeof(UdpHeader);
   if (size < headerSize) {
     return false;
   }
@@ -83,15 +83,15 @@ bool UdpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
   size = size - headerSize;
 
   if (m_header.dstPort == header->srcPort && m_header.srcPort == header->dstPort) {
-    return GetInnerPacket() ? GetInnerPacket()->DoesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
+    return innerPacket() ? innerPacket()->doesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
   }
 
   return false;
 }
 
-void UdpPacket::DoWriteToBuf(uint8_t *buffer)
+void UdpPacket::doWriteToBuf(uint8_t *buffer)
 {
-  uint16_t size = Size();
+  uint16_t size = this->size();
   m_header.checksum = 0x0000;
   m_header.length = BYTE_SWAP_16(size);
   // GetField("Udp Length")->SetValue(size);
@@ -100,10 +100,10 @@ void UdpPacket::DoWriteToBuf(uint8_t *buffer)
 
 
   std::vector<uint8_t> psuedo_header(size + 12);
-  if (GetOuterPacket()->GetPacketType() == PacketType::IP) {
-    IpPacket *ip = static_cast<IpPacket *>(GetOuterPacket());
-    Utils::WriteValue(&psuedo_header[0], ip->GetSourceIp());
-    Utils::WriteValue(&psuedo_header[4], ip->GetDestIp());
+  if (outerPacket()->packetType() == PacketType::IP) {
+    IpPacket *ip = static_cast<IpPacket *>(outerPacket());
+    Utils::WriteValue(&psuedo_header[0], ip->sourceIp());
+    Utils::WriteValue(&psuedo_header[4], ip->destIp());
     Utils::WriteValue(&psuedo_header[8], (uint8_t)0);
     Utils::WriteValue(&psuedo_header[9], (uint8_t)Constants::IP::TYPE_UDP);
     Utils::WriteValue(&psuedo_header[10], (uint16_t)m_header.length);

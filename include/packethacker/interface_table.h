@@ -27,14 +27,14 @@ struct Interface
 class InterfaceTable
 {
 public:
-  void RefreshTable();
-  Interface *BestInterface(IPv4Address &address);
+  void refreshTable();
+  Interface *bestInterface(IPv4Address &address);
 
-  Interface *GetInterface(const uint32_t ifIndex);
+  Interface *getInterface(const uint32_t ifIndex);
 
-  std::vector<Interface> &GetInterfaces() { return m_interfaces; }
+  std::vector<Interface> &interfaces() { return m_interfaces; }
 
-  static InterfaceTable &GetInstance()
+  static InterfaceTable &instance()
   {
     static InterfaceTable instance;
     return instance;

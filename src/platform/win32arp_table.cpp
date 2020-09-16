@@ -8,7 +8,7 @@
 
 namespace PacketHacker {
 
-void ArpTable::RefreshTable()
+void ArpTable::refreshTable()
 {
   ULONG size = 0;
   PMIB_IPNETTABLE IpNetTable = nullptr;
@@ -29,33 +29,33 @@ void ArpTable::RefreshTable()
   }
 }
 
-void ArpTable::FlushTable(uint32_t ifIndex)
+void ArpTable::flushTable(uint32_t ifIndex)
 {
   FlushIpNetTable(ifIndex);
 }
 
-void ArpTable::AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress, uint32_t ifIndex)
+void ArpTable::addEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress, uint32_t ifIndex)
 {
   MIB_IPNETROW IpNetRow{};
   IpNetRow.dwIndex = ifIndex;
   IpNetRow.dwPhysAddrLen = PHYSICAL_ADDR_LEN;
-  Utils::Write(IpNetRow.bPhysAddr, hwAddress.GetData().data(), PHYSICAL_ADDR_LEN);
-  IpNetRow.dwAddr = BYTE_SWAP_32(ipAddress.GetData());
+  Utils::Write(IpNetRow.bPhysAddr, hwAddress.ptr(), PHYSICAL_ADDR_LEN);
+  IpNetRow.dwAddr = BYTE_SWAP_32(ipAddress.data());
   IpNetRow.dwType = MIB_IPNET_TYPE_STATIC;
   DWORD ret = CreateIpNetEntry(&IpNetRow);
   if (ret == NO_ERROR) {
-    RefreshTable();
+    refreshTable();
   }
 }
 
-void ArpTable::DeleteEntry(const IPv4Address &ipAddress, uint32_t ifIndex)
+void ArpTable::deleteEntry(const IPv4Address &ipAddress, uint32_t ifIndex)
 {
   MIB_IPNETROW IpNetRow{};
   IpNetRow.dwIndex = ifIndex;
-  IpNetRow.dwAddr = BYTE_SWAP_32(ipAddress.GetData());
+  IpNetRow.dwAddr = BYTE_SWAP_32(ipAddress.data());
   DWORD ret = DeleteIpNetEntry(&IpNetRow);
   if (ret == NO_ERROR) {
-    RefreshTable();
+    refreshTable();
   }
 }
 

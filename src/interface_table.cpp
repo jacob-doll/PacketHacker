@@ -7,10 +7,10 @@ namespace PacketHacker {
 
 InterfaceTable::InterfaceTable()
 {
-  RefreshTable();
+  refreshTable();
 }
 
-Interface *InterfaceTable::GetInterface(const uint32_t ifIndex)
+Interface *InterfaceTable::getInterface(const uint32_t ifIndex)
 {
   auto first = m_interfaces.begin();
   while (first != m_interfaces.end()) {

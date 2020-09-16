@@ -18,16 +18,16 @@ struct ArpEntry
 class ArpTable
 {
 public:
-  void RefreshTable();
-  void FlushTable(uint32_t ifIndex);
+  void refreshTable();
+  void flushTable(uint32_t ifIndex);
 
-  void AddEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress, uint32_t ifIndex);
-  void DeleteEntry(const IPv4Address &ipAddress, uint32_t ifIndex);
-  ArpEntry *GetEntry(const IPv4Address &ipAddress);
+  void addEntry(const IPv4Address &ipAddress, const HardwareAddress &hwAddress, uint32_t ifIndex);
+  void deleteEntry(const IPv4Address &ipAddress, uint32_t ifIndex);
+  ArpEntry *getEntry(const IPv4Address &ipAddress);
 
-  std::vector<ArpEntry> &GetEntries() { return m_entries; }
+  std::vector<ArpEntry> &entries() { return m_entries; }
 
-  static ArpTable &GetInstance()
+  static ArpTable &instance()
   {
     static ArpTable instance;
     return instance;

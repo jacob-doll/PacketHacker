@@ -8,7 +8,7 @@
 
 namespace PacketHacker {
 
-void InterfaceTable::RefreshTable()
+void InterfaceTable::refreshTable()
 {
   ULONG size = 0;
   PIP_ADAPTER_ADDRESSES pAddresses = nullptr;
@@ -56,11 +56,11 @@ void InterfaceTable::RefreshTable()
   }
 }
 
-Interface *InterfaceTable::BestInterface(IPv4Address &address)
+Interface *InterfaceTable::bestInterface(IPv4Address &address)
 {
   DWORD dwBestIfIndex;
-  GetBestInterface((IPAddr)address.GetData(), &dwBestIfIndex);
-  return GetInterface(dwBestIfIndex);
+  GetBestInterface((IPAddr)address.data(), &dwBestIfIndex);
+  return getInterface(dwBestIfIndex);
 }
 
 }// namespace PacketHacker

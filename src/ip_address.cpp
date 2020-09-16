@@ -50,14 +50,14 @@ IPv4Address::IPv4Address(const std::string &address)
   m_data = Utils::StringToIPv4(address);
 }
 
-std::string IPv4Address::ToString() const
+std::string IPv4Address::toString() const
 {
   std::ostringstream string_stream;
   string_stream << (*this);
   return string_stream.str();
 }
 
-bool IPv4Address::IsIpv4AddressValid(const std::string &ipAddress)
+bool IPv4Address::isIpv4AddressValid(const std::string &ipAddress)
 {
   uint32_t b1, b2, b3, b4 = 0;
   int rc = sscanf(ipAddress.c_str(), "%u.%u.%u.%u", &b1, &b2, &b3, &b4);

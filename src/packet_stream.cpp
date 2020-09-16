@@ -7,7 +7,7 @@ PacketStream::PacketStream(Interface *streamInterface)
 {
 }
 
-bool PacketStream::OpenPacketStream(char *errbuf)
+bool PacketStream::openPacketStream(char *errbuf)
 {
   if (m_streamOpen) {
     sprintf(errbuf, "Stream already opened!");
@@ -36,22 +36,22 @@ bool PacketStream::OpenPacketStream(char *errbuf)
   return true;
 }
 
-void PacketStream::ClosePacketStream()
+void PacketStream::closePacketStream()
 {
   if (m_streamOpen) pcap_close(m_handle);
   m_streamOpen = false;
 }
 
-bool PacketStream::SendPacket(Packet *packet, char *errbuf)
+bool PacketStream::sendPacket(Packet *packet, char *errbuf)
 {
   if (!m_streamOpen) {
     sprintf(errbuf, "Stream not opened!");
     return false;
   }
 
-  const uint32_t size = packet->Size();
+  const uint32_t size = packet->size();
   std::vector<uint8_t> data(size);
-  packet->WriteToBuf(data.data(), size);
+  packet->writeToBuf(data.data(), size);
 
   if (pcap_sendpacket(m_handle, data.data(), size) != 0) {
     sprintf(errbuf, "Error sending the packet: %s", pcap_geterr(m_handle));
@@ -61,7 +61,7 @@ bool PacketStream::SendPacket(Packet *packet, char *errbuf)
   return true;
 }
 
-const uint8_t *PacketStream::GetNextPacket(uint32_t *size, char *errbuf)
+const uint8_t *PacketStream::getNextPacket(uint32_t *size, char *errbuf)
 {
   if (!m_streamOpen) {
     sprintf(errbuf, "Stream not opened!");

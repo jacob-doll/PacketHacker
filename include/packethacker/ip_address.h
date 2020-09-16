@@ -5,7 +5,7 @@
 
 namespace PacketHacker {
 namespace Utils {
-  uint32_t StringToIPv4(const std::string &ipv4Address);
+  uint32_t stringToIPv4(const std::string &ipv4Address);
 }// namespace Utils
 
 class IPv4Address
@@ -17,10 +17,10 @@ public:
   IPv4Address(const std::string &address);
   explicit IPv4Address(const uint32_t address);
 
-  const uint32_t GetData() const { return m_data; }
-  std::string ToString() const;
+  const uint32_t data() const { return m_data; }
+  std::string toString() const;
 
-  static bool IsIpv4AddressValid(const std::string &ipAddress);
+  static bool isIpv4AddressValid(const std::string &ipAddress);
 
   bool operator<(const IPv4Address &rhs) const
   {

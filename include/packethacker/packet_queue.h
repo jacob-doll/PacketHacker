@@ -11,11 +11,11 @@ class PacketQueue
 public:
   PacketQueue(const uint16_t capacity);
 
-  bool IsEmpty() const;
-  std::size_t Size() const;
-  Packet *GetPacket();
-  void InsertPacket(Packet *packet);
-  const uint16_t Capacity() const { return m_capacity; }
+  bool empty() const;
+  std::size_t size() const;
+  Packet *getPacket();
+  void insertPacket(Packet *packet);
+  const uint16_t capacity() const { return m_capacity; }
 
 private:
   std::queue<Packet *> m_packetQueue;

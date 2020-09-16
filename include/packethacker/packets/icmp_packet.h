@@ -12,23 +12,23 @@ public:
   IcmpPacket();
   IcmpPacket(const uint8_t *data, uint32_t size);
 
-  uint8_t GetType() { return m_header.type; }
-  uint8_t GetCode() { return m_header.code; }
-  uint16_t GetChecksum() { return BYTE_SWAP_16(m_header.checksum); }
-  uint32_t GetData() { return BYTE_SWAP_32(m_header.data); }
+  uint8_t type() { return m_header.type; }
+  uint8_t code() { return m_header.code; }
+  uint16_t checksum() { return BYTE_SWAP_16(m_header.checksum); }
+  uint32_t data() { return BYTE_SWAP_32(m_header.data); }
 
-  void SetType(const uint8_t type);
-  void SetCode(const uint8_t code);
-  void SetChecksum(const uint16_t checksum);
-  void SetData(const uint32_t data);
+  void type(const uint8_t type);
+  void code(const uint8_t code);
+  void checksum(const uint16_t checksum);
+  void data(const uint32_t data);
 
-  virtual const PacketType GetPacketType() const override { return PacketType::ICMP; }
-  virtual const std::string GetName() const override { return "ICMP"; }
-  virtual const uint32_t HeaderSize() const override { return sizeof(IcmpHeader); }
-  virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
+  virtual const PacketType packetType() const override { return PacketType::ICMP; }
+  virtual const std::string name() const override { return "ICMP"; }
+  virtual const uint32_t headerSize() const override { return sizeof(IcmpHeader); }
+  virtual bool doesReplyMatch(const uint8_t *buffer, uint32_t size) override;
 
 protected:
-  virtual void DoWriteToBuf(uint8_t *buffer) override;
+  virtual void doWriteToBuf(uint8_t *buffer) override;
 
 private:
 #pragma pack(push, 1)

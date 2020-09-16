@@ -34,7 +34,7 @@ ArpPacket::ArpPacket()
 ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
   : ArpPacket()
 {
-  if (size < HeaderSize()) {
+  if (size < sizeof(ArpHeader)) {
     return;
   }
   Utils::ReadValue(data, m_header);
@@ -56,54 +56,54 @@ ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
   // GetField("Target Protocol Address")->SetValue(IPv4Address(m_header.targetIp));
 }
 
-void ArpPacket::SetHardwareType(const uint16_t hardwareType)
+void ArpPacket::hardwareType(const uint16_t hardwareType)
 {
   m_header.hardwareType = BYTE_SWAP_16(hardwareType);
 }
 
-void ArpPacket::SetProtocolType(const uint16_t protocolType)
+void ArpPacket::protocolType(const uint16_t protocolType)
 {
   m_header.protocolType = BYTE_SWAP_16(protocolType);
 }
 
-void ArpPacket::SetHardwareLength(const uint8_t hardwareLength)
+void ArpPacket::hardwareLength(const uint8_t hardwareLength)
 {
   m_header.hardwareLength = hardwareLength;
 }
 
-void ArpPacket::SetProtocolLength(const uint8_t protocolLength)
+void ArpPacket::protocolLength(const uint8_t protocolLength)
 {
   m_header.protocolLength = protocolLength;
 }
 
-void ArpPacket::SetOpcode(const uint16_t opcode)
+void ArpPacket::opcode(const uint16_t opcode)
 {
   m_header.opcode = BYTE_SWAP_16(opcode);
 }
 
-void ArpPacket::SetSenderMac(const HardwareAddress &senderMac)
+void ArpPacket::senderMac(const HardwareAddress &senderMac)
 {
-  Utils::Write(m_header.senderMac, senderMac.GetData().data(), PHYSICAL_ADDR_LEN);
+  Utils::Write(m_header.senderMac, senderMac.ptr(), PHYSICAL_ADDR_LEN);
 }
 
-void ArpPacket::SetSenderIp(const IPv4Address &senderIp)
+void ArpPacket::senderIp(const IPv4Address &senderIp)
 {
-  m_header.senderIp = senderIp.GetData();
+  m_header.senderIp = senderIp.data();
 }
 
-void ArpPacket::SetTargetMac(const HardwareAddress &targetMac)
+void ArpPacket::targetMac(const HardwareAddress &targetMac)
 {
-  Utils::Write(m_header.targetMac, targetMac.GetData().data(), PHYSICAL_ADDR_LEN);
+  Utils::Write(m_header.targetMac, targetMac.ptr(), PHYSICAL_ADDR_LEN);
 }
 
-void ArpPacket::SetTargetIp(const IPv4Address &targetIp)
+void ArpPacket::targetIp(const IPv4Address &targetIp)
 {
-  m_header.targetIp = targetIp.GetData();
+  m_header.targetIp = targetIp.data();
 }
 
-bool ArpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
+bool ArpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
 {
-  uint32_t headerSize = HeaderSize();
+  uint32_t headerSize = sizeof(ArpHeader);
   if (size < headerSize) {
     return false;
   }
@@ -111,7 +111,7 @@ bool ArpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
   return (m_header.targetIp == header->senderIp) && (m_header.senderIp == header->targetIp);
 }
 
-void ArpPacket::DoWriteToBuf(uint8_t *buffer)
+void ArpPacket::doWriteToBuf(uint8_t *buffer)
 {
   Utils::WriteValue(buffer, m_header);
 }

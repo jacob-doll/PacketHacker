@@ -20,25 +20,25 @@ public:
   Packet();
   virtual ~Packet();
 
-  Packet *GetOuterPacket() const { return m_outerPacket; }
-  Packet *GetInnerPacket() const { return m_innerPacket; }
-  Packet *GetPacket(const std::string &name);
-  void SetInnerPacket(Packet *inner);
-  void RemoveInnerPacket();
-  const uint32_t Size() const;
+  Packet *outerPacket() const { return m_outerPacket; }
+  Packet *innerPacket() const { return m_innerPacket; }
+  Packet *getPacket(const std::string &name);
+  void innerPacket(Packet *inner);
+  void removeInnerPacket();
+  const uint32_t size() const;
 
-  void WriteToBuf(uint8_t *buffer, const uint32_t size);
+  void writeToBuf(uint8_t *buffer, const uint32_t size);
 
-  virtual const PacketType GetPacketType() const = 0;
-  virtual const std::string GetName() const = 0;
-  virtual const uint32_t HeaderSize() const = 0;
-  virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) = 0;
+  virtual const PacketType packetType() const = 0;
+  virtual const std::string name() const = 0;
+  virtual const uint32_t headerSize() const = 0;
+  virtual bool doesReplyMatch(const uint8_t *buffer, uint32_t size) = 0;
 
 protected:
-  virtual void DoWriteToBuf(uint8_t *buffer) = 0;
+  virtual void doWriteToBuf(uint8_t *buffer) = 0;
 
 private:
-  void SetOuterPacket(Packet *outer);
+  void outerPacket(Packet *outer);
 
 private:
   Packet *m_outerPacket;

@@ -4,10 +4,10 @@ namespace PacketHacker {
 
 RoutingTable::RoutingTable()
 {
-  RefreshTable();
+  refreshTable();
 }
 
-RouteEntry *RoutingTable::GetEntryFromNetDest(const IPv4Address &networkDest)
+RouteEntry *RoutingTable::getEntryFromNetDest(const IPv4Address &networkDest)
 {
   auto first = m_entries.begin();
   while (first != m_entries.end()) {
@@ -17,7 +17,7 @@ RouteEntry *RoutingTable::GetEntryFromNetDest(const IPv4Address &networkDest)
   return nullptr;
 }
 
-RouteEntry *RoutingTable::GetEntryFromIpDest(const IPv4Address &ipDest)
+RouteEntry *RoutingTable::getEntryFromIpDest(const IPv4Address &ipDest)
 {
   auto last = m_entries.rbegin();
   while (last != m_entries.rend()) {

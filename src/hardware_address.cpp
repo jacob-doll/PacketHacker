@@ -13,7 +13,7 @@ namespace Utils {
     snprintf(buffer, bufferSize, "%02x:%02x:%02x:%02x:%02x:%02x", hwAddress[0], hwAddress[1], hwAddress[2], hwAddress[3], hwAddress[4], hwAddress[5]);
     return std::string(buffer);
   }
-  void StringToHardwareAddress(const std::string &hwAddress, uint8_t *buf, size_t bufSize)
+  void stringToHardwareAddress(const std::string &hwAddress, uint8_t *buf, size_t bufSize)
   {
     unsigned char a[6];
     int last = -1;
@@ -53,7 +53,7 @@ HardwareAddress::HardwareAddress(const std::array<uint8_t, PHYSICAL_ADDR_LEN> &d
 
 HardwareAddress::HardwareAddress(const std::string &address)
 {
-  Utils::StringToHardwareAddress(address, m_data.data(), PHYSICAL_ADDR_LEN);
+  Utils::stringToHardwareAddress(address, m_data.data(), PHYSICAL_ADDR_LEN);
 }
 
 HardwareAddress::HardwareAddress(const uint8_t *data)
@@ -65,14 +65,14 @@ HardwareAddress::HardwareAddress(const uint8_t *data)
   }
 }
 
-std::string HardwareAddress::ToString() const
+std::string HardwareAddress::toString() const
 {
   std::ostringstream string_stream;
   string_stream << (*this);
   return string_stream.str();
 }
 
-bool HardwareAddress::IsHardwareAddressValid(const std::string &hwAddress)
+bool HardwareAddress::isHardwareAddressValid(const std::string &hwAddress)
 {
   uint8_t a[6];
   int last = -1;

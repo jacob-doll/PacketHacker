@@ -4,10 +4,10 @@ namespace PacketHacker {
 
 ArpTable::ArpTable()
 {
-  RefreshTable();
+  refreshTable();
 }
 
-ArpEntry *ArpTable::GetEntry(const IPv4Address &ipAddress)
+ArpEntry *ArpTable::getEntry(const IPv4Address &ipAddress)
 {
   auto first = m_entries.begin();
   while (first != m_entries.end()) {

@@ -6,17 +6,17 @@ PacketQueue::PacketQueue(const uint16_t capacity)
 {
 }
 
-bool PacketQueue::IsEmpty() const
+bool PacketQueue::empty() const
 {
   return m_packetQueue.empty();
 }
 
-std::size_t PacketQueue::Size() const
+std::size_t PacketQueue::size() const
 {
   return m_packetQueue.size();
 }
 
-Packet *PacketQueue::GetPacket()
+Packet *PacketQueue::getPacket()
 {
   if (m_packetQueue.empty()) return nullptr;
   Packet *packet = m_packetQueue.front();
@@ -24,7 +24,7 @@ Packet *PacketQueue::GetPacket()
   return packet;
 }
 
-void PacketQueue::InsertPacket(Packet *packet)
+void PacketQueue::insertPacket(Packet *packet)
 {
   if (m_packetQueue.size() <= m_capacity) {
     m_packetQueue.push(packet);

@@ -12,11 +12,11 @@ class PacketStream
 public:
   PacketStream(Interface *streamInterface);
 
-  bool OpenPacketStream(char *errbuf);
-  void ClosePacketStream();
-  bool SendPacket(Packet *packet, char *errbuf);
-  const uint8_t *GetNextPacket(uint32_t *size, char *errbuf);
-  bool IsStreamOpen() const { return m_streamOpen; }
+  bool openPacketStream(char *errbuf);
+  void closePacketStream();
+  bool sendPacket(Packet *packet, char *errbuf);
+  const uint8_t *getNextPacket(uint32_t *size, char *errbuf);
+  bool streamOpen() const { return m_streamOpen; }
 
 private:
   Interface *m_streamInterface;

@@ -25,7 +25,7 @@ IcmpPacket::IcmpPacket()
 IcmpPacket::IcmpPacket(const uint8_t *data, uint32_t size)
   : IcmpPacket()
 {
-  uint32_t headerSize = HeaderSize();
+  uint32_t headerSize = sizeof(IcmpHeader);
   if (size < headerSize) {
     return;
   }
@@ -43,38 +43,38 @@ IcmpPacket::IcmpPacket(const uint8_t *data, uint32_t size)
 
   size = size - headerSize;
   if (size > 0) {
-    SetInnerPacket(new DataPacket((uint8_t *)(data + headerSize), size));
+    innerPacket(new DataPacket((uint8_t *)(data + headerSize), size));
   }
 }
 
-void IcmpPacket::SetType(const uint8_t type)
+void IcmpPacket::type(const uint8_t type)
 {
   m_header.type = type;
 }
 
-void IcmpPacket::SetCode(const uint8_t code)
+void IcmpPacket::code(const uint8_t code)
 {
   m_header.code = code;
 }
 
-void IcmpPacket::SetChecksum(const uint16_t checksum)
+void IcmpPacket::checksum(const uint16_t checksum)
 {
   m_header.checksum = BYTE_SWAP_16(checksum);
 }
 
-void IcmpPacket::SetData(const uint32_t data)
+void IcmpPacket::data(const uint32_t data)
 {
   m_header.data = BYTE_SWAP_32(data);
 }
 
-bool IcmpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size) { return true; }
+bool IcmpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size) { return true; }
 
-void IcmpPacket::DoWriteToBuf(uint8_t *buffer)
+void IcmpPacket::doWriteToBuf(uint8_t *buffer)
 {
   m_header.checksum = 0x0000;
   Utils::WriteValue(buffer, m_header);
 
-  uint16_t checksum = Utils::CalcChecksum((void *)buffer, Size());
+  uint16_t checksum = Utils::CalcChecksum((void *)buffer, size());
   // char buf[6];
   // sprintf(buf, "0x%04x", checksum);
   // GetField("Checksum")->SetValue(checksum);

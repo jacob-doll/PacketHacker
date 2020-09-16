@@ -23,7 +23,7 @@ EthernetPacket::EthernetPacket()
 EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
   : EthernetPacket()
 {
-  uint32_t headerSize = HeaderSize();
+  uint32_t headerSize = sizeof(EthernetHeader);
   if (size < headerSize) {
     return;
   }
@@ -37,28 +37,28 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
 
   size = size - headerSize;
   if (size > 0) {
-    SetInnerPacket(Utils::PacketFromType(BYTE_SWAP_16(m_header.type), (uint8_t *)(data + headerSize), size));
+    innerPacket(Utils::PacketFromType(BYTE_SWAP_16(m_header.type), (uint8_t *)(data + headerSize), size));
   }
 }
 
-void EthernetPacket::SetDst(const HardwareAddress &dst)
+void EthernetPacket::dstMac(const HardwareAddress &dst)
 {
-  Utils::Write(m_header.dstMac, dst.GetData().data(), PHYSICAL_ADDR_LEN);
+  Utils::Write(m_header.dstMac, dst.ptr(), PHYSICAL_ADDR_LEN);
 }
 
-void EthernetPacket::SetSrc(const HardwareAddress &src)
+void EthernetPacket::srcMac(const HardwareAddress &src)
 {
-  Utils::Write(m_header.srcMac, src.GetData().data(), PHYSICAL_ADDR_LEN);
+  Utils::Write(m_header.srcMac, src.ptr(), PHYSICAL_ADDR_LEN);
 }
 
-void EthernetPacket::SetType(const uint16_t type)
+void EthernetPacket::type(const uint16_t type)
 {
   m_header.type = BYTE_SWAP_16(type);
 }
 
-bool EthernetPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
+bool EthernetPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
 {
-  uint32_t headerSize = HeaderSize();
+  uint32_t headerSize = sizeof(EthernetHeader);
   if (size < headerSize) {
     return false;
   }
@@ -66,13 +66,13 @@ bool EthernetPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
   const EthernetHeader *header = (const EthernetHeader *)buffer;
   size = size - headerSize;
   if (Utils::BufferEquals<6>(m_header.srcMac, header->dstMac)) {
-    return GetInnerPacket() ? GetInnerPacket()->DoesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
+    return innerPacket() ? innerPacket()->doesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
   }
 
   return false;
 }
 
-void EthernetPacket::DoWriteToBuf(uint8_t *buffer)
+void EthernetPacket::doWriteToBuf(uint8_t *buffer)
 {
   Utils::WriteValue(buffer, m_header);
 }

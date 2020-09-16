@@ -13,39 +13,39 @@ public:
   IpPacket();
   IpPacket(const uint8_t *data, uint32_t size);
 
-  uint8_t GetVersion() { return m_header.version; }
-  uint8_t GetHeaderLength() { return m_header.headerLength; }
-  uint8_t GetDiffServices() { return m_header.diffServices; }
-  uint16_t GetTotalLength() { return BYTE_SWAP_16(m_header.totalLength); }
-  uint16_t GetId() { return BYTE_SWAP_16(m_header.id); }
-  uint16_t GetFlags() { return BYTE_SWAP_16(m_header.flags); }
-  uint16_t GetFragOffset() { return BYTE_SWAP_16(m_header.fragOffset); }
-  uint8_t GetTtl() { return m_header.ttl; }
-  uint8_t GetProtocol() { return m_header.protocol; }
-  uint16_t GetChecksum() { return BYTE_SWAP_16(m_header.checksum); }
-  IPv4Address GetSourceIp() { return IPv4Address(m_header.sourceIp); }
-  IPv4Address GetDestIp() { return IPv4Address(m_header.destIp); }
+  uint8_t version() { return m_header.version; }
+  uint8_t headerLength() { return m_header.headerLength; }
+  uint8_t diffServices() { return m_header.diffServices; }
+  uint16_t totalLength() { return BYTE_SWAP_16(m_header.totalLength); }
+  uint16_t id() { return BYTE_SWAP_16(m_header.id); }
+  uint16_t flags() { return BYTE_SWAP_16(m_header.flags); }
+  uint16_t fragOffset() { return BYTE_SWAP_16(m_header.fragOffset); }
+  uint8_t ttl() { return m_header.ttl; }
+  uint8_t protocol() { return m_header.protocol; }
+  uint16_t checksum() { return BYTE_SWAP_16(m_header.checksum); }
+  IPv4Address sourceIp() { return IPv4Address(m_header.sourceIp); }
+  IPv4Address destIp() { return IPv4Address(m_header.destIp); }
 
-  void SetVersion(const uint8_t version);
-  void SetHeaderLength(const uint8_t headerLength);
-  void SetDiffServices(const uint8_t diffServices);
-  void SetTotalLength(const uint16_t totalLength);
-  void SetId(const uint16_t id);
-  void SetFlags(const uint16_t flags);
-  void SetFragOffset(const uint16_t fragOffset);
-  void SetTtl(const uint8_t ttl);
-  void SetProtocol(const uint8_t protocol);
-  void SetChecksum(const uint16_t checksum);
-  void SetSourceIp(const IPv4Address &sourceIp);
-  void SetDestIp(const IPv4Address &destIp);
+  void version(const uint8_t version);
+  void headerLength(const uint8_t headerLength);
+  void diffServices(const uint8_t diffServices);
+  void totalLength(const uint16_t totalLength);
+  void id(const uint16_t id);
+  void flags(const uint16_t flags);
+  void fragOffset(const uint16_t fragOffset);
+  void ttl(const uint8_t ttl);
+  void protocol(const uint8_t protocol);
+  void checksum(const uint16_t checksum);
+  void sourceIp(const IPv4Address &sourceIp);
+  void destIp(const IPv4Address &destIp);
 
-  virtual const PacketType GetPacketType() const override { return PacketType::IP; }
-  virtual const std::string GetName() const override { return "IPv4"; }
-  virtual const uint32_t HeaderSize() const override { return sizeof(IpHeader); }
-  virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
+  virtual const PacketType packetType() const override { return PacketType::IP; }
+  virtual const std::string name() const override { return "IPv4"; }
+  virtual const uint32_t headerSize() const override { return sizeof(IpHeader); }
+  virtual bool doesReplyMatch(const uint8_t *buffer, uint32_t size) override;
 
 protected:
-  virtual void DoWriteToBuf(uint8_t *buffer) override;
+  virtual void doWriteToBuf(uint8_t *buffer) override;
 
 private:
 #pragma pack(push, 1)

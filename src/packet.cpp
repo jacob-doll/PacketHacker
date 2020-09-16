@@ -14,65 +14,65 @@ Packet::~Packet()
   delete m_innerPacket;
 }
 
-const uint32_t Packet::Size() const
+const uint32_t Packet::size() const
 {
-  uint32_t size = HeaderSize();
+  uint32_t size = headerSize();
   if (m_innerPacket) {
-    size += m_innerPacket->Size();
+    size += m_innerPacket->size();
   }
   return size;
 }
 
-Packet *Packet::GetPacket(const std::string &name)
+Packet *Packet::getPacket(const std::string &name)
 {
   Packet *packet = this;
   while (packet) {
-    if (packet->GetName() == name) {
+    if (packet->name() == name) {
       return packet;
     }
-    packet = packet->GetInnerPacket();
+    packet = packet->innerPacket();
   }
   return nullptr;
 }
 
-void Packet::SetInnerPacket(Packet *inner)
+void Packet::innerPacket(Packet *inner)
 {
   delete m_innerPacket;
   m_innerPacket = inner;
   if (m_innerPacket) {
-    m_innerPacket->SetOuterPacket(this);
+    m_innerPacket->outerPacket(this);
   }
 }
 
-void Packet::RemoveInnerPacket()
+void Packet::removeInnerPacket()
 {
   delete m_innerPacket;
   m_innerPacket = nullptr;
 }
 
-void Packet::SetOuterPacket(Packet *outer)
+void Packet::outerPacket(Packet *outer)
 {
   m_outerPacket = outer;
 }
 
-void Packet::WriteToBuf(uint8_t *buffer, const uint32_t size)
+void Packet::writeToBuf(uint8_t *buffer, const uint32_t size)
 {
-  uint32_t packetSize = this->Size();
+  uint32_t packetSize = this->size();
   if (size < packetSize)
     return;
-  uint32_t offset = HeaderSize();
+  uint32_t offset = headerSize();
   if (m_innerPacket)
-    m_innerPacket->WriteToBuf((buffer + offset), packetSize);
-  DoWriteToBuf(buffer);
+    m_innerPacket->writeToBuf((buffer + offset), packetSize);
+  doWriteToBuf(buffer);
 }
 
 std::ostream &operator<<(std::ostream &output, Packet *packet)
 {
   Packet *curr = packet;
   while (curr != nullptr) {
-    output << curr->GetName();
-    if (curr->GetInnerPacket()) output << "/";
-    curr = curr->GetInnerPacket();
+    output << curr->name();
+    if (curr->innerPacket()) output << "/";
+    curr = curr->innerPacket();
   }
   return output;
 }

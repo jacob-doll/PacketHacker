@@ -10,26 +10,26 @@
 int main()
 {
   using namespace PacketHacker;
-  Interface *currInterface = InterfaceTable::GetInstance().BestInterface(IPv4Address(8, 8, 8, 8));
+  Interface *currInterface = InterfaceTable::instance().bestInterface(IPv4Address(8, 8, 8, 8));
 
   std::cout << currInterface->unicastAddress << "\n";
 
   PacketStream stream(currInterface);
 
   char errbuf[500];
-  if (!stream.OpenPacketStream(errbuf)) {
+  if (!stream.openPacketStream(errbuf)) {
     std::cout << errbuf << "\n";
     return 1;
   }
 
-  while (stream.IsStreamOpen()) {
+  while (stream.streamOpen()) {
     uint32_t size;
-    const uint8_t *data = stream.GetNextPacket(&size, errbuf);
+    const uint8_t *data = stream.getNextPacket(&size, errbuf);
     EthernetPacket eth(data, size);
-    std::cout << "Eth{" << eth.GetDst() << ", " << eth.GetSrc() << "}\n";
+    std::cout << "Eth{" << eth.dstMac() << ", " << eth.srcMac() << "}\n";
   }
 
-  stream.ClosePacketStream();
+  stream.closePacketStream();
 
   return 0;
 }

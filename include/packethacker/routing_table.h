@@ -18,19 +18,19 @@ struct RouteEntry
 class RoutingTable
 {
 public:
-  void RefreshTable();
-  void AddEntry(const IPv4Address &networkDest,
+  void refreshTable();
+  void addEntry(const IPv4Address &networkDest,
     const IPv4Address &netmask,
     const IPv4Address &nextHop,
     const uint32_t metric,
     const uint32_t ifIndex);
-  void DeleteEntry(const IPv4Address &networkDest);
-  RouteEntry *GetEntryFromNetDest(const IPv4Address &networkDest);
-  RouteEntry *GetEntryFromIpDest(const IPv4Address &ipDest);
+  void deleteEntry(const IPv4Address &networkDest);
+  RouteEntry *getEntryFromNetDest(const IPv4Address &networkDest);
+  RouteEntry *getEntryFromIpDest(const IPv4Address &ipDest);
 
-  std::vector<RouteEntry> &GetEntries() { return m_entries; }
+  std::vector<RouteEntry> &entries() { return m_entries; }
 
-  static RoutingTable &GetInstance()
+  static RoutingTable &instance()
   {
     static RoutingTable instance;
     return instance;

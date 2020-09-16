@@ -8,7 +8,7 @@
 
 namespace PacketHacker {
 
-void RoutingTable::RefreshTable()
+void RoutingTable::refreshTable()
 {
   ULONG size = 0;
   PMIB_IPFORWARDTABLE IpForwardTable = nullptr;
@@ -34,39 +34,39 @@ void RoutingTable::RefreshTable()
   }
 }
 
-void RoutingTable::AddEntry(const IPv4Address &networkDest,
+void RoutingTable::addEntry(const IPv4Address &networkDest,
   const IPv4Address &netmask,
   const IPv4Address &nextHop,
   const uint32_t metric,
   const uint32_t ifIndex)
 {
   MIB_IPFORWARDROW IpForwardRow{};
-  IpForwardRow.dwForwardDest = BYTE_SWAP_32(networkDest.GetData());
-  IpForwardRow.dwForwardMask = BYTE_SWAP_32(netmask.GetData());
-  IpForwardRow.dwForwardNextHop = BYTE_SWAP_32(nextHop.GetData());
+  IpForwardRow.dwForwardDest = BYTE_SWAP_32(networkDest.data());
+  IpForwardRow.dwForwardMask = BYTE_SWAP_32(netmask.data());
+  IpForwardRow.dwForwardNextHop = BYTE_SWAP_32(nextHop.data());
   IpForwardRow.dwForwardIfIndex = BYTE_SWAP_32(ifIndex);
   IpForwardRow.dwForwardType = MIB_IPROUTE_TYPE_INDIRECT;
   IpForwardRow.dwForwardProto = MIB_IPPROTO_NETMGMT;
   IpForwardRow.dwForwardMetric1 = metric;
   DWORD ret = CreateIpForwardEntry(&IpForwardRow);
   if (ret == NO_ERROR) {
-    RefreshTable();
+    refreshTable();
   }
 }
 
-void RoutingTable::DeleteEntry(const IPv4Address &networkDest)
+void RoutingTable::deleteEntry(const IPv4Address &networkDest)
 {
-  RouteEntry *entry = GetEntryFromNetDest(networkDest);
+  RouteEntry *entry = getEntryFromNetDest(networkDest);
   if (!entry) return;
   MIB_IPFORWARDROW IpForwardRow{};
   IpForwardRow.dwForwardIfIndex = BYTE_SWAP_32(entry->ifIndex);
-  IpForwardRow.dwForwardDest = BYTE_SWAP_32(networkDest.GetData());
-  IpForwardRow.dwForwardMask = BYTE_SWAP_32(entry->netmask.GetData());
-  IpForwardRow.dwForwardNextHop = BYTE_SWAP_32(entry->nextHop.GetData());
+  IpForwardRow.dwForwardDest = BYTE_SWAP_32(networkDest.data());
+  IpForwardRow.dwForwardMask = BYTE_SWAP_32(entry->netmask.data());
+  IpForwardRow.dwForwardNextHop = BYTE_SWAP_32(entry->nextHop.data());
   IpForwardRow.dwForwardProto = MIB_IPPROTO_NETMGMT;
   DWORD ret = DeleteIpForwardEntry(&IpForwardRow);
   if (ret == NO_ERROR) {
-    RefreshTable();
+    refreshTable();
   }
 }
 

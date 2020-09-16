@@ -7,7 +7,7 @@
 
 namespace PacketHacker {
 namespace Utils {
-  void StringToHardwareAddress(const std::string &hwAddress, uint8_t *buf, size_t bufSize);
+  void stringToHardwareAddress(const std::string &hwAddress, uint8_t *buf, size_t bufSize);
 }// namespace Utils
 
 class HardwareAddress
@@ -24,10 +24,11 @@ public:
   HardwareAddress(const std::string &address);
   explicit HardwareAddress(const uint8_t *data);
 
-  const std::array<uint8_t, PHYSICAL_ADDR_LEN> &GetData() const { return m_data; }
-  std::string ToString() const;
+  const uint8_t *ptr() const { return m_data.data(); }
+  const std::array<uint8_t, PHYSICAL_ADDR_LEN> &data() const { return m_data; }
+  std::string toString() const;
 
-  static bool IsHardwareAddressValid(const std::string &hwAddress);
+  static bool isHardwareAddressValid(const std::string &hwAddress);
 
   bool operator==(const HardwareAddress &rhs) const
   {

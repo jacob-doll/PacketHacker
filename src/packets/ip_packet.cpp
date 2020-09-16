@@ -39,7 +39,7 @@ IpPacket::IpPacket()
 IpPacket::IpPacket(const uint8_t *data, uint32_t size)
   : IpPacket()
 {
-  uint32_t headerSize = HeaderSize();
+  uint32_t headerSize = sizeof(IpHeader);
   if (size < headerSize) {
     return;
   }
@@ -71,73 +71,73 @@ IpPacket::IpPacket(const uint8_t *data, uint32_t size)
 
   size = size - headerSize;
   if (size > 0) {
-    SetInnerPacket(Utils::PacketFromType(m_header.protocol, (uint8_t *)(data + headerSize), size));
+    innerPacket(Utils::PacketFromType(m_header.protocol, (uint8_t *)(data + headerSize), size));
   }
 }
 
-void IpPacket::SetVersion(const uint8_t version)
+void IpPacket::version(const uint8_t version)
 {
   m_header.version = version;
 }
 
-void IpPacket::SetHeaderLength(const uint8_t headerLength)
+void IpPacket::headerLength(const uint8_t headerLength)
 {
   m_header.headerLength = headerLength;
 }
 
-void IpPacket::SetDiffServices(const uint8_t diffServices)
+void IpPacket::diffServices(const uint8_t diffServices)
 {
   m_header.diffServices = diffServices;
 }
 
-void IpPacket::SetTotalLength(const uint16_t totalLength)
+void IpPacket::totalLength(const uint16_t totalLength)
 {
   m_header.totalLength = BYTE_SWAP_32(totalLength);
 }
 
-void IpPacket::SetId(const uint16_t id)
+void IpPacket::id(const uint16_t id)
 {
   m_header.id = BYTE_SWAP_32(id);
 }
 
-void IpPacket::SetFlags(const uint16_t flags)
+void IpPacket::flags(const uint16_t flags)
 {
   m_header.flags = BYTE_SWAP_16(flags);
 }
 
-void IpPacket::SetFragOffset(const uint16_t fragOffset)
+void IpPacket::fragOffset(const uint16_t fragOffset)
 {
   m_header.fragOffset = BYTE_SWAP_16(fragOffset);
 }
 
-void IpPacket::SetTtl(const uint8_t ttl)
+void IpPacket::ttl(const uint8_t ttl)
 {
   m_header.ttl = ttl;
 }
 
-void IpPacket::SetProtocol(const uint8_t protocol)
+void IpPacket::protocol(const uint8_t protocol)
 {
   m_header.protocol = protocol;
 }
 
-void IpPacket::SetChecksum(const uint16_t checksum)
+void IpPacket::checksum(const uint16_t checksum)
 {
   m_header.checksum = BYTE_SWAP_16(checksum);
 }
 
-void IpPacket::SetSourceIp(const IPv4Address &sourceIp)
+void IpPacket::sourceIp(const IPv4Address &sourceIp)
 {
-  m_header.sourceIp = sourceIp.GetData();
+  m_header.sourceIp = sourceIp.data();
 }
 
-void IpPacket::SetDestIp(const IPv4Address &destIp)
+void IpPacket::destIp(const IPv4Address &destIp)
 {
-  m_header.destIp = destIp.GetData();
+  m_header.destIp = destIp.data();
 }
 
-bool IpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
+bool IpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
 {
-  uint16_t headerSize = HeaderSize();
+  uint16_t headerSize = sizeof(IpHeader);
   if (size < headerSize) {
     return false;
   }
@@ -146,15 +146,15 @@ bool IpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
   size = size - headerSize;
 
   if (m_header.destIp == header->sourceIp && m_header.sourceIp == header->destIp && m_header.protocol == header->protocol) {
-    return GetInnerPacket() ? GetInnerPacket()->DoesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
+    return innerPacket() ? innerPacket()->doesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
   }
 
   return false;
 }
 
-void IpPacket::DoWriteToBuf(uint8_t *buffer)
+void IpPacket::doWriteToBuf(uint8_t *buffer)
 {
-  uint16_t size = this->Size();
+  uint16_t size = this->size();
   m_header.totalLength = BYTE_SWAP_16(size);
   // GetField("Total Length")->SetValue(size);
 
