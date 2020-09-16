@@ -11,12 +11,12 @@ public:
   DataPacket();
   DataPacket(const uint8_t *data, uint32_t size);
 
-  void SetData(const FieldData &val);
+  void SetData(const std::vector<uint8_t> &data);
 
+  virtual const PacketType GetPacketType() const override { return PacketType::DATA; }
+  virtual const std::string GetName() const override { return "Data"; }
+  virtual const uint32_t HeaderSize() const override { return 0; }
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override { return true; }
-  virtual uint32_t HeaderSize() const override { return m_size; }
-  virtual std::string GetName() const override { return "Data"; }
-  virtual PacketType GetPacketType() const override { return PacketType::DATA; }
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer) override;

@@ -20,20 +20,20 @@ IpPacket::IpPacket()
   // HeaderField *checksum = new HeaderFieldImpl<IpPacket>(this, "Header Checksum", "0x0000", &IpPacket::SetChecksum, false);
   // HeaderField *sourceIp = new HeaderFieldImpl<IpPacket>(this, "Source", "0.0.0.0", &IpPacket::SetSourceIp, true, FieldType::FIELD_IP);
   // HeaderField *destIp = new HeaderFieldImpl<IpPacket>(this, "Destination", "0.0.0.0", &IpPacket::SetDestIp, true, FieldType::FIELD_IP);
-  HeaderField *version = HEADER_FIELD_INT8(IpPacket, "Version", 4u, false, SetVersion);
-  HeaderField *headerLength = HEADER_FIELD_INT8(IpPacket, "Header Length", 4u, true, SetHeaderLength);
-  HeaderField *diffServices = HEADER_FIELD_INT8(IpPacket, "Differentiated Services", 0u, true, SetDiffServices);
-  HeaderField *totalLength = HEADER_FIELD_INT16(IpPacket, "Total Length", 20u, false, SetTotalLength);
-  HeaderField *id = HEADER_FIELD_INT16(IpPacket, "Identification", 0u, true, SetId);
-  HeaderField *flags = HEADER_FIELD_INT16(IpPacket, "Flags", 0u, true, SetFlags);
-  HeaderField *fragOffset = HEADER_FIELD_INT16(IpPacket, "Fragment offset", 0u, true, SetFragOffset);
-  HeaderField *ttl = HEADER_FIELD_INT8(IpPacket, "Time to live", 128u, true, SetTtl);
-  HeaderField *protocol = HEADER_FIELD_INT8(IpPacket, "Protocol", 0u, true, SetProtocol);
-  HeaderField *checksum = HEADER_FIELD_INT16(IpPacket, "Header Checksum", 0u, false, SetChecksum);
-  HeaderField *sourceIp = HEADER_FIELD_IPv4(IpPacket, "Source", IPv4Address(), true, SetSourceIp);
-  HeaderField *destIp = HEADER_FIELD_IPv4(IpPacket, "Destination", IPv4Address(), true, SetDestIp);
-  m_fields = { version, headerLength, diffServices, totalLength, id, flags, fragOffset, ttl, protocol, checksum, sourceIp, destIp };
-  Init();
+  // HeaderField *version = HEADER_FIELD_INT8(IpPacket, "Version", 4u, false, SetVersion);
+  // HeaderField *headerLength = HEADER_FIELD_INT8(IpPacket, "Header Length", 4u, true, SetHeaderLength);
+  // HeaderField *diffServices = HEADER_FIELD_INT8(IpPacket, "Differentiated Services", 0u, true, SetDiffServices);
+  // HeaderField *totalLength = HEADER_FIELD_INT16(IpPacket, "Total Length", 20u, false, SetTotalLength);
+  // HeaderField *id = HEADER_FIELD_INT16(IpPacket, "Identification", 0u, true, SetId);
+  // HeaderField *flags = HEADER_FIELD_INT16(IpPacket, "Flags", 0u, true, SetFlags);
+  // HeaderField *fragOffset = HEADER_FIELD_INT16(IpPacket, "Fragment offset", 0u, true, SetFragOffset);
+  // HeaderField *ttl = HEADER_FIELD_INT8(IpPacket, "Time to live", 128u, true, SetTtl);
+  // HeaderField *protocol = HEADER_FIELD_INT8(IpPacket, "Protocol", 0u, true, SetProtocol);
+  // HeaderField *checksum = HEADER_FIELD_INT16(IpPacket, "Header Checksum", 0u, false, SetChecksum);
+  // HeaderField *sourceIp = HEADER_FIELD_IPv4(IpPacket, "Source", IPv4Address(), true, SetSourceIp);
+  // HeaderField *destIp = HEADER_FIELD_IPv4(IpPacket, "Destination", IPv4Address(), true, SetDestIp);
+  // m_fields = { version, headerLength, diffServices, totalLength, id, flags, fragOffset, ttl, protocol, checksum, sourceIp, destIp };
+  // Init();
 }
 
 IpPacket::IpPacket(const uint8_t *data, uint32_t size)
@@ -47,27 +47,27 @@ IpPacket::IpPacket(const uint8_t *data, uint32_t size)
 
   // char buf[8];
   // sprintf(buf, "%d", m_header.version);
-  GetField("Version")->SetValue((uint8_t)m_header.version);
+  // GetField("Version")->SetValue((uint8_t)m_header.version);
   // sprintf(buf, "%d", m_header.headerLength);
-  GetField("Header Length")->SetValue((uint8_t)m_header.headerLength);
+  // GetField("Header Length")->SetValue((uint8_t)m_header.headerLength);
   // sprintf(buf, "0x%02x", m_header.dscpEcn);
-  GetField("Differentiated Services")->SetValue(m_header.dscpEcn);
+  // GetField("Differentiated Services")->SetValue(m_header.dscpEcn);
   // sprintf(buf, "%d", BYTE_SWAP_16(m_header.totalLength));
-  GetField("Total Length")->SetValue(BYTE_SWAP_16(m_header.totalLength));
+  // GetField("Total Length")->SetValue(BYTE_SWAP_16(m_header.totalLength));
   // sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.id));
-  GetField("Identification")->SetValue(BYTE_SWAP_16(m_header.id));
+  // GetField("Identification")->SetValue(BYTE_SWAP_16(m_header.id));
   // sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.flagsOffset));
-  GetField("Flags")->SetValue(BYTE_SWAP_16(m_header.flagsOffset));
+  // GetField("Flags")->SetValue(BYTE_SWAP_16(m_header.flagsOffset));
   // sprintf(buf, "%d", BYTE_SWAP_16(m_header.flagsOffset) & (0x1fff));
-  GetField("Fragment offset")->SetValue(BYTE_SWAP_16(m_header.flagsOffset));
+  // GetField("Fragment offset")->SetValue(BYTE_SWAP_16(m_header.flagsOffset));
   // sprintf(buf, "%d", m_header.ttl);
-  GetField("Time to live")->SetValue(m_header.ttl);
+  // GetField("Time to live")->SetValue(m_header.ttl);
   // sprintf(buf, "0x%02x", m_header.protocol);
-  GetField("Protocol")->SetValue(m_header.protocol);
+  // GetField("Protocol")->SetValue(m_header.protocol);
   // sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.checksum));
-  GetField("Header Checksum")->SetValue(BYTE_SWAP_16(m_header.checksum));
-  GetField("Source")->SetValue(IPv4Address(m_header.sourceIp));
-  GetField("Destination")->SetValue(IPv4Address(m_header.destIp));
+  // GetField("Header Checksum")->SetValue(BYTE_SWAP_16(m_header.checksum));
+  // GetField("Source")->SetValue(IPv4Address(m_header.sourceIp));
+  // GetField("Destination")->SetValue(IPv4Address(m_header.destIp));
 
   size = size - headerSize;
   if (size > 0) {
@@ -75,88 +75,64 @@ IpPacket::IpPacket(const uint8_t *data, uint32_t size)
   }
 }
 
-void IpPacket::SetVersion(const FieldData &val)
+void IpPacket::SetVersion(const uint8_t version)
 {
-  uint8_t data = std::get<uint8_t>(val);
-  m_header.version = data;
-  GetField("Version")->SetValue(val);
+  m_header.version = version;
 }
 
-void IpPacket::SetHeaderLength(const FieldData &val)
+void IpPacket::SetHeaderLength(const uint8_t headerLength)
 {
-  uint8_t data = std::get<uint8_t>(val);
-  m_header.headerLength = data;
-  GetField("Header Length")->SetValue(val);
+  m_header.headerLength = headerLength;
 }
 
-void IpPacket::SetDiffServices(const FieldData &val)
+void IpPacket::SetDiffServices(const uint8_t diffServices)
 {
-  uint8_t data = std::get<uint8_t>(val);
-  m_header.dscpEcn = data;
-  GetField("Differentiated Services")->SetValue(val);
+  m_header.diffServices = diffServices;
 }
 
-void IpPacket::SetTotalLength(const FieldData &val)
+void IpPacket::SetTotalLength(const uint16_t totalLength)
 {
-  uint16_t data = std::get<uint16_t>(val);
-  m_header.totalLength = BYTE_SWAP_16(data);
-  GetField("Total Length")->SetValue(val);
+  m_header.totalLength = BYTE_SWAP_32(totalLength);
 }
 
-void IpPacket::SetId(const FieldData &val)
+void IpPacket::SetId(const uint16_t id)
 {
-  uint16_t data = std::get<uint16_t>(val);
-  m_header.id = BYTE_SWAP_16(data);
-  GetField("Identification")->SetValue(val);
+  m_header.id = BYTE_SWAP_32(id);
 }
 
-void IpPacket::SetFlags(const FieldData &val)
+void IpPacket::SetFlags(const uint16_t flags)
 {
-  uint16_t data = std::get<uint16_t>(val);
-  m_header.flags = data;
-  GetField("Flags")->SetValue(val);
+  m_header.flags = BYTE_SWAP_16(flags);
 }
 
-void IpPacket::SetFragOffset(const FieldData &val)
+void IpPacket::SetFragOffset(const uint16_t fragOffset)
 {
-  uint16_t data = std::get<uint16_t>(val);
-  m_header.fragOffset = data;
-  GetField("Fragment offset")->SetValue(val);
+  m_header.fragOffset = BYTE_SWAP_16(fragOffset);
 }
 
-void IpPacket::SetTtl(const FieldData &val)
+void IpPacket::SetTtl(const uint8_t ttl)
 {
-  uint8_t data = std::get<uint8_t>(val);
-  m_header.ttl = data;
-  GetField("Time to live")->SetValue(val);
+  m_header.ttl = ttl;
 }
 
-void IpPacket::SetProtocol(const FieldData &val)
+void IpPacket::SetProtocol(const uint8_t protocol)
 {
-  uint8_t data = std::get<uint8_t>(val);
-  m_header.protocol = data;
-  GetField("Protocol")->SetValue(val);
+  m_header.protocol = protocol;
 }
 
-void IpPacket::SetChecksum(const FieldData &val)
+void IpPacket::SetChecksum(const uint16_t checksum)
 {
-  uint16_t data = std::get<uint16_t>(val);
-  m_header.checksum = BYTE_SWAP_16(data);
-  GetField("Header Checksum")->SetValue(val);
+  m_header.checksum = BYTE_SWAP_16(checksum);
 }
 
-void IpPacket::SetSourceIp(const FieldData &val)
+void IpPacket::SetSourceIp(const IPv4Address &sourceIp)
 {
-  IPv4Address data = std::get<IPv4Address>(val);
-  m_header.sourceIp = BYTE_SWAP_32(data.GetData());
-  GetField("Source")->SetValue(val);
+  m_header.sourceIp = sourceIp.GetData();
 }
 
-void IpPacket::SetDestIp(const FieldData &val)
+void IpPacket::SetDestIp(const IPv4Address &destIp)
 {
-  IPv4Address data = std::get<IPv4Address>(val);
-  m_header.destIp = BYTE_SWAP_32(data.GetData());
-  GetField("Destination")->SetValue(val);
+  m_header.destIp = destIp.GetData();
 }
 
 bool IpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
@@ -176,20 +152,18 @@ bool IpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
   return false;
 }
 
-uint32_t IpPacket::HeaderSize() const { return sizeof(IpHeader); }
-
 void IpPacket::DoWriteToBuf(uint8_t *buffer)
 {
   uint16_t size = this->Size();
   m_header.totalLength = BYTE_SWAP_16(size);
-  GetField("Total Length")->SetValue(size);
+  // GetField("Total Length")->SetValue(size);
 
   m_header.checksum = 0x0000;
   uint16_t checksum = Utils::CalcChecksum((void *)&m_header, sizeof(m_header));
   m_header.checksum = BYTE_SWAP_16(checksum);
   // char buf[6];
   // sprintf(buf, "0x%04x", checksum);
-  GetField("Header Checksum")->SetValue(checksum);
+  // GetField("Header Checksum")->SetValue(checksum);
 
   Utils::WriteValue(buffer, m_header);
   buffer += 6;

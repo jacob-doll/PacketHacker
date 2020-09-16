@@ -10,16 +10,15 @@ public:
   IcmpPacket();
   IcmpPacket(const uint8_t *data, uint32_t size);
 
-  void SetType(const FieldData &val);
-  void SetCode(const FieldData &val);
-  void SetChecksum(const FieldData &val);
-  void SetData(const FieldData &val);
+  void SetType(const uint8_t type);
+  void SetCode(const uint8_t code);
+  void SetChecksum(const uint16_t checksum);
+  void SetData(const uint32_t data);
 
+  virtual const PacketType GetPacketType() const override { return PacketType::ICMP; }
+  virtual const std::string GetName() const override { return "ICMP"; }
+  virtual const uint32_t HeaderSize() const override { return sizeof(IcmpHeader); }
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
-  virtual uint32_t HeaderSize() const override;
-  virtual std::string GetName() const override { return "ICMP"; }
-  virtual PacketType GetPacketType() const override { return PacketType::ICMP; }
-
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer) override;
@@ -31,14 +30,7 @@ private:
     uint8_t type;
     uint8_t code;
     uint16_t checksum;
-    union {
-      uint32_t data;
-      struct
-      {
-        uint16_t identifier;
-        uint16_t sequenceNumber;
-      };
-    };
+    uint32_t data;
   };
 #pragma pack(pop)
 

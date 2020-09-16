@@ -15,13 +15,13 @@ UdpPacket::UdpPacket()
   // HeaderField *length = new HeaderFieldImpl<UdpPacket>(this, "Udp Length", 0u, FieldType::FIELD_INT16, &UdpPacket::SetLength, false);
   // HeaderField *checksum = new HeaderFieldImpl<UdpPacket>(this, "Udp Checksum", 0u, FieldType::FIELD_INT16, &UdpPacket::SetChecksum, false);
 
-  HeaderField *srcPort = HEADER_FIELD_INT16(UdpPacket, "Src Port", 0u, true, SetSrcPort);
-  HeaderField *dstPort = HEADER_FIELD_INT16(UdpPacket, "Dst Port", 0u, true, SetDstPort);
-  HeaderField *length = HEADER_FIELD_INT16(UdpPacket, "Udp Length", 0u, true, SetLength);
-  HeaderField *checksum = HEADER_FIELD_INT16(UdpPacket, "Udp Checksum", 0u, true, SetChecksum);
+  // HeaderField *srcPort = HEADER_FIELD_INT16(UdpPacket, "Src Port", 0u, true, SetSrcPort);
+  // HeaderField *dstPort = HEADER_FIELD_INT16(UdpPacket, "Dst Port", 0u, true, SetDstPort);
+  // HeaderField *length = HEADER_FIELD_INT16(UdpPacket, "Udp Length", 0u, true, SetLength);
+  // HeaderField *checksum = HEADER_FIELD_INT16(UdpPacket, "Udp Checksum", 0u, true, SetChecksum);
 
-  m_fields = { srcPort, dstPort, length, checksum };
-  Init();
+  // m_fields = { srcPort, dstPort, length, checksum };
+  // Init();
 }
 
 UdpPacket::UdpPacket(const uint8_t *data, uint32_t size)
@@ -35,16 +35,16 @@ UdpPacket::UdpPacket(const uint8_t *data, uint32_t size)
 
   // char buf[8];
   // sprintf(buf, "%d", BYTE_SWAP_16(m_header.srcPort));
-  GetField("Src Port")->SetValue(BYTE_SWAP_16(m_header.srcPort));
+  // GetField("Src Port")->SetValue(BYTE_SWAP_16(m_header.srcPort));
 
   // sprintf(buf, "%d", BYTE_SWAP_16(m_header.dstPort));
-  GetField("Dst Port")->SetValue(BYTE_SWAP_16(m_header.dstPort));
+  // GetField("Dst Port")->SetValue(BYTE_SWAP_16(m_header.dstPort));
 
   // sprintf(buf, "%d", BYTE_SWAP_16(m_header.length));
-  GetField("Udp Length")->SetValue(BYTE_SWAP_16(m_header.length));
+  // GetField("Udp Length")->SetValue(BYTE_SWAP_16(m_header.length));
 
   // sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.checksum));
-  GetField("Udp Checksum")->SetValue(BYTE_SWAP_16(m_header.checksum));
+  // GetField("Udp Checksum")->SetValue(BYTE_SWAP_16(m_header.checksum));
 
   size = size - headerSize;
   if (size > 0) {
@@ -52,23 +52,25 @@ UdpPacket::UdpPacket(const uint8_t *data, uint32_t size)
   }
 }
 
-void UdpPacket::SetSrcPort(const FieldData &val)
+void UdpPacket::SetSrcPort(const uint16_t srcPort)
 {
-  uint16_t data = std::get<uint16_t>(val);
-  m_header.srcPort = BYTE_SWAP_16(data);
-  GetField("Src Port")->SetValue(val);
+  m_header.srcPort = BYTE_SWAP_16(srcPort);
 }
 
-void UdpPacket::SetDstPort(const FieldData &val)
+void UdpPacket::SetDstPort(const uint16_t dstPort)
 {
-  uint16_t data = std::get<uint16_t>(val);
-  m_header.dstPort = BYTE_SWAP_16(data);
-  GetField("Dst Port")->SetValue(val);
+  m_header.dstPort = BYTE_SWAP_16(dstPort);
 }
 
-void UdpPacket::SetLength(const FieldData &val) {}
+void UdpPacket::SetLength(const uint16_t length)
+{
+  m_header.length = BYTE_SWAP_16(length);
+}
 
-void UdpPacket::SetChecksum(const FieldData &val) {}
+void UdpPacket::SetChecksum(const uint16_t checksum)
+{
+  m_header.checksum = BYTE_SWAP_16(checksum);
+}
 
 bool UdpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
 {
@@ -87,14 +89,12 @@ bool UdpPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)
   return false;
 }
 
-uint32_t UdpPacket::HeaderSize() const { return sizeof(UdpHeader); }
-
 void UdpPacket::DoWriteToBuf(uint8_t *buffer)
 {
   uint16_t size = Size();
   m_header.checksum = 0x0000;
   m_header.length = BYTE_SWAP_16(size);
-  GetField("Udp Length")->SetValue(size);
+  // GetField("Udp Length")->SetValue(size);
 
   Utils::WriteValue(buffer, m_header);
 
@@ -115,7 +115,7 @@ void UdpPacket::DoWriteToBuf(uint8_t *buffer)
   uint16_t checksum = Utils::CalcChecksum((void *)&psuedo_header[0], size + 12);
   // char buf[6];
   // sprintf(buf, "0x%04x", checksum);
-  GetField("Udp Checksum")->SetValue(checksum);
+  // GetField("Udp Checksum")->SetValue(checksum);
 
   Utils::WriteValue((uint8_t *)(buffer + 6), BYTE_SWAP_16(checksum));
 }

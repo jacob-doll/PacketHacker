@@ -11,9 +11,6 @@ Packet::Packet()
 
 Packet::~Packet()
 {
-  for (HeaderField *field : m_fields) {
-    delete field;
-  }
   delete m_innerPacket;
 }
 
@@ -24,13 +21,6 @@ const uint32_t Packet::Size() const
     size += m_innerPacket->Size();
   }
   return size;
-}
-
-void Packet::Init()
-{
-  for (HeaderField *field : m_fields) {
-    field->HandleData(field->GetCurrentVal());
-  }
 }
 
 Packet *Packet::GetPacket(const std::string &name)
@@ -65,16 +55,6 @@ void Packet::SetOuterPacket(Packet *outer)
   m_outerPacket = outer;
 }
 
-HeaderField *Packet::GetField(const std::string &name) const
-{
-  for (HeaderField *field : m_fields) {
-    if (field->GetName() == name) {
-      return field;
-    }
-  }
-  return nullptr;
-}
-
 void Packet::WriteToBuf(uint8_t *buffer, const uint32_t size)
 {
   uint32_t packetSize = this->Size();
@@ -84,6 +64,17 @@ void Packet::WriteToBuf(uint8_t *buffer, const uint32_t size)
   if (m_innerPacket)
     m_innerPacket->WriteToBuf((buffer + offset), packetSize);
   DoWriteToBuf(buffer);
+}
+
+std::ostream &operator<<(std::ostream &output, Packet *packet)
+{
+  Packet *curr = packet;
+  while (curr != nullptr) {
+    output << curr->GetName();
+    if (curr->GetInnerPacket()) output << "/";
+    curr = curr->GetInnerPacket();
+  }
+  return output;
 }
 
 }// namespace PacketHacker

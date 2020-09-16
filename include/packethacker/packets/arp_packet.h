@@ -1,5 +1,8 @@
 #pragma once
 
+#include "hardware_address.h"
+#include "ip_address.h"
+
 #include "packet.h"
 
 namespace PacketHacker {
@@ -10,20 +13,20 @@ public:
   ArpPacket();
   ArpPacket(const uint8_t *data, uint32_t size);
 
-  void SetHardwareType(const FieldData &val);
-  void SetProtocolType(const FieldData &val);
-  void SetHardwareLength(const FieldData &val);
-  void SetProtocolLength(const FieldData &val);
-  void SetOpcode(const FieldData &val);
-  void SetSenderMac(const FieldData &val);
-  void SetSenderIp(const FieldData &val);
-  void SetTargetMac(const FieldData &val);
-  void SetTargetIp(const FieldData &val);
+  void SetHardwareType(const uint16_t hardwareType);
+  void SetProtocolType(const uint16_t protocolType);
+  void SetHardwareLength(const uint8_t hardwareLength);
+  void SetProtocolLength(const uint8_t protocolLength);
+  void SetOpcode(const uint16_t opcode);
+  void SetSenderMac(const HardwareAddress &senderMac);
+  void SetSenderIp(const IPv4Address &senderIp);
+  void SetTargetMac(const HardwareAddress &targetMac);
+  void SetTargetIp(const IPv4Address &targetIp);
 
+  virtual const PacketType GetPacketType() const override { return PacketType::ARP; }
+  virtual const std::string GetName() const override { return "ARP"; }
+  virtual const uint32_t HeaderSize() const override { return sizeof(ArpHeader); }
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
-  virtual uint32_t HeaderSize() const override;
-  virtual std::string GetName() const override { return "ARP"; }
-  virtual PacketType GetPacketType() const override { return PacketType::ARP; }
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer) override;

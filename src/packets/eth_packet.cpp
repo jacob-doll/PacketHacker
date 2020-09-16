@@ -12,12 +12,12 @@ EthernetPacket::EthernetPacket()
   // HeaderField *src = new HeaderFieldImpl<EthernetPacket>(this, "Src", "00:00:00:00:00:00", &EthernetPacket::SetSrc, true, FieldType::FIELD_HARDWARE);
   // HeaderField *type = new HeaderFieldImpl<EthernetPacket>(this, "EtherType", "0x0800", &EthernetPacket::SetType);
 
-  HeaderField *dst = HEADER_FIELD_HARDWARE(EthernetPacket, "Dst", HardwareAddress(), true, SetDst);
-  HeaderField *src = HEADER_FIELD_HARDWARE(EthernetPacket, "Src", HardwareAddress(), true, SetSrc);
-  HeaderField *type = HEADER_FIELD_INT16(EthernetPacket, "EtherType", 0x0800, true, SetType);
+  // HeaderField *dst = HEADER_FIELD_HARDWARE(EthernetPacket, "Dst", HardwareAddress(), true, SetDst);
+  // HeaderField *src = HEADER_FIELD_HARDWARE(EthernetPacket, "Src", HardwareAddress(), true, SetSrc);
+  // HeaderField *type = HEADER_FIELD_INT16(EthernetPacket, "EtherType", 0x0800, true, SetType);
 
-  m_fields = { dst, src, type };
-  Init();
+  // m_fields = { dst, src, type };
+  // Init();
 }
 
 EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
@@ -29,11 +29,11 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
   }
   Utils::ReadValue(data, m_header);
 
-  GetField("Dst")->SetValue(HardwareAddress(m_header.dstMac));
-  GetField("Src")->SetValue(HardwareAddress(m_header.srcMac));
-  // char buf[8];
-  // sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.type));
-  GetField("EtherType")->SetValue(BYTE_SWAP_16(m_header.type));
+  // GetField("Dst")->SetValue(HardwareAddress(m_header.dstMac));
+  // GetField("Src")->SetValue(HardwareAddress(m_header.srcMac));
+  // // char buf[8];
+  // // sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.type));
+  // GetField("EtherType")->SetValue(BYTE_SWAP_16(m_header.type));
 
   size = size - headerSize;
   if (size > 0) {
@@ -41,28 +41,19 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
   }
 }
 
-void EthernetPacket::SetDst(const FieldData &val)
+void EthernetPacket::SetDst(const HardwareAddress &dst)
 {
-  HardwareAddress data = std::get<HardwareAddress>(val);
-
-  // Utils::StringToHardwareAddress(val, m_header.dstMac, PHYSICAL_ADDR_LEN);
-  Utils::Write(m_header.dstMac, data.GetData().data(), PHYSICAL_ADDR_LEN);
-  GetField("Dst")->SetValue(val);
+  Utils::Write(m_header.dstMac, dst.GetData().data(), PHYSICAL_ADDR_LEN);
 }
 
-void EthernetPacket::SetSrc(const FieldData &val)
+void EthernetPacket::SetSrc(const HardwareAddress &src)
 {
-  HardwareAddress data = std::get<HardwareAddress>(val);
-  // Utils::StringToHardwareAddress(val, m_header.srcMac, PHYSICAL_ADDR_LEN);
-  Utils::Write(m_header.srcMac, data.GetData().data(), PHYSICAL_ADDR_LEN);
-  GetField("Src")->SetValue(val);
+  Utils::Write(m_header.srcMac, src.GetData().data(), PHYSICAL_ADDR_LEN);
 }
 
-void EthernetPacket::SetType(const FieldData &val)
+void EthernetPacket::SetType(const uint16_t type)
 {
-  uint16_t data = std::get<uint16_t>(val);
-  m_header.type = BYTE_SWAP_16(data);
-  GetField("EtherType")->SetValue(val);
+  m_header.type = BYTE_SWAP_16(type);
 }
 
 bool EthernetPacket::DoesReplyMatch(const uint8_t *buffer, uint32_t size)

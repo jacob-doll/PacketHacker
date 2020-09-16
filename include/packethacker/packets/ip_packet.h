@@ -2,6 +2,8 @@
 
 #include "packet.h"
 
+#include "ip_address.h"
+
 namespace PacketHacker {
 
 class IpPacket : public Packet
@@ -10,26 +12,26 @@ public:
   IpPacket();
   IpPacket(const uint8_t *data, uint32_t size);
 
-  void SetVersion(const FieldData &val);
-  void SetHeaderLength(const FieldData &val);
-  void SetDiffServices(const FieldData &val);
-  void SetTotalLength(const FieldData &val);
-  void SetId(const FieldData &val);
-  void SetFlags(const FieldData &val);
-  void SetFragOffset(const FieldData &val);
-  void SetTtl(const FieldData &val);
-  void SetProtocol(const FieldData &val);
-  void SetChecksum(const FieldData &val);
-  void SetSourceIp(const FieldData &val);
-  void SetDestIp(const FieldData &val);
+  void SetVersion(const uint8_t version);
+  void SetHeaderLength(const uint8_t headerLength);
+  void SetDiffServices(const uint8_t diffServices);
+  void SetTotalLength(const uint16_t totalLength);
+  void SetId(const uint16_t id);
+  void SetFlags(const uint16_t flags);
+  void SetFragOffset(const uint16_t fragOffset);
+  void SetTtl(const uint8_t ttl);
+  void SetProtocol(const uint8_t protocol);
+  void SetChecksum(const uint16_t checksum);
+  void SetSourceIp(const IPv4Address &sourceIp);
+  void SetDestIp(const IPv4Address &destIp);
 
   const uint32_t GetSourceIp() const { return m_header.sourceIp; }
   const uint32_t GetDestIp() const { return m_header.destIp; }
 
+  virtual const PacketType GetPacketType() const override { return PacketType::IP; }
+  virtual const std::string GetName() const override { return "IPv4"; }
+  virtual const uint32_t HeaderSize() const override { return sizeof(IpHeader); }
   virtual bool DoesReplyMatch(const uint8_t *buffer, uint32_t size) override;
-  virtual uint32_t HeaderSize() const override;
-  virtual std::string GetName() const override { return "IPv4"; }
-  virtual PacketType GetPacketType() const override { return PacketType::IP; }
 
 protected:
   virtual void DoWriteToBuf(uint8_t *buffer) override;
