@@ -1,13 +1,27 @@
 #pragma once
 
 namespace PacketHacker {
+
+/**
+ * \brief List of constants
+ */
 namespace Constants {
 
+  /**
+   * \brief Ethernet constants.
+   * 
+   * List of acceptable ethertypes.
+   */
   enum Ethernet {
     TYPE_IPv4 = 0x0800,
     TYPE_ARP = 0x0806,
   };
 
+  /**
+   * \brief IP constants.
+   * 
+   * List of protocols supported by IP.
+   */
   enum IP {
     TYPE_ICMP = 1,
     TYPE_IGMP = 2,

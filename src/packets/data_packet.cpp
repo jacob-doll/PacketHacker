@@ -20,19 +20,6 @@ DataPacket::DataPacket(const uint8_t *data, uint32_t size)
   // data_field->SetValue(str.c_str());
 }
 
-void DataPacket::data(const std::vector<uint8_t> &data)
-{
-  // m_size = strlen(val);
-  // m_data.clear();
-  // m_data.resize(m_size);
-
-  // for (int i = 0; i < m_size; i++) {
-  //   m_data[i] = (uint8_t)val[i];
-  // }
-
-  // GetField("Packet Data")->SetValue(val);
-}
-
 void DataPacket::doWriteToBuf(uint8_t *buffer)
 {
   // Utils::Write(buffer, m_data.data(), m_size);

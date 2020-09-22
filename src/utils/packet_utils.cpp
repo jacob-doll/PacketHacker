@@ -6,17 +6,17 @@ namespace Utils {
   Packet *PacketFromId(const uint32_t packetId)
   {
     switch (packetId) {
-    case PacketType::ARP:
+    case Packet::ARP:
       return new ArpPacket();
-    case PacketType::ETHERNET:
+    case Packet::ETHERNET:
       return new EthernetPacket();
-    case PacketType::IP:
+    case Packet::IP:
       return new IpPacket();
-    case PacketType::ICMP:
+    case Packet::ICMP:
       return new IcmpPacket();
-    case PacketType::DATA:
+    case Packet::DATA:
       return new DataPacket();
-    case PacketType::UDP:
+    case Packet::UDP:
       return new UdpPacket();
     default:
       return nullptr;
