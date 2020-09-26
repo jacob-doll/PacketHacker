@@ -16,15 +16,16 @@ int main()
 
   PacketStream stream(currInterface);
 
-  char errbuf[500];
-  if (!stream.openPacketStream(errbuf)) {
-    std::cout << errbuf << "\n";
+  try {
+    stream.openPacketStream();
+  } catch (PacketStream::StreamException &e) {
+    std::cout << e.what() << "\n";
     return 1;
   }
 
   while (stream.streamOpen()) {
     uint32_t size;
-    const uint8_t *data = stream.getNextPacket(&size, errbuf);
+    const uint8_t *data = stream.getNextPacket(&size);
     EthernetPacket eth(data, size);
     std::cout << "Eth{" << eth.dstMac() << ", " << eth.srcMac() << "}\n";
   }

@@ -7,18 +7,16 @@ PacketStream::PacketStream(Interface *streamInterface)
 {
 }
 
-bool PacketStream::openPacketStream(char *errbuf)
+void PacketStream::openPacketStream()
 {
   if (m_streamOpen) {
-    sprintf(errbuf, "Stream already opened!");
-    return false;
+    throw StreamException("Stream already opened!");
   }
 
   char pcapErrbuf[PCAP_ERRBUF_SIZE];
 
   if ((m_handle = pcap_create(m_streamInterface->name.c_str(), pcapErrbuf)) == nullptr) {
-    sprintf(errbuf, "Unable to open the adapter. %s is not supported by Npcap", m_streamInterface->name.c_str());
-    return false;
+    throw StreamException("Unable to open the adapter.");
   }
 
   pcap_set_snaplen(m_handle, 100);
@@ -26,14 +24,11 @@ bool PacketStream::openPacketStream(char *errbuf)
   pcap_set_timeout(m_handle, 20);
 
   if (pcap_activate(m_handle) != 0) {
-    sprintf(errbuf, "Error activating handle: %s", pcap_geterr(m_handle));
     pcap_close(m_handle);
-    return false;
+    throw StreamException(pcap_geterr(m_handle));
   }
 
   m_streamOpen = true;
-
-  return true;
 }
 
 void PacketStream::closePacketStream()
@@ -42,11 +37,10 @@ void PacketStream::closePacketStream()
   m_streamOpen = false;
 }
 
-bool PacketStream::sendPacket(Packet *packet, char *errbuf)
+void PacketStream::sendPacket(Packet *packet)
 {
   if (!m_streamOpen) {
-    sprintf(errbuf, "Stream not opened!");
-    return false;
+    throw StreamException("Stream not opened!");
   }
 
   const uint32_t size = packet->size();
@@ -54,18 +48,14 @@ bool PacketStream::sendPacket(Packet *packet, char *errbuf)
   packet->writeToBuf(data.data(), size);
 
   if (pcap_sendpacket(m_handle, data.data(), size) != 0) {
-    sprintf(errbuf, "Error sending the packet: %s", pcap_geterr(m_handle));
-    return false;
+    throw StreamException(pcap_geterr(m_handle));
   }
-
-  return true;
 }
 
-const uint8_t *PacketStream::getNextPacket(uint32_t *size, char *errbuf)
+const uint8_t *PacketStream::getNextPacket(uint32_t *size)
 {
   if (!m_streamOpen) {
-    sprintf(errbuf, "Stream not opened!");
-    return false;
+    throw StreamException("Stream not opened!");
   }
 
   int res;
@@ -81,7 +71,7 @@ const uint8_t *PacketStream::getNextPacket(uint32_t *size, char *errbuf)
   }
 
   if (res == -1) {
-    sprintf(errbuf, "Error reading the packets: %s\n", pcap_geterr(m_handle));
+    throw StreamException(pcap_geterr(m_handle));
   }
 
   return nullptr;

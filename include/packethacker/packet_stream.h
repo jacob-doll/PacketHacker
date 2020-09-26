@@ -1,6 +1,7 @@
 #pragma once
 
 #include <pcap.h>
+#include <exception>
 
 #include "packet.h"
 #include "interface_table.h"
@@ -38,13 +39,11 @@ public:
 
   /**
    * \brief Opens the stream to send or receive packets.
-   * 
    * \warning Stream must be closed in order to open.
-   * @param errbuf buffer where error information is outputted
-   * @return true if packet stream could successfully be opened,
-   * false if any errors occur
+   * \exception Throws a stream exception if the stream is already opened
+   * or stream cannot be opened. 
    */
-  bool openPacketStream(char *errbuf);
+  void openPacketStream();
 
   /**
    * \brief Closes the packet stream.
@@ -58,29 +57,56 @@ public:
    * 
    * \warning Packet stream must be opened before sending packets
    * can happen.
+   * \exception Throws an exception if stream is not open or if
+   * sending the packet fails.
    * @param packet packet to be sent
-   * @param errbuf buffer where error information is outputted
-   * @return true if packet successfully sent, false if any errors
-   * occur
    */
-  bool sendPacket(Packet *packet, char *errbuf);
+  void sendPacket(Packet *packet);
 
   /**
    * \brief Reads the next packet from the stream and returns the byte buffer.
    * 
    * \warning Packet stream must be opened before receiving packets.
+   * \exception Throws an exception if stream is not open or if there
+   * was an error reading the next packet.
    * @param size pointer to size integer, this is set to the size of the packet
-   * @param errbuf buffer where error information is outputted
    * @return byte array of data that contains packet info, nullptr is 
    * returned if no packet received.
    */
-  const uint8_t *getNextPacket(uint32_t *size, char *errbuf);
+  const uint8_t *getNextPacket(uint32_t *size);
 
   /**
    * \brief Returns whether stream is open or not.
    * @return true if open, false if not 
    */
   bool streamOpen() const { return m_streamOpen; }
+
+  /**
+   * \brief Excption class for throwing stream exceptions.
+   */
+  class StreamException : public std::exception
+  {
+  public:
+    /**
+     * \brief Default constructor.
+     * @param message message of exception 
+     */
+    StreamException(const std::string &message)
+      : m_message(std::move(message))
+    {}
+
+    /**
+     * \brief Returns the exception message.
+     * @return message
+     */
+    virtual const char *what() const throw()
+    {
+      return m_message.c_str();
+    }
+
+  private:
+    std::string m_message;
+  };
 
 private:
   Interface *m_streamInterface;
