@@ -100,5 +100,6 @@
         "xloctime": "cpp",
         "xtree": "cpp",
         "concepts": "cpp"
-    }
+    },
+    "editor.formatOnSave": true
 }

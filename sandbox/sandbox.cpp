@@ -4,6 +4,7 @@
 #include "routing_table.h"
 #include "arp_table.h"
 #include "packet_stream.h"
+#include "constants.h"
 
 #include <iostream>
 
@@ -16,19 +17,35 @@ int main()
 
   PacketStream stream(currInterface);
 
-  try {
-    stream.openPacketStream();
-  } catch (PacketStream::StreamException &e) {
-    std::cout << e.what() << "\n";
+  if (!stream.openPacketStream()) {
+    std::cout << "Error opening packet stream!\n";
     return 1;
   }
 
-  while (stream.streamOpen()) {
-    uint32_t size;
-    const uint8_t *data = stream.getNextPacket(&size);
-    EthernetPacket eth(data, size);
-    std::cout << "Eth{" << eth.dstMac() << ", " << eth.srcMac() << "}\n";
-  }
+  EthernetPacket *eth = new EthernetPacket();
+  IpPacket *ip = new IpPacket();
+  IcmpPacket *icmp = new IcmpPacket();
+  eth->type(Constants::TYPE_IPv4);
+  eth->dstMac({ 0xff, 0xff, 0xff, 0xff, 0xff, 0xff });
+  eth->srcMac(currInterface->address);
+  ip->version(4);
+  ip->headerLength(5);
+  ip->diffServices(0);
+  ip->id(0x0001);
+  ip->flags(0);
+  ip->fragOffset(0);
+  ip->ttl(128);
+  ip->protocol(Constants::TYPE_ICMP);
+  ip->sourceIp(currInterface->unicastAddress);
+  ip->destIp(currInterface->gatewayAddress);
+  icmp->type(IcmpPacket::ADDRESS_MASK_REQUEST);
+  icmp->code(0);
+  icmp->id(1);
+  icmp->sequence(1);
+  eth->innerPacket(ip);
+  ip->innerPacket(icmp);
+
+  stream.sendPacket(eth);
 
   stream.closePacketStream();
 

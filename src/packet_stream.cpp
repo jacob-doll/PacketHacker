@@ -7,16 +7,16 @@ PacketStream::PacketStream(Interface *streamInterface)
 {
 }
 
-void PacketStream::openPacketStream()
+bool PacketStream::openPacketStream()
 {
   if (m_streamOpen) {
-    throw StreamException("Stream already opened!");
+    return false;
   }
 
   char pcapErrbuf[PCAP_ERRBUF_SIZE];
 
   if ((m_handle = pcap_create(m_streamInterface->name.c_str(), pcapErrbuf)) == nullptr) {
-    throw StreamException("Unable to open the adapter.");
+    return false;
   }
 
   pcap_set_snaplen(m_handle, 100);
@@ -25,10 +25,11 @@ void PacketStream::openPacketStream()
 
   if (pcap_activate(m_handle) != 0) {
     pcap_close(m_handle);
-    throw StreamException(pcap_geterr(m_handle));
+    return false;
   }
 
   m_streamOpen = true;
+  return true;
 }
 
 void PacketStream::closePacketStream()
@@ -37,10 +38,10 @@ void PacketStream::closePacketStream()
   m_streamOpen = false;
 }
 
-void PacketStream::sendPacket(Packet *packet)
+bool PacketStream::sendPacket(Packet *packet)
 {
   if (!m_streamOpen) {
-    throw StreamException("Stream not opened!");
+    return false;
   }
 
   const uint32_t size = packet->size();
@@ -48,14 +49,14 @@ void PacketStream::sendPacket(Packet *packet)
   packet->writeToBuf(data.data(), size);
 
   if (pcap_sendpacket(m_handle, data.data(), size) != 0) {
-    throw StreamException(pcap_geterr(m_handle));
+    return false;
   }
 }
 
 const uint8_t *PacketStream::getNextPacket(uint32_t *size)
 {
   if (!m_streamOpen) {
-    throw StreamException("Stream not opened!");
+    return nullptr;
   }
 
   int res;
@@ -71,7 +72,7 @@ const uint8_t *PacketStream::getNextPacket(uint32_t *size)
   }
 
   if (res == -1) {
-    throw StreamException(pcap_geterr(m_handle));
+    return nullptr;
   }
 
   return nullptr;

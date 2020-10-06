@@ -1,7 +1,6 @@
 #pragma once
 
 #include <pcap.h>
-#include <exception>
 
 #include "packet.h"
 #include "interface_table.h"
@@ -40,10 +39,9 @@ public:
   /**
    * \brief Opens the stream to send or receive packets.
    * \warning Stream must be closed in order to open.
-   * \exception Throws a stream exception if the stream is already opened
-   * or stream cannot be opened. 
+   * @return true if packet stream successfully opened, false otherwise 
    */
-  void openPacketStream();
+  bool openPacketStream();
 
   /**
    * \brief Closes the packet stream.
@@ -57,21 +55,18 @@ public:
    * 
    * \warning Packet stream must be opened before sending packets
    * can happen.
-   * \exception Throws an exception if stream is not open or if
-   * sending the packet fails.
    * @param packet packet to be sent
+   * @return true if packet sent without error, false otherwise
    */
-  void sendPacket(Packet *packet);
+  bool sendPacket(Packet *packet);
 
   /**
    * \brief Reads the next packet from the stream and returns the byte buffer.
    * 
    * \warning Packet stream must be opened before receiving packets.
-   * \exception Throws an exception if stream is not open or if there
-   * was an error reading the next packet.
    * @param size pointer to size integer, this is set to the size of the packet
    * @return byte array of data that contains packet info, nullptr is 
-   * returned if no packet received.
+   * returned if no packet received or on error.
    */
   const uint8_t *getNextPacket(uint32_t *size);
 
@@ -80,33 +75,6 @@ public:
    * @return true if open, false if not 
    */
   bool streamOpen() const { return m_streamOpen; }
-
-  /**
-   * \brief Excption class for throwing stream exceptions.
-   */
-  class StreamException : public std::exception
-  {
-  public:
-    /**
-     * \brief Default constructor.
-     * @param message message of exception 
-     */
-    StreamException(const std::string &message)
-      : m_message(std::move(message))
-    {}
-
-    /**
-     * \brief Returns the exception message.
-     * @return message
-     */
-    virtual const char *what() const throw()
-    {
-      return m_message.c_str();
-    }
-
-  private:
-    std::string m_message;
-  };
 
 private:
   Interface *m_streamInterface;
