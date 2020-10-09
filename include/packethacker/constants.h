@@ -3,12 +3,12 @@
 namespace PacketHacker {
 
 /**
- * \brief List of constants
+ * @brief List of constants
  */
 namespace Constants {
 
   /**
-   * \brief Ethernet constants.
+   * @brief Ethernet constants.
    * 
    * List of acceptable ethertypes.
    */
@@ -18,7 +18,7 @@ namespace Constants {
   };
 
   /**
-   * \brief IP constants.
+   * @brief IP constants.
    * 
    * List of protocols supported by IP.
    */

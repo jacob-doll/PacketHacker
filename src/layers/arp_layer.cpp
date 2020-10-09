@@ -1,11 +1,11 @@
-#include "packets/arp_packet.h"
+#include "layers/arp_layer.h"
 #include "utils/buffer_utils.h"
 #include "utils/adapter_utils.h"
 
 namespace PacketHacker {
 
-ArpPacket::ArpPacket()
-  : m_header(), Packet()
+ArpLayer::ArpLayer()
+  : m_header(), Layer()
 {
   // HeaderField *hardwareType = new HeaderFieldImpl<ArpPacket>(this, "Hardware Type", "0x0001", &ArpPacket::SetHardwareType);
   // HeaderField *protocolType = new HeaderFieldImpl<ArpPacket>(this, "Protocol Type", "0x0800", &ArpPacket::SetProtocolType);
@@ -31,8 +31,8 @@ ArpPacket::ArpPacket()
   // Init();
 }
 
-ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
-  : ArpPacket()
+ArpLayer::ArpLayer(const uint8_t *data, uint32_t size)
+  : ArpLayer()
 {
   if (size < sizeof(ArpHeader)) {
     return;
@@ -56,52 +56,52 @@ ArpPacket::ArpPacket(const uint8_t *data, uint32_t size)
   // GetField("Target Protocol Address")->SetValue(IPv4Address(m_header.targetIp));
 }
 
-void ArpPacket::hardwareType(const uint16_t hardwareType)
+void ArpLayer::hardwareType(const uint16_t hardwareType)
 {
   m_header.hardwareType = BYTE_SWAP_16(hardwareType);
 }
 
-void ArpPacket::protocolType(const uint16_t protocolType)
+void ArpLayer::protocolType(const uint16_t protocolType)
 {
   m_header.protocolType = BYTE_SWAP_16(protocolType);
 }
 
-void ArpPacket::hardwareLength(const uint8_t hardwareLength)
+void ArpLayer::hardwareLength(const uint8_t hardwareLength)
 {
   m_header.hardwareLength = hardwareLength;
 }
 
-void ArpPacket::protocolLength(const uint8_t protocolLength)
+void ArpLayer::protocolLength(const uint8_t protocolLength)
 {
   m_header.protocolLength = protocolLength;
 }
 
-void ArpPacket::opcode(const uint16_t opcode)
+void ArpLayer::opcode(const uint16_t opcode)
 {
   m_header.opcode = BYTE_SWAP_16(opcode);
 }
 
-void ArpPacket::senderMac(const HardwareAddress &senderMac)
+void ArpLayer::senderMac(const HardwareAddress &senderMac)
 {
   Utils::Write(m_header.senderMac, senderMac.ptr(), PHYSICAL_ADDR_LEN);
 }
 
-void ArpPacket::senderIp(const IPv4Address &senderIp)
+void ArpLayer::senderIp(const IPv4Address &senderIp)
 {
   m_header.senderIp = senderIp.data();
 }
 
-void ArpPacket::targetMac(const HardwareAddress &targetMac)
+void ArpLayer::targetMac(const HardwareAddress &targetMac)
 {
   Utils::Write(m_header.targetMac, targetMac.ptr(), PHYSICAL_ADDR_LEN);
 }
 
-void ArpPacket::targetIp(const IPv4Address &targetIp)
+void ArpLayer::targetIp(const IPv4Address &targetIp)
 {
   m_header.targetIp = targetIp.data();
 }
 
-bool ArpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
+bool ArpLayer::isReply(const uint8_t *buffer, uint32_t size)
 {
   uint32_t headerSize = sizeof(ArpHeader);
   if (size < headerSize) {
@@ -111,7 +111,7 @@ bool ArpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
   return (m_header.targetIp == header->senderIp) && (m_header.senderIp == header->targetIp);
 }
 
-void ArpPacket::doWriteToBuf(uint8_t *buffer)
+void ArpLayer::write(uint8_t *buffer)
 {
   Utils::WriteValue(buffer, m_header);
 }

@@ -8,7 +8,7 @@
 namespace PacketHacker {
 
 /**
- * \brief This class allows for the opening of packet streams on an interface.
+ * @brief This class allows for the opening of packet streams on an interface.
  * 
  * With this class you can open a packet stream and then 
  * use the open stream to read incoming packets like a sniffer
@@ -31,39 +31,39 @@ class PacketStream
 {
 public:
   /**
-   * \brief Creates a packet stream with a supplied interface.
+   * @brief Creates a packet stream with a supplied interface.
    * @param streamInterface interface to open streamon.
    */
   PacketStream(Interface *streamInterface);
 
   /**
-   * \brief Opens the stream to send or receive packets.
-   * \warning Stream must be closed in order to open.
+   * @brief Opens the stream to send or receive packets.
+   * @warning Stream must be closed in order to open.
    * @return true if packet stream successfully opened, false otherwise 
    */
   bool openPacketStream();
 
   /**
-   * \brief Closes the packet stream.
+   * @brief Closes the packet stream.
    * 
    * If packet stream already closed then this does nothing.
    */
   void closePacketStream();
 
   /**
-   * \brief Sends a packet through the interface.
+   * @brief Sends a packet through the interface.
    * 
-   * \warning Packet stream must be opened before sending packets
+   * @warning Packet stream must be opened before sending packets
    * can happen.
    * @param packet packet to be sent
    * @return true if packet sent without error, false otherwise
    */
-  bool sendPacket(Packet *packet);
+  bool sendPacket(Packet &packet);
 
   /**
-   * \brief Reads the next packet from the stream and returns the byte buffer.
+   * @brief Reads the next packet from the stream and returns the byte buffer.
    * 
-   * \warning Packet stream must be opened before receiving packets.
+   * @warning Packet stream must be opened before receiving packets.
    * @param size pointer to size integer, this is set to the size of the packet
    * @return byte array of data that contains packet info, nullptr is 
    * returned if no packet received or on error.
@@ -71,7 +71,7 @@ public:
   const uint8_t *getNextPacket(uint32_t *size);
 
   /**
-   * \brief Returns whether stream is open or not.
+   * @brief Returns whether stream is open or not.
    * @return true if open, false if not 
    */
   bool streamOpen() const { return m_streamOpen; }

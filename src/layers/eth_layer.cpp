@@ -1,12 +1,12 @@
-#include "packets/eth_packet.h"
+#include "layers/eth_layer.h"
 #include "utils/buffer_utils.h"
 #include "utils/adapter_utils.h"
-#include "utils/packet_utils.h"
+#include "utils/layer_utils.h"
 
 namespace PacketHacker {
 
-EthernetPacket::EthernetPacket()
-  : m_header(), Packet()
+EthernetLayer::EthernetLayer()
+  : m_header(), Layer()
 {
   // HeaderField *dst = new HeaderFieldImpl<EthernetPacket>(this, "Dst", "00:00:00:00:00:00", &EthernetPacket::SetDst, true, FieldType::FIELD_HARDWARE);
   // HeaderField *src = new HeaderFieldImpl<EthernetPacket>(this, "Src", "00:00:00:00:00:00", &EthernetPacket::SetSrc, true, FieldType::FIELD_HARDWARE);
@@ -20,8 +20,8 @@ EthernetPacket::EthernetPacket()
   // Init();
 }
 
-EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
-  : EthernetPacket()
+EthernetLayer::EthernetLayer(const uint8_t *data, uint32_t size)
+  : EthernetLayer()
 {
   uint32_t headerSize = sizeof(EthernetHeader);
   if (size < headerSize) {
@@ -37,26 +37,26 @@ EthernetPacket::EthernetPacket(const uint8_t *data, uint32_t size)
 
   size = size - headerSize;
   if (size > 0) {
-    innerPacket(Utils::PacketFromType(BYTE_SWAP_16(m_header.type), (uint8_t *)(data + headerSize), size));
+    innerLayer(Utils::LayerFromType(BYTE_SWAP_16(m_header.protoType), (uint8_t *)(data + headerSize), size));
   }
 }
 
-void EthernetPacket::dstMac(const HardwareAddress &dst)
+void EthernetLayer::dstMac(const HardwareAddress &dst)
 {
   Utils::Write(m_header.dstMac, dst.ptr(), PHYSICAL_ADDR_LEN);
 }
 
-void EthernetPacket::srcMac(const HardwareAddress &src)
+void EthernetLayer::srcMac(const HardwareAddress &src)
 {
   Utils::Write(m_header.srcMac, src.ptr(), PHYSICAL_ADDR_LEN);
 }
 
-void EthernetPacket::type(const uint16_t type)
+void EthernetLayer::protoType(const uint16_t protoType)
 {
-  m_header.type = BYTE_SWAP_16(type);
+  m_header.protoType = BYTE_SWAP_16(protoType);
 }
 
-bool EthernetPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
+bool EthernetLayer::isReply(const uint8_t *buffer, uint32_t size)
 {
   uint32_t headerSize = sizeof(EthernetHeader);
   if (size < headerSize) {
@@ -66,13 +66,13 @@ bool EthernetPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
   const EthernetHeader *header = (const EthernetHeader *)buffer;
   size = size - headerSize;
   if (Utils::BufferEquals<6>(m_header.srcMac, header->dstMac)) {
-    return innerPacket() ? innerPacket()->doesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
+    return true;
   }
 
   return false;
 }
 
-void EthernetPacket::doWriteToBuf(uint8_t *buffer)
+void EthernetLayer::write(uint8_t *buffer)
 {
   Utils::WriteValue(buffer, m_header);
 }

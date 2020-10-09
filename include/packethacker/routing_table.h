@@ -7,7 +7,7 @@
 namespace PacketHacker {
 
 /**
- * \brief Struct representation of a route on a local routing table.
+ * @brief Struct representation of a route on a local routing table.
  * 
  * Routes map which interface to use depending on the network
  * destination. Given a supplied IP address bit-wise anded with 
@@ -24,7 +24,7 @@ struct RouteEntry
 };
 
 /**
- * \brief Class representation of the Routing table of the local machine.
+ * @brief Class representation of the Routing table of the local machine.
  * 
  * This class allows for the manipulation of the Routing table on 
  * the local machine. Sufficient priviledges are needed for addEntry()
@@ -40,15 +40,15 @@ class RoutingTable
 {
 public:
   /**
-   * \brief Retrieves the Routing table from the local machine
+   * @brief Retrieves the Routing table from the local machine
    * and stores it in a vector.
    */
   void refreshTable();
 
   /**
-   * \brief Adds a route to the local routing table.
+   * @brief Adds a route to the local routing table.
    * 
-   * \warning This function requires sufficient priviledges when executed.
+   * @warning This function requires sufficient priviledges when executed.
    * @param networkDest network destination of the route
    * @param netmask network mask of the route
    * @param nextHop the forwarding IP address
@@ -62,23 +62,23 @@ public:
     const uint32_t ifIndex);
 
   /**
-   * \brief Delets a route from the local routing table.
+   * @brief Delets a route from the local routing table.
    * 
    * Only the network destination needs to be supplied to delete a route.
-   * \warning This function requires sufficient priviledges when executed.
+   * @warning This function requires sufficient priviledges when executed.
    * @param networkDest network destination of the route to delete
    */
   void deleteEntry(const IPv4Address &networkDest);
 
   /**
-   * \brief Retrieves route given a network destination.
+   * @brief Retrieves route given a network destination.
    * @param networkDest destination network of route
    * @return pointer to the route entry
    */
   RouteEntry *getEntryFromNetDest(const IPv4Address &networkDest);
 
   /**
-   * \brief Retrieves route given an IP destination.
+   * @brief Retrieves route given an IP destination.
    * 
    * Different from getEntryFromNetDest as an IP address is
    * supplied insted of a network destination.
@@ -88,13 +88,13 @@ public:
   RouteEntry *getEntryFromIpDest(const IPv4Address &ipDest);
 
   /**
-   * \brief Returns the entries that have been retrieved from the local machine.
+   * @brief Returns the entries that have been retrieved from the local machine.
    * @return std::vector of Route entries
    */
   std::vector<RouteEntry> &entries() { return m_entries; }
 
   /**
-   * \brief Returns the static instance of this class.
+   * @brief Returns the static instance of this class.
    * @return RoutingTable instance
    */
   static RoutingTable &instance()

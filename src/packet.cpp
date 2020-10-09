@@ -1,58 +1,72 @@
 #include "packet.h"
 
-#include <sstream>
+#include "layers/eth_layer.h"
 
 namespace PacketHacker {
 
 Packet::Packet()
-  : m_innerPacket(), m_outerPacket()
+  : m_firstLayer(), m_lastLayer()
 {
 }
 
+Packet::Packet(const uint8_t *data, uint32_t size)
+  : Packet()
+{
+  m_firstLayer = new EthernetLayer(data, size);
+  m_lastLayer = m_firstLayer;
+  Layer *curr = m_firstLayer;
+  while (curr->innerLayer()) {
+    curr = curr->innerLayer();
+  }
+  m_lastLayer = curr;
+}
+
+
 Packet::~Packet()
 {
-  delete m_innerPacket;
+  delete m_firstLayer;
+  m_firstLayer = 0;
+}
+
+void Packet::insertLayer(Layer *layer)
+{
+  if (!m_firstLayer) {
+    m_firstLayer = layer;
+    m_lastLayer = layer;
+  } else {
+    m_lastLayer->innerLayer(layer);
+    m_lastLayer = layer;
+  }
+}
+
+void Packet::RemoveLayer(Layer::LayerType type)
+{
 }
 
 const uint32_t Packet::size() const
 {
-  uint32_t size = headerSize();
-  if (m_innerPacket) {
-    size += m_innerPacket->size();
+  uint32_t size = 0;
+  Layer *curr = m_firstLayer;
+  while (curr) {
+    size += curr->headerSize();
+    curr = curr->innerLayer();
   }
   return size;
 }
 
-Packet *Packet::getPacket(const std::string &name)
+bool Packet::isReply(const uint8_t *data, uint32_t size)
 {
-  Packet *packet = this;
-  while (packet) {
-    if (packet->name() == name) {
-      return packet;
+  Layer *curr = m_firstLayer;
+  uint32_t offset = 0;
+  while (curr) {
+    if (!curr->isReply(data + offset, size)) {
+      return false;
     }
-    packet = packet->innerPacket();
+    offset += curr->headerSize();
+    size -= curr->headerSize();
+    curr = curr->innerLayer();
   }
-  return nullptr;
-}
-
-void Packet::innerPacket(Packet *inner)
-{
-  delete m_innerPacket;
-  m_innerPacket = inner;
-  if (m_innerPacket) {
-    m_innerPacket->outerPacket(this);
-  }
-}
-
-void Packet::removeInnerPacket()
-{
-  delete m_innerPacket;
-  m_innerPacket = nullptr;
-}
-
-void Packet::outerPacket(Packet *outer)
-{
-  m_outerPacket = outer;
+  return true;
 }
 
 void Packet::writeToBuf(uint8_t *buffer, const uint32_t size)
@@ -60,21 +74,14 @@ void Packet::writeToBuf(uint8_t *buffer, const uint32_t size)
   uint32_t packetSize = this->size();
   if (size < packetSize)
     return;
-  uint32_t offset = headerSize();
-  if (m_innerPacket)
-    m_innerPacket->writeToBuf((buffer + offset), packetSize);
-  doWriteToBuf(buffer);
-}
 
-std::ostream &operator<<(std::ostream &output, Packet *packet)
-{
-  Packet *curr = packet;
-  while (curr != nullptr) {
-    output << curr->name();
-    if (curr->innerPacket()) output << "/";
-    curr = curr->innerPacket();
+  Layer *curr = m_lastLayer;
+  uint32_t offset = size;
+  while (curr) {
+    offset -= curr->headerSize();
+    curr->write(buffer + offset);
+    curr = curr->outerLayer();
   }
-  return output;
 }
 
 }// namespace PacketHacker

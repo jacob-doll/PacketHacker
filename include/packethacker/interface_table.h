@@ -10,7 +10,7 @@
 namespace PacketHacker {
 
 /**
- * \brief Struct representation of an interface entry on a local interface table.
+ * @brief Struct representation of an interface entry on a local interface table.
  * 
  * Provides information about the ip addressing of an interface
  * as well as its name and description. Passed into a PacketStream 
@@ -32,7 +32,7 @@ struct Interface
 };
 
 /**
- * \brief Class representation of the interface table on a local machine.
+ * @brief Class representation of the interface table on a local machine.
  * 
  * This allows for the access of all interfaces that are on the local
  * machine, including virtual interfaces.
@@ -47,7 +47,7 @@ class InterfaceTable
 {
 public:
   /**
-   * \brief Retrieves all local interfaces and adds them to a vector.
+   * @brief Retrieves all local interfaces and adds them to a vector.
    * 
    * Only realistically needs to be called once, yet the functionality
    * is here if needed.
@@ -55,27 +55,27 @@ public:
   void refreshTable();
 
   /**
-   * \brief Returns the best interface to send packets to a specific IP.
+   * @brief Returns the best interface to send packets to a specific IP.
    * @param address IPv4 address of the machine to be sent to
    * @return interface pointer of the best interface or nullptr.
    */
   Interface *bestInterface(IPv4Address &address);
 
   /**
-   * \brief Returns the interface with the given index.
+   * @brief Returns the interface with the given index.
    * @param ifIndex index of the interface to be returned
    * @return interface of given index or nullptr if none found
    */
   Interface *getInterface(const uint32_t ifIndex);
 
   /**
-   * \brief Returns the vector of local interfaces retrieved.
+   * @brief Returns the vector of local interfaces retrieved.
    * @return std::vector of interfaces
    */
   std::vector<Interface> &interfaces() { return m_interfaces; }
 
   /**
-   * \brief Returns the static instance of this class.
+   * @brief Returns the static instance of this class.
    * @return InterfaceTable instance
    */
   static InterfaceTable &instance()

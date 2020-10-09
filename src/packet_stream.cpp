@@ -38,19 +38,21 @@ void PacketStream::closePacketStream()
   m_streamOpen = false;
 }
 
-bool PacketStream::sendPacket(Packet *packet)
+bool PacketStream::sendPacket(Packet &packet)
 {
   if (!m_streamOpen) {
     return false;
   }
 
-  const uint32_t size = packet->size();
+  const uint32_t size = packet.size();
   std::vector<uint8_t> data(size);
-  packet->writeToBuf(data.data(), size);
+  packet.writeToBuf(data.data(), size);
 
   if (pcap_sendpacket(m_handle, data.data(), size) != 0) {
     return false;
   }
+
+  return true;
 }
 
 const uint8_t *PacketStream::getNextPacket(uint32_t *size)

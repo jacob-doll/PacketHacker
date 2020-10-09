@@ -3,89 +3,90 @@
 #include "hardware_address.h"
 #include "utils/buffer_utils.h"
 
-#include "packet.h"
+#include "layer.h"
 
 namespace PacketHacker {
 
 /**
- * \brief Class representation of an EthernetII packet.
+ * @brief Class representation of an EthernetII layer.
  */
-class EthernetPacket : public Packet
+class EthernetLayer : public Layer
 {
 public:
   /**
-   * \brief Default constructor.
-   * Fills packet with zereos.
+   * Declares the layer type of this layer.
    */
-  EthernetPacket();
+  DECL_LAYER(LayerType::ETHERNET);
 
   /**
-   * \brief Initializes Ethernet packet from a data buffer.
+   * @brief Default constructor.
+   * Initializes header with zero values.
+   */
+  EthernetLayer();
+
+  /**
+   * @brief Initializes Ethernet layer from a data buffer.
    * 
    * If size is less than the sizeof(EthernetHeader) then an error will be thrown.
-   * The packet will only read the first sizeof(EthernetHeader) bytes from the
+   * The layer will only read the first sizeof(EthernetHeader) bytes from the
    * buffer, the rest is ignored.
    * @param data buffer to read from
    * @param size size of buffer
    */
-  EthernetPacket(const uint8_t *data, uint32_t size);
+  EthernetLayer(const uint8_t *data, uint32_t size);
 
   /**
-   * \brief Returns the destination hardware address.
+   * @brief Returns the destination hardware address.
    * @return destination hardware address
    */
   HardwareAddress dstMac() { return HardwareAddress(m_header.dstMac); }
 
   /**
-   * \brief Returns the source hardware address.
+   * @brief Returns the source hardware address.
    * @return source hardware address
    */
   HardwareAddress srcMac() { return HardwareAddress(m_header.srcMac); }
 
   /**
-   * \brief Returns the next protocol type.
+   * @brief Returns the next protocol type.
    * @return protocol type
    */
-  uint16_t type() { return BYTE_SWAP_16(m_header.type); }
+  uint16_t protoType() { return BYTE_SWAP_16(m_header.protoType); }
 
   /**
-   * \brief Sets the destination hardware address.
+   * @brief Sets the destination hardware address.
    * @param dst destination hardware address
    */
   void dstMac(const HardwareAddress &dst);
 
   /**
-   * \brief Sets the source hardware address.
+   * @brief Sets the source hardware address.
    * @param src source hardware address
    */
   void srcMac(const HardwareAddress &src);
 
   /**
-   * \brief Sets the protocol type.
-   * @param type protocol type
+   * @brief Sets the protocol type.
+   * @param protoType protocol type
    */
-  void type(const uint16_t type);
+  void protoType(const uint16_t protoType);
 
   /**
-   * \brief Returns the packet's type.
-   * @return PacketType::ETHERNET
+   * @brief Returns the layer's type.
+   * @return LayerType::ETHERNET
+   * @sa Layer::type()
    */
-  virtual const PacketType packetType() const override { return PacketType::ETHERNET; }
+  virtual const LayerType type() const override { return typeFlag; }
 
   /**
-   * \brief Returns the packet's name.
-   * @return Ethernet
-   */
-  virtual const std::string name() const override { return "Ethernet"; }
-
-  /**
-   * \brief Returns the header size of the packet.
+   * @brief Returns the header size of the layer.
    * @return sizeof(EthernetHeader)
+   * @sa Layer::headerSize()
    */
   virtual const uint32_t headerSize() const override { return sizeof(EthernetHeader); }
 
   /**
-   * \brief Returns if a packet is the reply to this packet.
+   * @brief Returns if a buffer contains the reply to this layer.
    * 
    * True if reply's dst mac equals the src mac and vice
    * versa for the reply's src mac and the dst mac. Type must
@@ -95,22 +96,23 @@ public:
    * @param buffer data of the reply
    * @param size size of the reply buffer
    * @return true if the buffer contains a reply, false otherwise
+   * @sa Layer::isReply()
    */
-  virtual bool doesReplyMatch(const uint8_t *buffer, uint32_t size) override;
+  virtual bool isReply(const uint8_t *buffer, uint32_t size) override;
 
-protected:
   /**
-   * Writes the contents of this packet to the buffer.
+   * @brief Writes the contents of this layer to the buffer.
    * @param buffer data buffer to write to
+   * @sa Layer::write()
    */
-  virtual void doWriteToBuf(uint8_t *buffer) override;
+  virtual void write(uint8_t *buffer) override;
 
 private:
   struct EthernetHeader
   {
     uint8_t dstMac[6];
     uint8_t srcMac[6];
-    uint16_t type;
+    uint16_t protoType;
   };
 
   EthernetHeader m_header;

@@ -1,14 +1,14 @@
-#include "packets/udp_packet.h"
-#include "packets/data_packet.h"
-#include "packets/ip_packet.h"
+#include "layers/udp_layer.h"
+#include "layers/data_layer.h"
+#include "layers/ip_layer.h"
 #include "utils/buffer_utils.h"
 #include "utils/adapter_utils.h"
 #include "constants.h"
 
 namespace PacketHacker {
 
-UdpPacket::UdpPacket()
-  : m_header(), Packet()
+UdpLayer::UdpLayer()
+  : m_header(), Layer()
 {
   // HeaderField *srcPort = new HeaderFieldImpl<UdpPacket>(this, "Src Port", 0u, FieldType::FIELD_INT16, &UdpPacket::SetSrcPort);
   // HeaderField *dstPort = new HeaderFieldImpl<UdpPacket>(this, "Dst Port", 0u, FieldType::FIELD_INT16, &UdpPacket::SetDstPort);
@@ -24,8 +24,8 @@ UdpPacket::UdpPacket()
   // Init();
 }
 
-UdpPacket::UdpPacket(const uint8_t *data, uint32_t size)
-  : UdpPacket()
+UdpLayer::UdpLayer(const uint8_t *data, uint32_t size)
+  : UdpLayer()
 {
   uint32_t headerSize = sizeof(UdpHeader);
   if (size < headerSize) {
@@ -48,31 +48,31 @@ UdpPacket::UdpPacket(const uint8_t *data, uint32_t size)
 
   size = size - headerSize;
   if (size > 0) {
-    innerPacket(new DataPacket((uint8_t *)(data + headerSize), size));
+    innerLayer(new DataLayer((uint8_t *)(data + headerSize), size));
   }
 }
 
-void UdpPacket::srcPort(const uint16_t srcPort)
+void UdpLayer::srcPort(const uint16_t srcPort)
 {
   m_header.srcPort = BYTE_SWAP_16(srcPort);
 }
 
-void UdpPacket::dstPort(const uint16_t dstPort)
+void UdpLayer::dstPort(const uint16_t dstPort)
 {
   m_header.dstPort = BYTE_SWAP_16(dstPort);
 }
 
-void UdpPacket::length(const uint16_t length)
+void UdpLayer::length(const uint16_t length)
 {
   m_header.length = BYTE_SWAP_16(length);
 }
 
-void UdpPacket::checksum(const uint16_t checksum)
+void UdpLayer::checksum(const uint16_t checksum)
 {
   m_header.checksum = BYTE_SWAP_16(checksum);
 }
 
-bool UdpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
+bool UdpLayer::isReply(const uint8_t *buffer, uint32_t size)
 {
   uint16_t headerSize = sizeof(UdpHeader);
   if (size < headerSize) {
@@ -83,15 +83,20 @@ bool UdpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size)
   size = size - headerSize;
 
   if (m_header.dstPort == header->srcPort && m_header.srcPort == header->dstPort) {
-    return innerPacket() ? innerPacket()->doesReplyMatch((uint8_t *)(buffer + headerSize), size) : true;
+    return true;
   }
 
   return false;
 }
 
-void UdpPacket::doWriteToBuf(uint8_t *buffer)
+void UdpLayer::write(uint8_t *buffer)
 {
-  uint16_t size = this->size();
+  uint32_t size = headerSize();
+  Layer *curr = innerLayer();
+  while (curr) {
+    size += curr->headerSize();
+    curr = curr->innerLayer();
+  }
   m_header.checksum = 0x0000;
   m_header.length = BYTE_SWAP_16(size);
   // GetField("Udp Length")->SetValue(size);
@@ -100,8 +105,8 @@ void UdpPacket::doWriteToBuf(uint8_t *buffer)
 
 
   std::vector<uint8_t> psuedo_header(size + 12);
-  if (outerPacket()->packetType() == PacketType::IP) {
-    IpPacket *ip = static_cast<IpPacket *>(outerPacket());
+  if (outerLayer()->type() == LayerType::IP) {
+    IpLayer *ip = static_cast<IpLayer *>(outerLayer());
     Utils::WriteValue(&psuedo_header[0], ip->sourceIp());
     Utils::WriteValue(&psuedo_header[4], ip->destIp());
     Utils::WriteValue(&psuedo_header[8], (uint8_t)0);

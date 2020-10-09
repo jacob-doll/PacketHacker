@@ -4,18 +4,19 @@ set(PACKET_SRCS
   hardware_address.cpp
   interface_table.cpp
   ip_address.cpp
+  layer.cpp
   packet.cpp
   packet_queue.cpp
   packet_stream.cpp
   routing_table.cpp
-  packets/arp_packet.cpp
-  packets/data_packet.cpp
-  packets/eth_packet.cpp
-  packets/icmp_packet.cpp
-  packets/ip_packet.cpp
-  packets/udp_packet.cpp
+  layers/arp_layer.cpp
+  layers/data_layer.cpp
+  layers/eth_layer.cpp
+  layers/icmp_layer.cpp
+  layers/ip_layer.cpp
+  layers/udp_layer.cpp
   utils/adapter_utils.cpp
-  utils/packet_utils.cpp
+  utils/layer_utils.cpp
 )
 
 if (WIN32)

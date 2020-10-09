@@ -1,104 +1,119 @@
 #pragma once
-#include <stdint.h>
-#include <string>
 
+#include "layer.h"
 
 namespace PacketHacker {
 
 /**
- * \brief Packet container class representing all data for a given packet.
+ * @brief Packet container class representing all data for a given packet.
  * 
- * All packet types are sub-classed from this class.
+ * Packets encompass layers which hold the data for the packet. The packet
+ * is a container object that manipulates layers.
  * 
- * The supported packets are as follows:
- *   - ArpPacket
- *   - EthernetPacket
- *   - IcmpPacket
- *   - IpPacket
- *   - UdpPacket
+ * The supported layers are as follows:
+ *   - EthernetII (Layer 2)
+ *   - ARP (Layer 2/3)
+ *   - IP (Layer 3)
+ *   - ICMP (Layer 3/4)
+ *   - UDP (Layer 4)
  * 
- * As of right now the base packet for reading from an interface are 
- * EthernetPacket (s). Support for more packet types are coming soon.
+ * Packets can be initialized from a buffer of specific size or by manually
+ * adding layers to the packet.
  * 
- * Each packet type has their own initializers, yet each packet can be
- * instantiated from a buffer.
+ * e.g. \n Packet packet; \n packet.insertLayer(new EthernetLayer);
  * 
- *   - e.g. Packet *p = new EthernetPacket({...}, size);
  */
 class Packet
 {
 public:
   /**
-   * \brief Available packet types.
-   */
-  enum PacketType {
-    ARP,
-    ETHERNET,
-    IP,
-    ICMP,
-    DATA,
-    UDP
-  };
-
-  /**
-   * \brief Default constructor.
+   * @brief Default constructor.
    */
   Packet();
 
   /**
-   * \brief Virtual destructor that defaults to nothing.
+   * @brief Initializes a packet from buffer and size.
+   * 
+   * Currently the base layer is EthernetLayer but soon the
+   * base layer type will be determined from the interface.
+   * 
+   * @param data data buffer to read from
+   * @param size size of data buffer
+   */
+  Packet(const uint8_t *data, uint32_t size);
+
+  /**
+   * @brief Virtual destructor that defaults to nothing.
    * 
    * If a sub-class needs to destroy data then it
    * overrides this function.
    */
-  virtual ~Packet();
+  ~Packet();
 
   /**
-   * \brief Pointer to the parent packet.
-   * 
-   * If top-level packet then outerPacket returns nullptr.
-   * @return Pointer of outer packet
+   * @brief Returns first layer.
+   * @return first layer
    */
-  Packet *outerPacket() const { return m_outerPacket; }
+  Layer *firstLayer() const { return m_firstLayer; }
 
   /**
-   * \brief Returns a pointer to the next child packet.
-   * 
-   * If bottom-level packet then innerPacket returns nullptr.
-   * @return Pointer of inner packet
+   * @brief Returns last layer.
+   * If only one layer exists both first and last layer
+   * will point to the same layer.
+   * @return last layer
    */
-  Packet *innerPacket() const { return m_innerPacket; }
+  Layer *lastLayer() const { return m_lastLayer; }
 
   /**
-   * \brief Returns packet in this structure with the given name.
-   * 
-   * Attempts to find a packet with the given name in
-   * the packet structure. If no packet can be found 
-   * then nullptr is returned.
-   * @param name string name of packet to look for.
-   * @return Packet of the given name
+   * @brief Returns a layer of the given type supplied.
+   * @param type layer type to be returned
+   * @return layer of the type specified or null if not found
    */
-  Packet *getPacket(const std::string &name); /** TODO: Use packet class to find instead of packet name. */
+  template<typename TLayer>
+  TLayer *getLayer(Layer::LayerType type = TLayer::typeFlag) const
+  {
+    Layer *curr = m_firstLayer;
+    while (curr) {
+      if (curr->type() == type) {
+        return static_cast<TLayer *>(curr);
+      }
+      curr = curr->innerLayer();
+    }
+    return nullptr;
+  }
 
   /**
-   * \brief Sets the inner packet.
-   * @param inner Pointer to packet object
+   * @brief Inserts a new layer at the end.
+   * @param layer layer to be inserted
    */
-  void innerPacket(Packet *inner);
+  void insertLayer(Layer *layer);
 
   /**
-   * \brief Removes child packet and all other children, deleting them.
+   * @brief Removes the layer of the specified type and all
+   * layers below it.
+   * @param type type of layer to remove
    */
-  void removeInnerPacket();
+  void RemoveLayer(Layer::LayerType type);
 
   /**
-   * \brief Returns the total size of the packet in bytes.
+   * @brief Returns the total size of the packet in bytes.
    * @return Size of packet
    */
   const uint32_t size() const;
 
   /**
-   * \brief Writes the entire packet and children to a supplied buffer.
+   * @brief Returns if a buffer contains the reply to this packet.
+   * 
+   * If the buffer has enough capacity and represents
+   * the reply to this packet then true is returned.
+   * @param data data of the reply
+   * @param size size of the reply buffer
+   * @return true if the buffer contains a reply, false otherwise
+   */
+  bool isReply(const uint8_t *data, uint32_t size);
+
+  /**
+   * @brief Writes the entire packet and children to a supplied buffer.
    * 
    * Will overwrite and data in the buffer of the given size.
    * @param buffer buffer to write into.
@@ -106,60 +121,9 @@ public:
    */
   void writeToBuf(uint8_t *buffer, const uint32_t size);
 
-  /**
-   * \brief Returns the packet's type.
-   * @return PacketType of this packet
-   */
-  virtual const PacketType packetType() const = 0;
-
-  /**
-   * \brief Returns the packet's name.
-   * @return string name of the packet
-   */
-  virtual const std::string name() const = 0;
-
-  /**
-   * \brief Returns the header size of the packet.
-   * @return size of header in bytes
-   */
-  virtual const uint32_t headerSize() const = 0;
-
-  /**
-   * \brief Returns if a packet is the reply to this packet.
-   * 
-   * If the buffer has enough capacity and represents
-   * the reply to this packet then true is returned.
-   * @param buffer data of the reply
-   * @param size size of the reply buffer
-   * @return true if the buffer contains a reply, false otherwise
-   */
-  virtual bool doesReplyMatch(const uint8_t *buffer, uint32_t size) = 0;
-
-  /**
-   * \brief Prints the packet to a stream.
-   * @param output stream to print to
-   * @param packet packet to print
-   * @return stream that was written to
-   */
-  friend std::ostream &operator<<(std::ostream &output, Packet *packet);
-
-protected:
-  /**
-   * Writes just this packet to the buffer.
-   * @param buffer data buffer to write to
-   */
-  virtual void doWriteToBuf(uint8_t *buffer) = 0;
-
 private:
-  /**
-   * Sets the parent packet of this packet.
-   * @param outer parent packet
-   */
-  void outerPacket(Packet *outer);
-
-private:
-  Packet *m_outerPacket;
-  Packet *m_innerPacket;
+  Layer *m_firstLayer;
+  Layer *m_lastLayer;
 };
 
 }// namespace PacketHacker

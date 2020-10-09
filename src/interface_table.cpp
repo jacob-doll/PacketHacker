@@ -1,7 +1,4 @@
 #include "interface_table.h"
-#include "packets.h"
-
-#include <pcap.h>
 
 namespace PacketHacker {
 

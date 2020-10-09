@@ -1,17 +1,17 @@
-#include "packets/icmp_packet.h"
+#include "layers/icmp_layer.h"
 #include "utils/buffer_utils.h"
 #include "utils/adapter_utils.h"
-#include "packets/data_packet.h"
+#include "layers/data_layer.h"
 
 namespace PacketHacker {
 
-IcmpPacket::IcmpPacket()
+IcmpLayer::IcmpLayer()
   : m_header(),
     m_originateTimestamp(0),
     m_receiveTimestamp(0),
     m_transmitTimestamp(0),
     m_addressMask(0),
-    Packet()
+    Layer()
 {
   // HeaderField *type = new HeaderFieldImpl<IcmpPacket>(this, "Type", "0", &IcmpPacket::SetType);
   // HeaderField *code = new HeaderFieldImpl<IcmpPacket>(this, "Code", "0", &IcmpPacket::SetCode);
@@ -27,8 +27,8 @@ IcmpPacket::IcmpPacket()
   // Init();
 }
 
-IcmpPacket::IcmpPacket(const uint8_t *data, uint32_t size)
-  : IcmpPacket()
+IcmpLayer::IcmpLayer(const uint8_t *data, uint32_t size)
+  : IcmpLayer()
 {
   uint32_t headerSize = sizeof(IcmpHeader);
   if (size < headerSize) {
@@ -53,78 +53,78 @@ IcmpPacket::IcmpPacket(const uint8_t *data, uint32_t size)
   }
 
   if (size > 0) {
-    innerPacket(new DataPacket((uint8_t *)(data + headerSize), size));
+    innerLayer(new DataLayer((uint8_t *)(data + headerSize), size));
   }
 }
 
-void IcmpPacket::type(const uint8_t type)
+void IcmpLayer::icmpType(const uint8_t icmpType)
 {
-  m_header.type = type;
+  m_header.icmpType = icmpType;
 }
 
-void IcmpPacket::code(const uint8_t code)
+void IcmpLayer::code(const uint8_t code)
 {
   m_header.code = code;
 }
 
-void IcmpPacket::checksum(const uint16_t checksum)
+void IcmpLayer::checksum(const uint16_t checksum)
 {
   m_header.checksum = BYTE_SWAP_16(checksum);
 }
 
-void IcmpPacket::id(const uint16_t id)
+void IcmpLayer::id(const uint16_t id)
 {
   m_header.data.id = BYTE_SWAP_16(id);
 }
 
-void IcmpPacket::sequence(const uint16_t sequence)
+void IcmpLayer::sequence(const uint16_t sequence)
 {
   m_header.data.sequence = BYTE_SWAP_16(sequence);
 }
 
-void IcmpPacket::nextHopMtu(const uint16_t nextHopMtu)
+void IcmpLayer::nextHopMtu(const uint16_t nextHopMtu)
 {
   m_header.data.nextHopMtu = BYTE_SWAP_16(nextHopMtu);
 }
 
-void IcmpPacket::gateway(const IPv4Address &gateway)
+void IcmpLayer::gateway(const IPv4Address &gateway)
 {
   m_header.data.gateway = gateway.data();
 }
 
-void IcmpPacket::originateTimestamp(const uint32_t originateTimestamp)
+void IcmpLayer::originateTimestamp(const uint32_t originateTimestamp)
 {
   m_originateTimestamp = BYTE_SWAP_32(originateTimestamp);
 }
 
-void IcmpPacket::receiveTimestamp(const uint32_t receiveTimestamp)
+void IcmpLayer::receiveTimestamp(const uint32_t receiveTimestamp)
 {
   m_receiveTimestamp = BYTE_SWAP_32(receiveTimestamp);
 }
 
-void IcmpPacket::transmitTimestamp(const uint32_t transmitTimestamp)
+void IcmpLayer::transmitTimestamp(const uint32_t transmitTimestamp)
 {
   m_transmitTimestamp = BYTE_SWAP_32(transmitTimestamp);
 }
 
-void IcmpPacket::addressMask(const IPv4Address &addressMask)
+void IcmpLayer::addressMask(const IPv4Address &addressMask)
 {
   m_addressMask = addressMask.data();
 }
 
-const uint32_t IcmpPacket::headerSize() const
+const uint32_t IcmpLayer::headerSize() const
 {
-  if (m_header.type == TIMESTAMP || m_header.type == TIMESTAMP_REPLY) {
+  if (m_header.icmpType == TIMESTAMP || m_header.icmpType == TIMESTAMP_REPLY) {
     return sizeof(IcmpHeader) + 3 * sizeof(uint32_t);
-  } else if (m_header.type == ADDRESS_MASK_REQUEST || m_header.type == ADDRESS_MASK_REPLY) {
+  } else if (m_header.icmpType == ADDRESS_MASK_REQUEST || m_header.icmpType == ADDRESS_MASK_REPLY) {
     return sizeof(IcmpHeader) + sizeof(uint32_t);
   }
   return sizeof(IcmpHeader);
 }
 
-bool IcmpPacket::doesReplyMatch(const uint8_t *buffer, uint32_t size) { return true; }
+bool IcmpLayer::isReply(const uint8_t *buffer, uint32_t size) { return true; }
 
-void IcmpPacket::doWriteToBuf(uint8_t *buffer)
+void IcmpLayer::write(uint8_t *buffer)
 {
   m_header.checksum = 0x0000;
   Utils::WriteValue(buffer, m_header);
@@ -137,7 +137,14 @@ void IcmpPacket::doWriteToBuf(uint8_t *buffer)
     Utils::WriteValue(buffer + sizeof(m_header), m_addressMask);
   }
 
-  uint16_t checksum = Utils::CalcChecksum((void *)buffer, size());
+  uint32_t size = headerSize();
+  Layer *curr = innerLayer();
+  while (curr) {
+    size += curr->headerSize();
+    curr = curr->innerLayer();
+  }
+
+  uint16_t checksum = Utils::CalcChecksum((void *)buffer, size);
 
   Utils::WriteValue((uint8_t *)(buffer + 2), BYTE_SWAP_16(checksum));
 }
