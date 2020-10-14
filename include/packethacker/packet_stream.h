@@ -68,7 +68,7 @@ public:
    * @return byte array of data that contains packet info, nullptr is 
    * returned if no packet received or on error.
    */
-  const uint8_t *getNextPacket(uint32_t *size);
+  const DataType *getNextPacket(SizeType *size);
 
   /**
    * @brief Returns whether stream is open or not.

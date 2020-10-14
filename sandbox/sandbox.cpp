@@ -52,30 +52,39 @@ int main(void)
   packet.insertLayer(ip);
   packet.insertLayer(icmp);
 
+  packet.payload(new StringPayload("Hello World!"));
+
   IcmpLayer *test = packet.getLayer<IcmpLayer>();
   if (test) {
     std::cout << test->id() << "\n";
   }
 
-  // const uint32_t size = packet.size();
-  // std::vector<uint8_t> data(size);
-  // packet.writeToBuf(data.data(), size);
+  const SizeType size = packet.size();
+  std::vector<DataType> data(size);
+  packet.writeToBuf(data.data(), size);
 
-  // for (int i = 0; i < size; i++) {
-  //   std::cout << std::hex << (int)data.at(i) << " ";
-  // }
-  // std::cout << "\n";
+  for (int i = 0; i < size; i++) {
+    std::cout << std::hex << (int)data.at(i) << " ";
+  }
+  std::cout << "\n";
 
-  // stream.sendPacket(packet);
+  stream.sendPacket(packet);
 
-  // while (stream.streamOpen()) {
-  //   uint32_t size;
-  //   const uint8_t *data = stream.getNextPacket(&size);
-  //   if (packet.isReply(data, size)) {
-  //     std::cout << "Received reply\n";
-  //     break;
-  //   }
-  // }
+  while (stream.streamOpen()) {
+    SizeType recv_size;
+    const DataType *recv_data = stream.getNextPacket(&recv_size);
+    if (packet.isReply(recv_data, recv_size)) {
+      std::cout << "Received reply\n";
+      Packet received(recv_data, size);
+      std::vector<DataType> recv_vector(recv_size);
+      received.writeToBuf(recv_vector.data(), size);
+      for (int i = 0; i < recv_size; i++) {
+        std::cout << std::hex << (int)recv_vector.at(i) << " ";
+      }
+      std::cout << "\n";
+      break;
+    }
+  }
 
   stream.closePacketStream();
 

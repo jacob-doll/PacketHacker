@@ -2,7 +2,6 @@
 #include "constants.h"
 
 #include "layers/arp_layer.h"
-#include "layers/data_layer.h"
 #include "layers/eth_layer.h"
 #include "layers/icmp_layer.h"
 #include "layers/ip_layer.h"
@@ -22,8 +21,6 @@ namespace Utils {
       return new IpLayer();
     case Layer::LayerType::ICMP:
       return new IcmpLayer();
-    case Layer::LayerType::DATA:
-      return new DataLayer();
     case Layer::LayerType::UDP:
       return new UdpLayer();
     default:

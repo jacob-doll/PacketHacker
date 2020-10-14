@@ -1,7 +1,6 @@
 #include "layers/icmp_layer.h"
 #include "utils/buffer_utils.h"
 #include "utils/adapter_utils.h"
-#include "layers/data_layer.h"
 
 namespace PacketHacker {
 
@@ -38,22 +37,18 @@ IcmpLayer::IcmpLayer(const uint8_t *data, uint32_t size)
   data += sizeof(IcmpHeader);
 
   size = size - headerSize;
-  if (type() == TIMESTAMP || type() == TIMESTAMP_REPLY) {
+  if (icmpType() == TIMESTAMP || icmpType() == TIMESTAMP_REPLY) {
     if (size < 3 * sizeof(uint32_t)) {
       return;
     }
     Utils::ReadValue(data, m_originateTimestamp);
     Utils::ReadValue(data + sizeof(uint32_t), m_receiveTimestamp);
     Utils::ReadValue(data + 2 * sizeof(uint32_t), m_transmitTimestamp);
-  } else if (type() == ADDRESS_MASK_REQUEST || type() == ADDRESS_MASK_REPLY) {
+  } else if (icmpType() == ADDRESS_MASK_REQUEST || icmpType() == ADDRESS_MASK_REPLY) {
     if (size < sizeof(uint32_t)) {
       return;
     }
     Utils::ReadValue(data, m_addressMask);
-  }
-
-  if (size > 0) {
-    innerLayer(new DataLayer((uint8_t *)(data + headerSize), size));
   }
 }
 
@@ -112,7 +107,7 @@ void IcmpLayer::addressMask(const IPv4Address &addressMask)
   m_addressMask = addressMask.data();
 }
 
-const uint32_t IcmpLayer::headerSize() const
+const SizeType IcmpLayer::headerSize() const
 {
   if (m_header.icmpType == TIMESTAMP || m_header.icmpType == TIMESTAMP_REPLY) {
     return sizeof(IcmpHeader) + 3 * sizeof(uint32_t);
@@ -122,18 +117,18 @@ const uint32_t IcmpLayer::headerSize() const
   return sizeof(IcmpHeader);
 }
 
-bool IcmpLayer::isReply(const uint8_t *buffer, uint32_t size) { return true; }
+bool IcmpLayer::isReply(const DataType *buffer, SizeType size) { return true; }
 
-void IcmpLayer::write(uint8_t *buffer)
+void IcmpLayer::write(DataType *buffer)
 {
   m_header.checksum = 0x0000;
   Utils::WriteValue(buffer, m_header);
 
-  if (type() == TIMESTAMP || type() == TIMESTAMP_REPLY) {
+  if (icmpType() == TIMESTAMP || icmpType() == TIMESTAMP_REPLY) {
     Utils::WriteValue(buffer + sizeof(m_header), m_originateTimestamp);
     Utils::WriteValue(buffer + sizeof(m_header) + sizeof(uint32_t), m_receiveTimestamp);
     Utils::WriteValue(buffer + sizeof(m_header) + 2 * sizeof(uint32_t), m_transmitTimestamp);
-  } else if (type() == ADDRESS_MASK_REQUEST || type() == ADDRESS_MASK_REPLY) {
+  } else if (icmpType() == ADDRESS_MASK_REQUEST || icmpType() == ADDRESS_MASK_REPLY) {
     Utils::WriteValue(buffer + sizeof(m_header), m_addressMask);
   }
 

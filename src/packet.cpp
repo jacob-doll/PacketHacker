@@ -5,11 +5,11 @@
 namespace PacketHacker {
 
 Packet::Packet()
-  : m_firstLayer(), m_lastLayer()
+  : m_firstLayer(), m_lastLayer(), m_payload()
 {
 }
 
-Packet::Packet(const uint8_t *data, uint32_t size)
+Packet::Packet(const DataType *data, SizeType size)
   : Packet()
 {
   m_firstLayer = new EthernetLayer(data, size);
@@ -19,6 +19,11 @@ Packet::Packet(const uint8_t *data, uint32_t size)
     curr = curr->innerLayer();
   }
   m_lastLayer = curr;
+  SizeType offset = this->size();
+  size = size - offset;
+  if (size > 0) {
+    m_payload = new RawPayload(data + offset, size);
+  }
 }
 
 
@@ -26,6 +31,8 @@ Packet::~Packet()
 {
   delete m_firstLayer;
   m_firstLayer = 0;
+  delete m_payload;
+  m_payload = 0;
 }
 
 void Packet::insertLayer(Layer *layer)
@@ -43,21 +50,30 @@ void Packet::RemoveLayer(Layer::LayerType type)
 {
 }
 
-const uint32_t Packet::size() const
+void Packet::payload(Payload *payload)
 {
-  uint32_t size = 0;
+  delete m_payload;
+  m_payload = payload;
+}
+
+const SizeType Packet::size() const
+{
+  SizeType size = 0;
   Layer *curr = m_firstLayer;
   while (curr) {
     size += curr->headerSize();
     curr = curr->innerLayer();
   }
+  if (m_payload) {
+    size += m_payload->payloadSize();
+  }
   return size;
 }
 
-bool Packet::isReply(const uint8_t *data, uint32_t size)
+bool Packet::isReply(const DataType *data, SizeType size)
 {
   Layer *curr = m_firstLayer;
-  uint32_t offset = 0;
+  SizeType offset = 0;
   while (curr) {
     if (!curr->isReply(data + offset, size)) {
       return false;
@@ -69,14 +85,20 @@ bool Packet::isReply(const uint8_t *data, uint32_t size)
   return true;
 }
 
-void Packet::writeToBuf(uint8_t *buffer, const uint32_t size)
+void Packet::writeToBuf(DataType *buffer, const SizeType size)
 {
-  uint32_t packetSize = this->size();
+  SizeType packetSize = this->size();
   if (size < packetSize)
     return;
 
   Layer *curr = m_lastLayer;
-  uint32_t offset = size;
+  SizeType offset = size;
+
+  if (m_payload) {
+    offset -= m_payload->payloadSize();
+    m_payload->write(buffer + offset);
+  }
+
   while (curr) {
     offset -= curr->headerSize();
     curr->write(buffer + offset);

@@ -101,7 +101,7 @@ void ArpLayer::targetIp(const IPv4Address &targetIp)
   m_header.targetIp = targetIp.data();
 }
 
-bool ArpLayer::isReply(const uint8_t *buffer, uint32_t size)
+bool ArpLayer::isReply(const DataType *buffer, SizeType size)
 {
   uint32_t headerSize = sizeof(ArpHeader);
   if (size < headerSize) {
@@ -111,7 +111,7 @@ bool ArpLayer::isReply(const uint8_t *buffer, uint32_t size)
   return (m_header.targetIp == header->senderIp) && (m_header.senderIp == header->targetIp);
 }
 
-void ArpLayer::write(uint8_t *buffer)
+void ArpLayer::write(DataType *buffer)
 {
   Utils::WriteValue(buffer, m_header);
 }

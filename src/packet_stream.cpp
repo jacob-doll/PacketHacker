@@ -55,7 +55,7 @@ bool PacketStream::sendPacket(Packet &packet)
   return true;
 }
 
-const uint8_t *PacketStream::getNextPacket(uint32_t *size)
+const DataType *PacketStream::getNextPacket(SizeType *size)
 {
   if (!m_streamOpen) {
     return nullptr;

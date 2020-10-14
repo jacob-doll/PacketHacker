@@ -1,6 +1,7 @@
 #pragma once
 
 #include "layer.h"
+#include "payload.h"
 
 namespace PacketHacker {
 
@@ -40,7 +41,7 @@ public:
    * @param data data buffer to read from
    * @param size size of data buffer
    */
-  Packet(const uint8_t *data, uint32_t size);
+  Packet(const DataType *data, SizeType size);
 
   /**
    * @brief Virtual destructor that defaults to nothing.
@@ -96,10 +97,25 @@ public:
   void RemoveLayer(Layer::LayerType type);
 
   /**
+   * @brief Returns the current payload attached to this packet.
+   * Can be string data or raw data.
+   * @return payload
+   */
+  Payload *payload() const { return m_payload; }
+
+  /**
+   * @brief Sets the payload of this packet.
+   * If payload is already set, the payload is deleted
+   * and a the new one is set.
+   * @param payload payload to add
+   */
+  void payload(Payload *payload);
+
+  /**
    * @brief Returns the total size of the packet in bytes.
    * @return Size of packet
    */
-  const uint32_t size() const;
+  const SizeType size() const;
 
   /**
    * @brief Returns if a buffer contains the reply to this packet.
@@ -110,7 +126,7 @@ public:
    * @param size size of the reply buffer
    * @return true if the buffer contains a reply, false otherwise
    */
-  bool isReply(const uint8_t *data, uint32_t size);
+  bool isReply(const DataType *data, SizeType size);
 
   /**
    * @brief Writes the entire packet and children to a supplied buffer.
@@ -119,11 +135,12 @@ public:
    * @param buffer buffer to write into.
    * @param size size in bytes to write.
    */
-  void writeToBuf(uint8_t *buffer, const uint32_t size);
+  void writeToBuf(DataType *buffer, const SizeType size);
 
 private:
   Layer *m_firstLayer;
   Layer *m_lastLayer;
+  Payload *m_payload;
 };
 
 }// namespace PacketHacker

@@ -56,7 +56,7 @@ void EthernetLayer::protoType(const uint16_t protoType)
   m_header.protoType = BYTE_SWAP_16(protoType);
 }
 
-bool EthernetLayer::isReply(const uint8_t *buffer, uint32_t size)
+bool EthernetLayer::isReply(const DataType *buffer, SizeType size)
 {
   uint32_t headerSize = sizeof(EthernetHeader);
   if (size < headerSize) {
@@ -72,7 +72,7 @@ bool EthernetLayer::isReply(const uint8_t *buffer, uint32_t size)
   return false;
 }
 
-void EthernetLayer::write(uint8_t *buffer)
+void EthernetLayer::write(DataType *buffer)
 {
   Utils::WriteValue(buffer, m_header);
 }

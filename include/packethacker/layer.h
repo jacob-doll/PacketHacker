@@ -1,5 +1,6 @@
 #pragma once
-#include <stdint.h>
+
+#include "common.h"
 
 namespace PacketHacker {
 
@@ -27,7 +28,7 @@ public:
   /**
    * @brief Available packet types.
    */
-  enum LayerType {
+  enum class LayerType {
     ETHERNET,
     ARP,
     IP,
@@ -78,7 +79,7 @@ public:
    * @brief Returns the header size of the layer.
    * @return size of header in bytes
    */
-  virtual const uint32_t headerSize() const = 0;
+  virtual const SizeType headerSize() const = 0;
 
   /**
    * @brief Returns if a buffer contains the reply to this layer.
@@ -89,13 +90,13 @@ public:
    * @param size size of the reply buffer
    * @return true if the buffer contains a reply, false otherwise
    */
-  virtual bool isReply(const uint8_t *data, const uint32_t size) = 0;
+  virtual bool isReply(const DataType *data, const SizeType size) = 0;
 
   /**
    * @brief Writes this layer to a buffer.
    * @param buffer buffer to write to
    */
-  virtual void write(uint8_t *buffer) = 0;
+  virtual void write(DataType *buffer) = 0;
 
 private:
   /**

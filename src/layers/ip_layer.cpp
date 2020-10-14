@@ -135,7 +135,7 @@ void IpLayer::destIp(const IPv4Address &destIp)
   m_header.destIp = destIp.data();
 }
 
-bool IpLayer::isReply(const uint8_t *buffer, uint32_t size)
+bool IpLayer::isReply(const DataType *buffer, SizeType size)
 {
   uint16_t headerSize = sizeof(IpHeader);
   if (size < headerSize) {
@@ -152,7 +152,7 @@ bool IpLayer::isReply(const uint8_t *buffer, uint32_t size)
   return false;
 }
 
-void IpLayer::write(uint8_t *buffer)
+void IpLayer::write(DataType *buffer)
 {
   uint32_t size = headerSize();
   Layer *curr = innerLayer();

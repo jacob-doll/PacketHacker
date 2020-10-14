@@ -1,5 +1,4 @@
 #include "layers/udp_layer.h"
-#include "layers/data_layer.h"
 #include "layers/ip_layer.h"
 #include "utils/buffer_utils.h"
 #include "utils/adapter_utils.h"
@@ -45,11 +44,6 @@ UdpLayer::UdpLayer(const uint8_t *data, uint32_t size)
 
   // sprintf(buf, "0x%04x", BYTE_SWAP_16(m_header.checksum));
   // GetField("Udp Checksum")->SetValue(BYTE_SWAP_16(m_header.checksum));
-
-  size = size - headerSize;
-  if (size > 0) {
-    innerLayer(new DataLayer((uint8_t *)(data + headerSize), size));
-  }
 }
 
 void UdpLayer::srcPort(const uint16_t srcPort)
@@ -72,7 +66,7 @@ void UdpLayer::checksum(const uint16_t checksum)
   m_header.checksum = BYTE_SWAP_16(checksum);
 }
 
-bool UdpLayer::isReply(const uint8_t *buffer, uint32_t size)
+bool UdpLayer::isReply(const DataType *buffer, SizeType size)
 {
   uint16_t headerSize = sizeof(UdpHeader);
   if (size < headerSize) {
@@ -89,7 +83,7 @@ bool UdpLayer::isReply(const uint8_t *buffer, uint32_t size)
   return false;
 }
 
-void UdpLayer::write(uint8_t *buffer)
+void UdpLayer::write(DataType *buffer)
 {
   uint32_t size = headerSize();
   Layer *curr = innerLayer();

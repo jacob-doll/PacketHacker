@@ -99,7 +99,7 @@ public:
    * @return sizeof(UdpHeader)
    * @sa Layer::headerSize()
    */
-  virtual const uint32_t headerSize() const override { return sizeof(UdpHeader); }
+  virtual const SizeType headerSize() const override { return sizeof(UdpHeader); }
 
   /**
    * @brief Returns if a buffer contains the reply to this layer.
@@ -113,14 +113,14 @@ public:
    * @return true if the buffer contains a reply, false otherwise
    * @sa Layer::isReply()
    */
-  virtual bool isReply(const uint8_t *buffer, uint32_t size) override;
+  virtual bool isReply(const DataType *buffer, SizeType size) override;
 
   /**
    * @brief Writes the contents of this layer to the buffer.
    * @param buffer data buffer to write to
    * @sa Layer::write()
    */
-  virtual void write(uint8_t *buffer) override;
+  virtual void write(DataType *buffer) override;
 
 private:
 #pragma pack(push, 1)

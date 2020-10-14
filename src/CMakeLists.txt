@@ -6,11 +6,11 @@ set(PACKET_SRCS
   ip_address.cpp
   layer.cpp
   packet.cpp
+  payload.cpp
   packet_queue.cpp
   packet_stream.cpp
   routing_table.cpp
   layers/arp_layer.cpp
-  layers/data_layer.cpp
   layers/eth_layer.cpp
   layers/icmp_layer.cpp
   layers/ip_layer.cpp
